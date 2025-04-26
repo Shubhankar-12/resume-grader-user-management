@@ -59,7 +59,7 @@ export class CreateUserResumeUseCase
       return successClass({
         resume_id: createdResume._id,
         user_id: createdResume.user_id,
-        extractedText: createdResume.extractedText,
+        extractedText: analysis.extractedFields,
         analysis: createdResume.analysis,
         resume: createdResume.resume,
         created_on: createdResume.created_on,

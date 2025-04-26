@@ -6,12 +6,36 @@ const openai = new OpenAI({
 
 export async function getResumeAnalysisFromAI(text: string) {
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini", // or "gpt-4"
+    model: "gpt-4o-mini",
     messages: [
       {
         role: "system",
-        content:
-          "You are an expert resume analyzer. Respond ONLY in a strict JSON format: { gradingScore: number, atsScore: number, suggestions: string[] }",
+        content: `
+You are an expert resume analyzer.
+Strictly respond ONLY in this JSON format:
+
+{
+  gradingScore: number,
+  atsScore: number,
+  suggestions: string[],
+  extractedFields: {
+    name: string,
+    email: string,
+    phone: string,
+    location: string,
+    skills: string[],
+    experience: {
+      companyName: string,
+      role: string,
+      tasks: string[],
+      startDate: string,
+      endDate: string,
+      isPresent: boolean
+    }[]
+  }
+}
+
+DO NOT include any explanation. Only return JSON.`,
       },
       {
         role: "user",

@@ -36,7 +36,6 @@ const s3 = new AWS.S3({
 export class UploadDocUseCase implements UseCase<UseCaseRequest, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute({ file, auth }: UseCaseRequest): Promise<Response> {
-    console.log("Vook ASdsakl");
     if (!file.buffer) {
       return errClass(new NoDocUploadedError("document"));
     }
@@ -64,8 +63,6 @@ export class UploadDocUseCase implements UseCase<UseCaseRequest, Response> {
       Body: file.buffer,
       ContentType: file.mimetype,
     };
-
-    console.log(params, " Thisis paras");
 
     const result: S3Response = await new Promise((resolve, reject) => {
       try {
