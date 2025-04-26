@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ObjectId } from "mongodb";
 import { IUser, IUserDocument, IUserModel } from "../user/types";
 
 export class UserQueries {
@@ -35,7 +36,7 @@ export class UserQueries {
 
     aggregateQuery.push({
       $match: {
-        _id: id,
+        _id: new ObjectId(id),
         status: {
           $ne: "DISABLED",
         },
