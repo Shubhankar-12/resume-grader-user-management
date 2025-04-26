@@ -33,7 +33,7 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
         },
         { headers: { Accept: "application/json" } }
       );
-      console.log("tokenResponse", tokenResponse.data);
+
       const accessToken = tokenResponse.data.access_token;
       if (!accessToken) return errClass("GitHub token exchange failed");
 
