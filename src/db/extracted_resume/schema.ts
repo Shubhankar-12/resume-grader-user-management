@@ -11,6 +11,9 @@ const ExtractedResumeSchema = new Schema(
     name: {
       type: String,
     },
+    category: {
+      type: String,
+    },
     email: {
       type: String,
     },

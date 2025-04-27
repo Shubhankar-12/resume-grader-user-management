@@ -23,7 +23,7 @@ export class UserResumeQueries {
 
     aggregateQuery.push({
       $match: {
-        userId: new ObjectId(data.userId),
+        user_id: new ObjectId(data.user_id),
         status: {
           $ne: "DISABLED",
         },
@@ -51,12 +51,29 @@ export class UserResumeQueries {
     });
 
     aggregateQuery.push({
+      $lookup: {
+        from: "extracted_resumes",
+        localField: "_id",
+        foreignField: "resume_id",
+        as: "extracted_resume",
+      },
+    });
+
+    aggregateQuery.push({
+      $unwind: {
+        path: "$extracted_resume",
+        preserveNullAndEmptyArrays: true,
+      },
+    });
+
+    aggregateQuery.push({
       $project: {
         _id: 0,
         resume_id: "$_id",
         user_id: 1,
         resume: 1,
         extractedText: 1,
+        extracted_resume: 1,
         analysis: 1,
         status: 1,
         created_on: 1,

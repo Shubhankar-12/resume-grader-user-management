@@ -3,6 +3,7 @@ import { Document, Model } from "mongoose";
 interface IExtractedResume {
   resume_id: string;
   name: string;
+  category: string;
   email: string;
   phone: string;
   location: string;

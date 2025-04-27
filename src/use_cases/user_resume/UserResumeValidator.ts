@@ -27,6 +27,7 @@ const ObjectId = Types.ObjectId;
 type Response = Either<GeneralError, boolean>;
 
 export class UserResumeValidator extends BaseValidator {
+  private common_message = "user_resume ";
   @logUnexpectedValidatorError({ level: "error" })
   validateString(value: any, field: string): Response {
     if (value == undefined) {
@@ -40,6 +41,51 @@ export class UserResumeValidator extends BaseValidator {
     } else {
       return successClass(true);
     }
+  }
+  @logUnexpectedValidatorError({ level: "error" })
+  validateStatus(value: any): Response {
+    const field = "status";
+    if (value == undefined) {
+      return errClass(new NotFound(field));
+    } else if (typeof value != "string") {
+      return errClass(new InvalidDataType(field, "string"));
+    } else if (value.length == 0) {
+      return errClass(new NullOrUndefined(field));
+    } else if (StatusArray.indexOf(value) == -1) {
+      return errClass(new InvalidENUM(field, StatusArray));
+    } else {
+      return successClass(true);
+    }
+  }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validateLimit(value: any): Response {
+    const field = this.common_message + "limit";
+    return this.numberCheck(value, field);
+  }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validateSkip(value: any): Response {
+    const field = this.common_message + "skip";
+    return this.numberCheck(value, field);
+  }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validateSort(value: any): Response {
+    const field = this.common_message + "sort";
+    return this.stringCheck(value, field);
+  }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validateFilter(value: any): Response {
+    const field = this.common_message + "filter";
+    return this.stringCheck(value, field);
+  }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validateSearch(value: any): Response {
+    const field = this.common_message + "search";
+    return this.stringCheck(value, field);
   }
 }
 

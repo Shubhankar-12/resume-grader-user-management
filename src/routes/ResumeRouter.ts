@@ -7,6 +7,10 @@ import {
   createUserResumeController,
   createUserResumeMiddleware,
 } from "../use_cases/user_resume/create";
+import {
+  getAllUserResumesController,
+  getAllUserResumesMiddleware,
+} from "../use_cases/user_resume/get_all";
 export const resumeRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -17,4 +21,14 @@ baseRouterHandler.handleWithHooks(
   // createUserResumeMiddleware.ensureLoggedIn(),
   // createUserResumeMiddleware.ensureValidation(),
   createUserResumeController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+  resumeRouter,
+  "get",
+  "/list",
+  // getAllUserResumesMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // getAllUserResumesMiddleware.ensureLoggedIn(),
+  // getAllUserResumesMiddleware.ensureValidation(),
+  getAllUserResumesController.execute()
 );

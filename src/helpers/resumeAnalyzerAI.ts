@@ -19,6 +19,7 @@ Strictly respond ONLY in this JSON format:
   atsScore: number,
   suggestions: string[],
   extractedFields: {
+    category: string,
     name: string,
     email: string,
     phone: string,
