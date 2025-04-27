@@ -113,26 +113,41 @@ export async function generateResumeReportFromExtractedText(
         content: `
 You are an expert resume analyst.
 
-Given extracted resume fields (name, summary, skills, experience, education), generate a detailed JSON report:
+Given extracted resume fields (name, summary, skills, experience, education), generate a detailed JSON report with the following structure:
 
-- overallGrade: string (e.g., "B+")
-- scoreOutOf100: number (e.g., 75)
-- scoreBreakdown: atsCompatibility, keywordMatch, contentQuality, formatting (all percentages)
+overallGrade: string (e.g., "B+")
 
-- strengths: array of { title: string, description: string }
-- areasForImprovement: array of { title: string, description: string }
+scoreOutOf100: number (e.g., 75)
 
-- keywordAnalysis:
-  - presentKeywords: string[]
-  - missingKeywords: string[]
+scoreBreakdown:
 
-- actionableSuggestions: array of { 
-    title: string, 
-    description: string, 
-    block: string (valid simple HTML, including <p>, <ul>, <li>, <strong>, etc.)
-  }
+atsCompatibility: number (percentage)
 
-Respond ONLY with valid JSON. No extra text.`,
+keywordMatch: number (percentage)
+
+contentQuality: number (percentage)
+
+formatting: number (percentage)
+
+strengths: array of { title: string, description: string }
+
+areasForImprovement: array of { title: string, description: string }
+
+keywordAnalysis:
+
+presentKeywords: string[]
+
+missingKeywords: string[]
+
+actionableSuggestions: array of:
+
+{ title: string, description: string, block: string (valid simple HTML using <p>, <ul>, <li>, <strong>, etc., styled with Tailwind classes like: mt-2, p-3, bg-muted, rounded-md, text-sm, text-red-500 line-through, text-green-500 mt-1, font-semibold) }
+
+Important Instructions:
+
+Respond only with valid JSON.
+
+No extra explanation, no wrapping text, no markdown — just pure JSON output.`,
       },
       {
         role: "user",

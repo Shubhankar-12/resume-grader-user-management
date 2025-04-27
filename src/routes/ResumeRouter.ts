@@ -16,6 +16,10 @@ import {
   createReportController,
   createReportMiddleware,
 } from "../use_cases/user_resume/create_report";
+import {
+  getReportByResumeIdController,
+  getReportByResumeIdMiddleware,
+} from "../use_cases/user_resume/get_by_id";
 export const resumeRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -55,4 +59,13 @@ baseRouterHandler.handleWithHooks(
   // createReportMiddleware.ensureLoggedIn(),
   // createReportMiddleware.ensureValidation(),
   createReportController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  resumeRouter,
+  "get",
+  "/report",
+  // getReportByResumeIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // getReportByResumeIdMiddleware.ensureLoggedIn(),
+  // getReportByResumeIdMiddleware.ensureValidation(),
+  getReportByResumeIdController.execute()
 );
