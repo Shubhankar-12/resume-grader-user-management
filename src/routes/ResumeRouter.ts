@@ -11,6 +11,7 @@ import {
   getAllUserResumesController,
   getAllUserResumesMiddleware,
 } from "../use_cases/user_resume/get_all";
+import { disableUserResumeController } from "../use_cases/user_resume/disable";
 export const resumeRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -31,4 +32,13 @@ baseRouterHandler.handleWithHooks(
   // getAllUserResumesMiddleware.ensureLoggedIn(),
   // getAllUserResumesMiddleware.ensureValidation(),
   getAllUserResumesController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  resumeRouter,
+  "patch",
+  "/disable",
+  // disableUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // disableUserResumeMiddleware.ensureLoggedIn(),
+  // disableUserResumeMiddleware.ensureValidation(),
+  disableUserResumeController.execute()
 );

@@ -102,7 +102,7 @@ export class UserResumeQueries {
   }
 
   async updateResume(data: any): Promise<any> {
-    const filter = { _id: data.resume_id };
+    const filter = { _id: new ObjectId(data.resume_id) };
     return await this.userResumeModel.updateOne(filter, {
       $set: data,
     });
