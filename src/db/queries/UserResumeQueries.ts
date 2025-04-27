@@ -107,4 +107,18 @@ export class UserResumeQueries {
       $set: data,
     });
   }
+
+  async getResumeById(id: any): Promise<any> {
+    let aggregateQuery: any[] = [];
+    aggregateQuery.push({
+      $match: {
+        _id: new ObjectId(id),
+        status: {
+          $ne: "DISABLED",
+        },
+      },
+    });
+
+    return await this.userResumeModel.aggregate(aggregateQuery);
+  }
 }

@@ -169,3 +169,99 @@ No extra explanation, no wrapping text, no markdown — just pure JSON output.`,
     throw new Error("Invalid AI Report Format");
   }
 }
+
+export async function generateTailoredResume(
+  extractedFields: any,
+  jobDescription: string
+) {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `
+Tailored Resume Generation Prompt:
+You are an expert resume writer specialized in tailoring resumes to job descriptions.
+
+Given:
+
+Old resume data (structured)
+
+New job description (JD text)
+
+Tailor and enhance the resume specifically for the new JD, following this exact output structure:
+
+json
+Copy
+Edit
+{
+  "category": "string",
+  "name": "string",
+  "summary": "string",
+  "email": "string",
+  "phone": "string",
+  "location": "string",
+  "skills": ["string", "string", "..."],
+  "experience": [
+    {
+      "companyName": "string",
+      "role": "string",
+      "tasks": ["string", "string", "..."],
+      "startDate": "string",
+      "endDate": "string",
+      "isPresent": boolean,
+      "location": "string",
+      "description": "string"
+    }
+  ],
+  "education": [
+    {
+      "schoolName": "string",
+      "degree": "string",
+      "subject": "string",
+      "location": "string",
+      "startDate": "string",
+      "endDate": "string"
+    }
+  ]
+}
+Tailoring Instructions:
+
+Improve summary and skills to match the JD keywords and focus areas.
+
+Adjust experience descriptions and tasks to highlight the most relevant achievements and responsibilities for the JD.
+
+Keep education mostly unchanged unless specifically relevant skills or coursework from JD can be highlighted.
+
+Maintain all dates and companies correctly.
+
+Important Rules:
+
+Respond only with valid JSON.
+
+No extra explanation, no wrapping text, no markdown — just pure JSON.
+`,
+      },
+      {
+        role: "user",
+        content: `Here is the old resume data:\n${JSON.stringify(
+          extractedFields
+        )}\n\nHere is the new JD:\n${jobDescription}`,
+      },
+    ],
+    temperature: 0,
+  });
+
+  const aiContent = response.choices[0].message.content;
+
+  try {
+    const tailoredResume = JSON.parse(aiContent!);
+    return tailoredResume;
+  } catch (error) {
+    console.error(
+      "Failed to parse AI response for tailored resume:",
+      aiContent
+    );
+    throw new Error("Invalid AI Tailored Resume Format");
+  }
+}
