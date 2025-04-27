@@ -101,3 +101,56 @@ DO NOT include any explanation. Only return JSON.`,
     throw new Error("Invalid AI Extract Fields Response Format");
   }
 }
+
+export async function generateResumeReportFromExtractedText(
+  extractedFields: any
+) {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini", // or "gpt-4" if you want more quality
+    messages: [
+      {
+        role: "system",
+        content: `
+You are an expert resume analyst.
+
+Given extracted resume fields (name, summary, skills, experience, education), generate a detailed JSON report:
+
+- overallGrade: string (e.g., "B+")
+- scoreOutOf100: number (e.g., 75)
+- scoreBreakdown: atsCompatibility, keywordMatch, contentQuality, formatting (all percentages)
+
+- strengths: array of { title: string, description: string }
+- areasForImprovement: array of { title: string, description: string }
+
+- keywordAnalysis:
+  - presentKeywords: string[]
+  - missingKeywords: string[]
+
+- actionableSuggestions: array of { 
+    title: string, 
+    description: string, 
+    block: string (valid simple HTML, including <p>, <ul>, <li>, <strong>, etc.)
+  }
+
+Respond ONLY with valid JSON. No extra text.`,
+      },
+      {
+        role: "user",
+        content: `Here is the extracted resume data:\n${JSON.stringify(
+          extractedFields
+        )}`,
+      },
+    ],
+    temperature: 0,
+  });
+
+  const aiContent = response.choices[0].message.content;
+
+  try {
+    const report = JSON.parse(aiContent!);
+    return report;
+  } catch (error) {
+    console.error("Failed to parse AI response for resume report:", aiContent);
+    throw new Error("Invalid AI Report Format");
+  }
+}

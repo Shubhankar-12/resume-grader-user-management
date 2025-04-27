@@ -12,6 +12,10 @@ import {
   getAllUserResumesMiddleware,
 } from "../use_cases/user_resume/get_all";
 import { disableUserResumeController } from "../use_cases/user_resume/disable";
+import {
+  createReportController,
+  createReportMiddleware,
+} from "../use_cases/user_resume/create_report";
 export const resumeRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -41,4 +45,14 @@ baseRouterHandler.handleWithHooks(
   // disableUserResumeMiddleware.ensureLoggedIn(),
   // disableUserResumeMiddleware.ensureValidation(),
   disableUserResumeController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+  resumeRouter,
+  "post",
+  "/report/create",
+  // createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // createReportMiddleware.ensureLoggedIn(),
+  // createReportMiddleware.ensureValidation(),
+  createReportController.execute()
 );
