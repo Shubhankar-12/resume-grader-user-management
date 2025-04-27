@@ -23,6 +23,16 @@ export class AIAnalysisFailedError extends UseCaseError {
     super("AIAnalysisFailedError", "AI analysis failed.", "resume");
   }
 }
+// EXTRACTED_RESUME_NOT_FOUND
+export class ExtractedResumeNotFoundError extends UseCaseError {
+  constructor() {
+    super(
+      "ExtractedResumeNotFoundError",
+      "The extracted resume was not found.",
+      "resume"
+    );
+  }
+}
 
 // INTERNAL_SERVER_ERROR
 export class InternalServerError extends UseCaseError {

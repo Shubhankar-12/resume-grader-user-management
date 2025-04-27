@@ -1,4 +1,8 @@
-import { userQueries, userResumeQueries } from "../../../db";
+import {
+  extractedResumeQueries,
+  userQueries,
+  userResumeQueries,
+} from "../../../db";
 import { IUserResumeDocument } from "../../../db/user_resume";
 import { getResumeAnalysisFromAI } from "../../../helpers/resumeAnalyzerAI";
 import { extractTextFromPdf } from "../../../helpers/utils";
@@ -13,6 +17,7 @@ import { logUnexpectedUsecaseError } from "../../../logger";
 import { ICreateUserResumeDto } from "./dto";
 import {
   AIAnalysisFailedError,
+  ExtractedResumeNotFoundError,
   InternalServerError,
   ResumeExtractionFailedError,
   UserNotFoundError,
@@ -54,6 +59,15 @@ export class CreateUserResumeUseCase
 
       if (!createdResume) {
         return errClass(new InternalServerError());
+      }
+
+      const extractedResume = await extractedResumeQueries.create({
+        resume_id: createdResume._id,
+        ...analysis.extractedFields,
+        status: "ENABLED",
+      });
+      if (!extractedResume) {
+        return errClass(new ExtractedResumeNotFoundError());
       }
 
       return successClass({
