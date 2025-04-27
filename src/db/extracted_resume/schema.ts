@@ -14,6 +14,9 @@ const ExtractedResumeSchema = new Schema(
     category: {
       type: String,
     },
+    summary: {
+      type: String,
+    },
     email: {
       type: String,
     },
@@ -46,8 +49,37 @@ const ExtractedResumeSchema = new Schema(
         isPresent: {
           type: Boolean,
         },
+        location: {
+          type: String,
+        },
+        description: {
+          type: String,
+        },
       },
     ],
+    education: [
+      {
+        schoolName: {
+          type: String,
+        },
+        degree: {
+          type: String,
+        },
+        subject: {
+          type: String,
+        },
+        location: {
+          type: String,
+        },
+        startDate: {
+          type: String,
+        },
+        endDate: {
+          type: String,
+        },
+      },
+    ],
+
     status: {
       type: String,
       enum: ["ENABLED", "DISABLED"],

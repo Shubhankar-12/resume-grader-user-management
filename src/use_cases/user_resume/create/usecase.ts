@@ -4,7 +4,10 @@ import {
   userResumeQueries,
 } from "../../../db";
 import { IUserResumeDocument } from "../../../db/user_resume";
-import { getResumeAnalysisFromAI } from "../../../helpers/resumeAnalyzerAI";
+import {
+  getResumeScoreAndSuggestions,
+  getResumeExtractedFields,
+} from "../../../helpers/resumeAnalyzerAI";
 import { extractTextFromPdf } from "../../../helpers/utils";
 import {
   UseCase,
@@ -37,35 +40,46 @@ export class CreateUserResumeUseCase
       }
 
       const extractedText = await extractTextFromPdf(request.resume.url);
-      // console.log("Extracted Text:", extractedText);
-
       if (!extractedText) {
         return errClass(new ResumeExtractionFailedError());
       }
 
-      // 2. Analyze the extracted text with AI
-      const analysis = await getResumeAnalysisFromAI(extractedText);
-      // console.log("AI Analysis:", analysis);
-      if (!analysis) {
+      // Analyze the extracted text with AI (parallel)
+      const [gradingResult, extractedFieldsResult] = await Promise.all([
+        getResumeScoreAndSuggestions(extractedText),
+        getResumeExtractedFields(extractedText),
+      ]);
+
+      if (!gradingResult || !extractedFieldsResult) {
         return errClass(new AIAnalysisFailedError());
       }
+
+      // Combine into single analysis object
+      const combinedAnalysis = {
+        gradingScore: gradingResult.gradingScore,
+        atsScore: gradingResult.atsScore,
+        suggestions: gradingResult.suggestions,
+        extractedFields: extractedFieldsResult,
+      };
 
       // 3. Create resume record in DB
       const createdResume = await userResumeQueries.create({
         ...request,
         extractedText: extractedText,
-        analysis: analysis,
+        analysis: combinedAnalysis,
       });
 
       if (!createdResume) {
         return errClass(new InternalServerError());
       }
 
+      // 4. Create extracted resume fields separately
       const extractedResume = await extractedResumeQueries.create({
         resume_id: createdResume._id,
-        ...analysis.extractedFields,
+        ...extractedFieldsResult,
         status: "ENABLED",
       });
+
       if (!extractedResume) {
         return errClass(new ExtractedResumeNotFoundError());
       }
@@ -73,7 +87,7 @@ export class CreateUserResumeUseCase
       return successClass({
         resume_id: createdResume._id,
         user_id: createdResume.user_id,
-        extractedText: analysis.extractedFields,
+        extractedText: extractedFieldsResult,
         analysis: createdResume.analysis,
         resume: createdResume.resume,
         created_on: createdResume.created_on,

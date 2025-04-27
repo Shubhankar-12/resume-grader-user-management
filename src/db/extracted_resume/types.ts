@@ -2,8 +2,10 @@ import { Document, Model } from "mongoose";
 
 interface IExtractedResume {
   resume_id: string;
-  name: string;
+
   category: string;
+  name: string;
+  summary: string;
   email: string;
   phone: string;
   location: string;
@@ -15,7 +17,18 @@ interface IExtractedResume {
     startDate: string;
     endDate: string;
     isPresent: boolean;
+    location: string;
+    description: string;
   }[];
+  education: {
+    schoolName: string;
+    degree: string;
+    subject: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+  }[];
+
   status: string;
 }
 
