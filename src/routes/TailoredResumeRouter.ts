@@ -15,8 +15,19 @@ import {
   createMatchReportController,
   createMatchReportMiddleware,
 } from "../use_cases/tailored_resume/create_match";
+import { getAllTailoredResumesController } from "../use_cases/tailored_resume/get_all";
 
 export const tailoredResumeRouter = express.Router();
+
+baseRouterHandler.handleWithHooks(
+  tailoredResumeRouter,
+  "get",
+  "/list",
+  // getAllTailoredResumesMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // getAllTailoredResumesMiddleware.ensureLoggedIn(),
+  // getAllTailoredResumesMiddleware.ensureValidation(),
+  getAllTailoredResumesController.execute()
+);
 
 baseRouterHandler.handleWithHooks(
   tailoredResumeRouter,

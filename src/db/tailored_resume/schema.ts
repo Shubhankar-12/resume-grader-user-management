@@ -4,6 +4,10 @@ const ObjectId = Types.ObjectId;
 
 const TailoredResumeSchema = new Schema(
   {
+    user_id: {
+      type: ObjectId,
+      required: true,
+    },
     resume_id: {
       type: ObjectId,
       required: true,

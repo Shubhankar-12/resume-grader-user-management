@@ -2,6 +2,7 @@ import { ICreateTailoredResumeRequest } from "./request";
 
 export interface ICreateTailoredResumeDto {
   resume_id: string;
+  user_id: string;
   job_description: string;
 }
 
@@ -10,6 +11,7 @@ export class CreateTailoredResumeDtoConverter {
   constructor(data: ICreateTailoredResumeRequest) {
     this.output_object = {
       resume_id: data.resume_id,
+      user_id: data.user_id,
       job_description: data.job_description,
     };
   }

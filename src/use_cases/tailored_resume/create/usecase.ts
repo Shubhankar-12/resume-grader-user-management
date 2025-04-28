@@ -49,6 +49,7 @@ export class CreateTailoredResumeUseCase
       );
       const createdTailoredResume = await tailoredResumeQueries.create({
         ...createTailoredResumeData,
+        user_id: request.user_id,
         resume_id: request.resume_id,
         job_description: request.job_description.trim().toLowerCase(),
       });
