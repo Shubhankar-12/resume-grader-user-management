@@ -1,4 +1,8 @@
-import { extractedResumeQueries, tailoredResumeQueries } from "../../../db";
+import {
+  extractedResumeQueries,
+  resumeMatchQueries,
+  tailoredResumeQueries,
+} from "../../../db";
 import { generateResumeJobMatchReport } from "../../../helpers/resumeAnalyzerAI";
 import {
   UseCase,
@@ -34,19 +38,31 @@ export class CreateMatchReportUseCase
         );
       }
 
+      const existingMatch = await resumeMatchQueries.getResumeMatchbyResumeId({
+        resume_id: request.resume_id,
+        job_description: request.job_description.trim().toLowerCase(),
+      });
+
+      if (existingMatch.length > 0) {
+        return successClass(existingMatch[0]);
+      }
+
       const createMatchReportData = await generateResumeJobMatchReport(
         existingResume[0],
         request.resume_id
       );
+
+      await resumeMatchQueries.create({
+        ...createMatchReportData,
+        resume_id: request.resume_id,
+        job_description: request.job_description.trim().toLowerCase(),
+      });
 
       return successClass({
         resume_id: request.resume_id,
         job_description: request.job_description,
         keyRequirements: createMatchReportData.keyRequirements,
         resumeMatchAnalysis: createMatchReportData.resumeMatchAnalysis,
-        educationMatch: createMatchReportData.educationMatch,
-        projectMatch: createMatchReportData.projectMatch,
-        certificationMatch: createMatchReportData.certificationMatch,
       });
     } catch (error) {
       console.error("Unexpected error in CreateMatchReportUseCase:", error);
