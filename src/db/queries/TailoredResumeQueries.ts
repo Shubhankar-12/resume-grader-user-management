@@ -63,6 +63,7 @@ export class TailoredResumeQueries {
         certifications: 1,
         languages: 1,
         intrests: 1,
+        created_on: 1,
       },
     });
 
@@ -106,6 +107,7 @@ export class TailoredResumeQueries {
         certifications: 1,
         languages: 1,
         intrests: 1,
+        created_on: 1,
       },
     });
 

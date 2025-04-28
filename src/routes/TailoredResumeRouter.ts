@@ -8,6 +8,10 @@ import {
   createTailoredResumeMiddleware,
 } from "../use_cases/tailored_resume/create";
 import {
+  getTailoredResumeByIdController,
+  getTailoredResumeByIdMiddleware,
+} from "../use_cases/tailored_resume/get_by_id";
+import {
   createMatchReportController,
   createMatchReportMiddleware,
 } from "../use_cases/tailored_resume/create_match";
@@ -22,6 +26,15 @@ baseRouterHandler.handleWithHooks(
   // createTailoredResumeMiddleware.ensureLoggedIn(),
   // createTailoredResumeMiddleware.ensureValidation(),
   createTailoredResumeController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  tailoredResumeRouter,
+  "get",
+  "/",
+  // getTailoredResumeByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // getTailoredResumeByIdMiddleware.ensureLoggedIn(),
+  // getTailoredResumeByIdMiddleware.ensureValidation(),
+  getTailoredResumeByIdController.execute()
 );
 
 baseRouterHandler.handleWithHooks(
