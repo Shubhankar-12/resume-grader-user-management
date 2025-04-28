@@ -2,7 +2,7 @@ import { Document, Model } from "mongoose";
 
 interface ITailoredResume {
   resume_id: string;
-
+  job_description: string;
   category: string;
   name: string;
   summary: string;

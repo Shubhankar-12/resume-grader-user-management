@@ -7,6 +7,10 @@ import {
   createTailoredResumeController,
   createTailoredResumeMiddleware,
 } from "../use_cases/tailored_resume/create";
+import {
+  createMatchReportController,
+  createMatchReportMiddleware,
+} from "../use_cases/tailored_resume/create_match";
 
 export const tailoredResumeRouter = express.Router();
 
@@ -18,4 +22,14 @@ baseRouterHandler.handleWithHooks(
   // createTailoredResumeMiddleware.ensureLoggedIn(),
   // createTailoredResumeMiddleware.ensureValidation(),
   createTailoredResumeController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+  tailoredResumeRouter,
+  "post",
+  "/match",
+  // createMatchReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  // createMatchReportMiddleware.ensureLoggedIn(),
+  // createMatchReportMiddleware.ensureValidation(),
+  createMatchReportController.execute()
 );

@@ -8,6 +8,10 @@ const TailoredResumeSchema = new Schema(
       type: ObjectId,
       required: true,
     },
+    job_description: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
     },

@@ -41,6 +41,7 @@ export class CreateTailoredResumeUseCase
       const createdTailoredResume = await tailoredResumeQueries.create({
         ...createTailoredResumeData,
         resume_id: request.resume_id,
+        job_description: request.job_description,
       });
       if (!createdTailoredResume) {
         return errClass(new InternalServerError());
@@ -48,6 +49,7 @@ export class CreateTailoredResumeUseCase
       return successClass({
         resume_id: request.resume_id,
         tailored_resume_id: createdTailoredResume._id,
+        job_description: createdTailoredResume.job_description,
         category: createdTailoredResume.category,
         name: createdTailoredResume.name,
         summary: createdTailoredResume.summary,
