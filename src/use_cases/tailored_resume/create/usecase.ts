@@ -40,7 +40,7 @@ export class CreateTailoredResumeUseCase
         });
 
       if (existingTailoredResume.length > 0) {
-        return successClass(existingTailoredResume);
+        return successClass(existingTailoredResume[0]);
       }
 
       const createTailoredResumeData = await generateTailoredResume(

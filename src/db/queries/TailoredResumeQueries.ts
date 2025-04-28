@@ -47,6 +47,8 @@ export class TailoredResumeQueries {
     aggregateQuery.push({
       $project: {
         _id: 0,
+        tailored_resume_id: "$_id",
+        resume_id: 1,
         category: 1,
         name: 1,
         summary: 1,
