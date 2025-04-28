@@ -28,7 +28,23 @@ interface ITailoredResume {
     startDate: string;
     endDate: string;
   }[];
-
+  projects: [
+    {
+      title: string;
+      description: string;
+      technologies: [string];
+      startDate: string;
+      endDate: string;
+      links: {
+        GitHub: string;
+        Website: string;
+      };
+    }
+  ];
+  achievements: [string];
+  certifications: [string];
+  languages: [string];
+  interests: [string];
   status: string;
 }
 

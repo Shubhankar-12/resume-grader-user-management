@@ -23,6 +23,28 @@ interface IActionableSuggestion {
   block: string; // HTML as string
 }
 
+interface AnalysisItem {
+  title: string;
+  description: string;
+}
+
+interface ProjectAnalysis {
+  strengths: AnalysisItem[];
+  areasForImprovement: AnalysisItem[];
+}
+
+interface CertificationAnalysis {
+  strengths: AnalysisItem[];
+  areasForImprovement: AnalysisItem[];
+  recommendedCertifications: string[];
+}
+
+interface InterestAnalysis {
+  relevance: number;
+  comments: string;
+  suggestions: string[];
+}
+
 interface IReport {
   resume_id: string;
 
@@ -36,7 +58,9 @@ interface IReport {
   keywordAnalysis: IKeywordAnalysis;
 
   actionableSuggestions: IActionableSuggestion[];
-
+  projectAnalysis: ProjectAnalysis;
+  certificationAnalysis: CertificationAnalysis;
+  interestAnalysis: InterestAnalysis;
   status: "ENABLED" | "DISABLED";
 
   created_on?: Date;

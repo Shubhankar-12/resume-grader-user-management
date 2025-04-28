@@ -58,6 +58,56 @@ const ReportSchema = new Schema(
         },
       ],
     },
+
+    projectAnalysis: {
+      strengths: [
+        {
+          title: { type: String, required: true },
+          description: { type: String, required: true },
+        },
+      ],
+      areasForImprovement: [
+        {
+          title: { type: String, required: true },
+          description: { type: String, required: true },
+        },
+      ],
+    },
+    certificationAnalysis: {
+      strengths: [
+        {
+          title: { type: String, required: true },
+          description: { type: String, required: true },
+        },
+      ],
+      areasForImprovement: [
+        {
+          title: { type: String, required: true },
+          description: { type: String, required: true },
+        },
+      ],
+      recommendedCertifications: [
+        {
+          type: String,
+        },
+      ],
+    },
+    interestAnalysis: {
+      relevance: {
+        type: Number,
+        required: true,
+      },
+      comments: {
+        type: String,
+        required: true,
+      },
+      suggestions: [
+        {
+          type: String,
+        },
+      ],
+    },
+
     actionableSuggestions: [
       {
         title: { type: String, required: true },

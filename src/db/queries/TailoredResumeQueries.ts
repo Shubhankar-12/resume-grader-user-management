@@ -48,6 +48,11 @@ export class TailoredResumeQueries {
         skills: 1,
         experience: 1,
         education: 1,
+        projects: 1,
+        achievments: 1,
+        certifications: 1,
+        languages: 1,
+        intrests: 1,
       },
     });
 

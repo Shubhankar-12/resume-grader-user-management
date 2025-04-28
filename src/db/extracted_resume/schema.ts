@@ -79,6 +79,47 @@ const ExtractedResumeSchema = new Schema(
         },
       },
     ],
+    projects: [
+      {
+        title: {
+          type: String,
+        },
+        description: {
+          type: String,
+        },
+        technologies: {
+          type: [String],
+        },
+        startDate: {
+          type: String,
+        },
+        endDate: {
+          type: String,
+        },
+        links: [
+          {
+            Github: {
+              type: String,
+            },
+            Website: {
+              type: String,
+            },
+          },
+        ],
+      },
+    ],
+    achievements: {
+      type: [String],
+    },
+    certifications: {
+      type: [String],
+    },
+    languages: {
+      type: [String],
+    },
+    intrests: {
+      type: [String],
+    },
 
     status: {
       type: String,

@@ -78,7 +78,24 @@ Strictly respond ONLY in this JSON format:
     location: string,
     startDate: string,
     endDate: string
-  }[]
+  }[],
+  "projects": [
+    {
+      "title": "string",
+      "description": "string",
+      "technologies": ["string"],
+      "startDate": "string",
+      "endDate": "string",
+      "links": {
+        "GitHub": "string",
+        "Website": "string"
+      }
+    }
+  ],
+  "achievements": ["string"],
+  "certifications": ["string"],
+  "languages": ["string"],
+  "interests": ["string"],
 }
 
 DO NOT include any explanation. Only return JSON.`,
@@ -113,7 +130,7 @@ export async function generateResumeReportFromExtractedText(
         content: `
 You are an expert resume analyst.
 
-Given extracted resume fields (name, summary, skills, experience, education), generate a detailed JSON report with the following structure:
+Given extracted resume fields (name, summary, skills, experience, education, projects, achievements, certifications, interests), generate a detailed JSON report with the following structure:
 
 overallGrade: string (e.g., "B+")
 
@@ -138,6 +155,20 @@ keywordAnalysis:
 presentKeywords: string[]
 
 missingKeywords: string[]
+
+projectAnalysis:
+  strengths: array of { title: string, description: string }
+  areasForImprovement: array of { title: string, description: string }
+  
+certificationAnalysis:
+  strengths: array of { title: string, description: string }
+  areasForImprovement: array of { title: string, description: string }
+  recommendedCertifications: string[]
+
+interestAnalysis:
+  relevance: number (percentage)
+  comments: string
+  suggestions: string[]
 
 actionableSuggestions: array of:
 
@@ -191,9 +222,6 @@ New job description (JD text)
 
 Tailor and enhance the resume specifically for the new JD, following this exact output structure:
 
-json
-Copy
-Edit
 {
   "category": "string",
   "name": "string",
@@ -223,23 +251,40 @@ Edit
       "startDate": "string",
       "endDate": "string"
     }
-  ]
+  ],
+  "projects": [
+    {
+      "title": "string",
+      "description": "string",
+      "technologies": ["string"],
+      "startDate": "string",
+      "endDate": "string",
+      "links": {
+        "GitHub": "string",
+        "Website": "string"
+      }
+    }
+  ],
+  "achievements": ["string"],
+  "certifications": ["string"],
+  "languages": ["string"],
+  "interests": ["string"]
 }
+
 Tailoring Instructions:
 
-Improve summary and skills to match the JD keywords and focus areas.
-
-Adjust experience descriptions and tasks to highlight the most relevant achievements and responsibilities for the JD.
-
-Keep education mostly unchanged unless specifically relevant skills or coursework from JD can be highlighted.
-
-Maintain all dates and companies correctly.
+- Improve summary and skills to match JD keywords and focus areas.
+- Adjust experience descriptions and tasks to highlight the most relevant achievements and responsibilities for the JD.
+- Enhance project descriptions to better reflect skills, technologies, and achievements relevant to the JD.
+- Strengthen achievements to align with JD's required skills, leadership, or results.
+- Keep education mostly unchanged unless relevant coursework or honors match JD.
+- Maintain all dates and companies correctly.
+- Certify that links (GitHub, Website) are preserved as given.
 
 Important Rules:
 
-Respond only with valid JSON.
-
-No extra explanation, no wrapping text, no markdown — just pure JSON.
+- Respond ONLY with valid JSON.
+- No extra explanation, no wrapping text, no markdown — just pure JSON.
 `,
       },
       {
