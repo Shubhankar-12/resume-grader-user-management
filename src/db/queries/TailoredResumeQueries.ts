@@ -30,6 +30,14 @@ export class TailoredResumeQueries {
       },
     });
 
+    if (data.job_description) {
+      aggregateQuery.push({
+        $match: {
+          job_description: data.job_description,
+        },
+      });
+    }
+
     aggregateQuery.push({
       $sort: {
         created_on: -1,
@@ -40,6 +48,49 @@ export class TailoredResumeQueries {
       $project: {
         _id: 0,
         category: 1,
+        name: 1,
+        summary: 1,
+        email: 1,
+        phone: 1,
+        location: 1,
+        skills: 1,
+        experience: 1,
+        education: 1,
+        projects: 1,
+        achievments: 1,
+        certifications: 1,
+        languages: 1,
+        intrests: 1,
+      },
+    });
+
+    const result = await this.tailoredResumeModel.aggregate(aggregateQuery);
+
+    return result;
+  }
+  async getTailoredResumebyId(data: any): Promise<any[]> {
+    let aggregateQuery: any[] = [];
+
+    aggregateQuery.push({
+      $match: {
+        _id: new ObjectId(data.tailored_resume_id),
+        status: {
+          $ne: "DISABLED",
+        },
+      },
+    });
+
+    aggregateQuery.push({
+      $sort: {
+        created_on: -1,
+      },
+    });
+
+    aggregateQuery.push({
+      $project: {
+        _id: 0,
+        category: 1,
+        job_description: 1,
         name: 1,
         summary: 1,
         email: 1,

@@ -33,6 +33,15 @@ export class CreateTailoredResumeUseCase
           new ResumeNotFoundError(request.resume_id, "resume_id")
         );
       }
+      const existingTailoredResume =
+        await tailoredResumeQueries.getTailoredResumebyResumeId({
+          resume_id: request.resume_id,
+          job_description: request.job_description.trim().toLowerCase(),
+        });
+
+      if (existingTailoredResume.length > 0) {
+        return successClass(existingTailoredResume);
+      }
 
       const createTailoredResumeData = await generateTailoredResume(
         existingResume[0],
@@ -41,7 +50,7 @@ export class CreateTailoredResumeUseCase
       const createdTailoredResume = await tailoredResumeQueries.create({
         ...createTailoredResumeData,
         resume_id: request.resume_id,
-        job_description: request.job_description,
+        job_description: request.job_description.trim().toLowerCase(),
       });
       if (!createdTailoredResume) {
         return errClass(new InternalServerError());
