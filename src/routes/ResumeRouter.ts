@@ -36,9 +36,9 @@ baseRouterHandler.handleWithHooks(
   resumeRouter,
   "get",
   "/list",
-  // getAllUserResumesMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  // getAllUserResumesMiddleware.ensureLoggedIn(),
-  // getAllUserResumesMiddleware.ensureValidation(),
+  getAllUserResumesMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  getAllUserResumesMiddleware.ensureLoggedIn(),
+  getAllUserResumesMiddleware.ensureValidation(),
   getAllUserResumesController.execute()
 );
 baseRouterHandler.handleWithHooks(

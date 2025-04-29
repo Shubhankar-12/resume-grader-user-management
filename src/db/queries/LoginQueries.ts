@@ -4,6 +4,7 @@ import { ILogin, ILoginDocument, ILoginModel } from "../login/types";
 import { Types } from "mongoose";
 import { ModificationResponse, TokenDevice } from "../../interfaces";
 import { TokenStatus } from "../../helpers";
+import { ObjectId } from "mongodb";
 
 export class LoginQueries {
   private loginModel: ILoginModel;
@@ -20,14 +21,23 @@ export class LoginQueries {
     return await this.loginModel.updateMany(match, { $set: update_content });
   }
 
-  async findLogin(
+  async findLogin(query: any): Promise<ILoginDocument[]> {
+    return await this.loginModel.find(query).sort({ updated_on: -1 });
+  }
+  // async findLoginByUserId(user_id: string): Promise<ILoginDocument[]> {
+  //   return await this.loginModel.find({
+  //     "user.id": new ObjectId(user_id),
+  //     status: "ENABLED",
+  //   });
+  // }
+
+  async findLoginByUserId(
     employee_id: string | Types.ObjectId
   ): Promise<ILoginDocument[]> {
     return await this.loginModel
-      .find({ "user.id": employee_id })
+      .find({ "user.id": employee_id, status: "ENABLED" })
       .sort({ updated_on: -1 });
   }
-
   async getGuestToken(device: TokenDevice): Promise<string | null> {
     const result = await this.loginModel.find({
       is_login: false,

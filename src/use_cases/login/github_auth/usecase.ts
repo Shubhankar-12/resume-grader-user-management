@@ -75,7 +75,7 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
         const newUser = await userQueries.create(userData);
         userId = newUser._id.toString();
       }
-      const loginData = await loginQueries.findLogin(userId);
+      const loginData = await loginQueries.findLoginByUserId(userId);
 
       if (loginData.length > 0) {
         return successClass({ token: loginData[0] });
