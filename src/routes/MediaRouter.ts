@@ -26,11 +26,11 @@ baseRouterHandler.handleWithHooks(
   async (req, res, next) => {
     upload(req, res, next);
   },
-  // uploadDocMiddleware.ensureAuthentication([
-  //   POLICIES.ADMIN_POLICY,
-  //   POLICIES.OWNER_POLICY,
-  // ]),
+  uploadDocMiddleware.ensureAuthentication([
+    POLICIES.ADMIN_POLICY,
+    POLICIES.OWNER_POLICY,
+  ]),
   uploadDocMiddleware.ensureValidation(),
-  // uploadDocMiddleware.ensureLoggedIn(),
+  uploadDocMiddleware.ensureLoggedIn(),
   uploadDocController.execute()
 );

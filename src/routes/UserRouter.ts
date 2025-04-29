@@ -13,8 +13,8 @@ baseRouterHandler.handleWithHooks(
   userRouter,
   "get",
   "/",
-  // getUserByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  // getUserByIdMiddleware.ensureLoggedIn(),
-  // getUserByIdMiddleware.ensureValidation(),
+  getUserByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  getUserByIdMiddleware.ensureLoggedIn(),
+  getUserByIdMiddleware.ensureValidation(),
   getUserByIdController.execute()
 );

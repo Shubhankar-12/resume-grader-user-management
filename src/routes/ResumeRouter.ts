@@ -11,7 +11,10 @@ import {
   getAllUserResumesController,
   getAllUserResumesMiddleware,
 } from "../use_cases/user_resume/get_all";
-import { disableUserResumeController } from "../use_cases/user_resume/disable";
+import {
+  disableUserResumeController,
+  disableUserResumeMiddleware,
+} from "../use_cases/user_resume/disable";
 import {
   createReportController,
   createReportMiddleware,
@@ -26,9 +29,9 @@ baseRouterHandler.handleWithHooks(
   resumeRouter,
   "post",
   "/create",
-  // createUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  // createUserResumeMiddleware.ensureLoggedIn(),
-  // createUserResumeMiddleware.ensureValidation(),
+  createUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  createUserResumeMiddleware.ensureLoggedIn(),
+  createUserResumeMiddleware.ensureValidation(),
   createUserResumeController.execute()
 );
 
@@ -45,9 +48,9 @@ baseRouterHandler.handleWithHooks(
   resumeRouter,
   "patch",
   "/disable",
-  // disableUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  // disableUserResumeMiddleware.ensureLoggedIn(),
-  // disableUserResumeMiddleware.ensureValidation(),
+  disableUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  disableUserResumeMiddleware.ensureLoggedIn(),
+  disableUserResumeMiddleware.ensureValidation(),
   disableUserResumeController.execute()
 );
 
@@ -55,17 +58,17 @@ baseRouterHandler.handleWithHooks(
   resumeRouter,
   "post",
   "/report/create",
-  // createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  // createReportMiddleware.ensureLoggedIn(),
-  // createReportMiddleware.ensureValidation(),
+  createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  createReportMiddleware.ensureLoggedIn(),
+  createReportMiddleware.ensureValidation(),
   createReportController.execute()
 );
 baseRouterHandler.handleWithHooks(
   resumeRouter,
   "get",
   "/report",
-  // getReportByResumeIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  // getReportByResumeIdMiddleware.ensureLoggedIn(),
-  // getReportByResumeIdMiddleware.ensureValidation(),
+  getReportByResumeIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  getReportByResumeIdMiddleware.ensureLoggedIn(),
+  getReportByResumeIdMiddleware.ensureValidation(),
   getReportByResumeIdController.execute()
 );
