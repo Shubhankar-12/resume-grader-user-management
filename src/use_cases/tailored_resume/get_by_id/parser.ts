@@ -11,11 +11,11 @@ export class GetAllParser extends BaseParser {
   ) {
     super();
     this.tailoredResumeValidator = tailoredResumeValidator;
-    this.parseTailoredResumeId(query.tailoredResume_id);
+    this.parseTailoredResumeId(query.tailored_resume_id);
   }
   parseTailoredResumeId(value: any): void {
     const result = this.tailoredResumeValidator.validateId(
-      "tailoredResume_id",
+      "tailored_resume_id",
       value
     );
     this.pushIfError(result);

@@ -7,10 +7,10 @@ export class GetAllParser extends BaseParser {
   constructor(request: any, query: any, userValidator: UserResumeValidator) {
     super();
     this.userValidator = userValidator;
-    this.parseUserId(query.user_id);
+    this.parseUserId(query.resume_id);
   }
   parseUserId(value: any): void {
-    const result = this.userValidator.validateId("user_id", value);
+    const result = this.userValidator.validateId("resume_id", value);
     this.pushIfError(result);
   }
 }

@@ -226,6 +226,7 @@ Tailor and enhance the resume specifically for the new JD, following this exact 
   "category": "string",
   "name": "string",
   "summary": "string",
+  "atsScore": number,
   "email": "string",
   "phone": "string",
   "location": "string",
@@ -282,6 +283,7 @@ Tailoring Instructions:
 - Certify that links (GitHub, Website) are preserved as given.
 - Add any relevant interests.
 - Category is the role required in job description.
+- ATS Score is a number between 0 and 100, representing how well this resume matches the job description.
 
 Important Rules:
 

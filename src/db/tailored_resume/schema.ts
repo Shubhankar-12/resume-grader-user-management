@@ -12,6 +12,10 @@ const TailoredResumeSchema = new Schema(
       type: ObjectId,
       required: true,
     },
+    atsScore: {
+      type: Number,
+      required: true,
+    },
     job_description: {
       type: String,
       required: true,

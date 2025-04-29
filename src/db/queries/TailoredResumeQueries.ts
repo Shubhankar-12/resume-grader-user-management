@@ -49,6 +49,7 @@ export class TailoredResumeQueries {
         _id: 0,
         tailored_resume_id: "$_id",
         resume_id: 1,
+        atsScore: 1,
         category: 1,
         name: 1,
         summary: 1,
@@ -94,6 +95,7 @@ export class TailoredResumeQueries {
         _id: 0,
         category: 1,
         job_description: 1,
+        atsScore: 1,
         name: 1,
         summary: 1,
         email: 1,
@@ -168,6 +170,7 @@ export class TailoredResumeQueries {
       $project: {
         _id: 0,
         tailored_resume_id: "$_id",
+        atsScore: 1,
         user_id: 1,
         category: 1,
         job_description: 1,
