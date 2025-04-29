@@ -3,14 +3,15 @@ import { Document, Model } from "mongoose";
 interface IUser {
   name: string;
   username?: string;
+  password?: string;
   email: string;
   avatar: {
     name?: string;
     url?: string;
     mimetype?: string;
   };
-  provider: string;
-  providerId: string;
+  provider?: string;
+  providerId?: string;
   githubProfile?: {
     id: string;
     username: string;

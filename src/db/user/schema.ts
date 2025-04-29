@@ -8,6 +8,10 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    password: {
+      type: String,
+    },
+
     username: {
       type: String,
     },
@@ -23,11 +27,9 @@ const UserSchema = new Schema(
     provider: {
       type: String,
       enum: ["google", "github"],
-      required: true,
     },
     providerId: {
       type: String,
-      required: true,
     },
     githubProfile: {
       githubId: { type: String },
