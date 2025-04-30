@@ -404,3 +404,59 @@ ${jobDescription}`,
     throw new Error("Invalid AI Report Format");
   }
 }
+
+export async function generateResumeCoverLetterFromExtractedText(
+  extractedResumeData: any,
+  jobDescription: string
+) {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini", // or "gpt-4" if you want more quality
+    messages: [
+      {
+        role: "system",
+        content: `
+You are an expert resume cover letter generator.
+
+Given extracted resume fields and a job description, generate a detailed JSON cover letter with the following structure:
+
+{
+  "cover_letter": string,
+  "cover_letter_summary": string
+}
+
+Important Instructions:
+
+1. Generate a cover letter based on the resume data and the job description.
+2. Provide a summary of the cover letter.
+3. Cover letter and summary should be in first person perspective.
+
+Respond only with valid JSON. 
+
+No extra explanation, no wrapping text, no markdown — just pure JSON output.`,
+      },
+      {
+        role: "user",
+        content: `
+Resume Data:
+${JSON.stringify(extractedResumeData)}
+
+Job Description:
+${jobDescription}`,
+      },
+    ],
+    temperature: 0,
+  });
+
+  const aiContent = response.choices[0].message.content;
+
+  try {
+    const report = JSON.parse(aiContent!);
+    return report;
+  } catch (error) {
+    console.error(
+      "Failed to parse AI response for job match report:",
+      aiContent
+    );
+    throw new Error("Invalid AI Report Format");
+  }
+}

@@ -23,6 +23,10 @@ import {
   getReportByResumeIdController,
   getReportByResumeIdMiddleware,
 } from "../use_cases/user_resume/get_by_id";
+import {
+  createCoverLetterController,
+  createCoverLetterMiddleware,
+} from "../use_cases/user_resume/create_cover_letter";
 export const resumeRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -71,4 +75,13 @@ baseRouterHandler.handleWithHooks(
   getReportByResumeIdMiddleware.ensureLoggedIn(),
   getReportByResumeIdMiddleware.ensureValidation(),
   getReportByResumeIdController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  resumeRouter,
+  "post",
+  "/cover-letter/create",
+  createCoverLetterMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  createCoverLetterMiddleware.ensureLoggedIn(),
+  createCoverLetterMiddleware.ensureValidation(),
+  createCoverLetterController.execute()
 );

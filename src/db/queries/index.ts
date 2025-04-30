@@ -1,3 +1,4 @@
+import { coverLetterModel } from "../cover_letter";
 import { extractedResumeModel } from "../extracted_resume";
 import { loginModel } from "../login";
 import { reportModel } from "../report";
@@ -5,6 +6,7 @@ import { resumeMatchModel } from "../resume_match";
 import { tailoredResumeModel } from "../tailored_resume";
 import { userModel } from "../user";
 import { userResumeModel } from "../user_resume";
+import { CoverLetterQueries } from "./CoverLetterQueries";
 import { ExtractedResumeQueries } from "./ExtractedResumeQueries";
 import { LoginQueries } from "./LoginQueries";
 import { ReportQueries } from "./ReportQueries";
@@ -23,3 +25,4 @@ export const tailoredResumeQueries = new TailoredResumeQueries(
 );
 export const reportQueries = new ReportQueries(reportModel);
 export const resumeMatchQueries = new ResumeMatchQueries(resumeMatchModel);
+export const coverLetterQueries = new CoverLetterQueries(coverLetterModel);
