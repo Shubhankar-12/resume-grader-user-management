@@ -50,6 +50,8 @@ export class CoverLetterQueries {
         cover_letter_id: "$_id",
         resume_id: 1,
         user_id: 1,
+        role: 1,
+        company: 1,
         job_description: 1,
         cover_letter_summary: 1,
         cover_letter: 1,
@@ -86,6 +88,8 @@ export class CoverLetterQueries {
         cover_letter_id: "$_id",
         resume_id: 1,
         user_id: 1,
+        role: 1,
+        company: 1,
         job_description: 1,
         cover_letter_summary: 1,
         cover_letter: 1,
@@ -132,27 +136,13 @@ export class CoverLetterQueries {
     });
 
     aggregateQuery.push({
-      $lookup: {
-        from: "extracted_resumes",
-        localField: "_id",
-        foreignField: "resume_id",
-        as: "extracted_resume",
-      },
-    });
-
-    aggregateQuery.push({
-      $unwind: {
-        path: "$extracted_resume",
-        preserveNullAndEmptyArrays: true,
-      },
-    });
-
-    aggregateQuery.push({
       $project: {
         _id: 0,
         cover_letter_id: "$_id",
         resume_id: 1,
         user_id: 1,
+        role: 1,
+        company: 1,
         job_description: 1,
         cover_letter: 1,
         cover_letter_summary: 1,

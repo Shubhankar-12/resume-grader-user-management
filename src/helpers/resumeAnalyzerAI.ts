@@ -407,7 +407,9 @@ ${jobDescription}`,
 
 export async function generateResumeCoverLetterFromExtractedText(
   extractedResumeData: any,
-  jobDescription: string
+  jobDescription: string,
+  role: string,
+  company: string
 ) {
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini", // or "gpt-4" if you want more quality
@@ -417,7 +419,7 @@ export async function generateResumeCoverLetterFromExtractedText(
         content: `
 You are an expert resume cover letter generator.
 
-Given extracted resume fields and a job description, generate a detailed JSON cover letter with the following structure:
+Given extracted resume fields, role and company and a job description, generate a detailed JSON cover letter with the following structure:
 
 {
   "cover_letter": string,
@@ -429,6 +431,8 @@ Important Instructions:
 1. Generate a cover letter based on the resume data and the job description.
 2. Provide a summary of the cover letter.
 3. Cover letter and summary should be in first person perspective.
+4. Cover letter should be 150-200 words long.
+5. Persolanize the cover letter with the role and company.
 
 Respond only with valid JSON. 
 
@@ -441,7 +445,14 @@ Resume Data:
 ${JSON.stringify(extractedResumeData)}
 
 Job Description:
-${jobDescription}`,
+${jobDescription}
+
+Role:
+${role}
+
+Company:
+${company}
+`,
       },
     ],
     temperature: 0,

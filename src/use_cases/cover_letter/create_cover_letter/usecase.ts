@@ -47,7 +47,9 @@ export class CreateCoverLetterUseCase
       const createCoverLetterData =
         await generateResumeCoverLetterFromExtractedText(
           extractedResumeData,
-          request.job_description
+          request.job_description,
+          request.role,
+          request.company
         );
       if (!createCoverLetterData) {
         return errClass(
@@ -59,6 +61,8 @@ export class CreateCoverLetterUseCase
         ...createCoverLetterData,
         resume_id: request.resume_id,
         user_id: request.user_id,
+        role: request.role,
+        company: request.company,
         job_description: request.job_description.trim().toLowerCase(),
       });
       if (!createdCoverLetter) {
@@ -68,6 +72,8 @@ export class CreateCoverLetterUseCase
         cover_letter_id: createdCoverLetter._id,
         resume_id: createdCoverLetter.resume_id,
         user_id: createdCoverLetter.user_id,
+        role: createdCoverLetter.role,
+        company: createdCoverLetter.company,
         job_description: createdCoverLetter.job_description,
         cover_letter: createdCoverLetter.cover_letter,
         cover_letter_summary: createdCoverLetter.cover_letter_summary,

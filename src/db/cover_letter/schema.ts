@@ -12,6 +12,14 @@ const CoverLetterSchema = new Schema(
       type: ObjectId,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+    },
+    company: {
+      type: String,
+      required: true,
+    },
     job_description: {
       type: String,
       required: true,
