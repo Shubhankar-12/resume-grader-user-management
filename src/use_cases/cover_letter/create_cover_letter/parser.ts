@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { BaseParser } from "../../../base_classes";
-import { UserResumeValidator } from "../UserResumeValidator";
+import { UserResumeValidator } from "../../user_resume/UserResumeValidator";
 
 export class CreateCoverLetterParser extends BaseParser {
   private coverLetterValidator: UserResumeValidator;
@@ -11,6 +11,7 @@ export class CreateCoverLetterParser extends BaseParser {
     super();
     this.coverLetterValidator = coverLetterValidator;
     this.parseEmployeeId(data.resume_id);
+    this.parseForeignId(data.user_id);
   }
 
   // parseTitle(value: any): void {
@@ -29,7 +30,7 @@ export class CreateCoverLetterParser extends BaseParser {
   }
 
   parseForeignId(value: any): void {
-    const result = this.coverLetterValidator.validateId("foreign_id", value);
+    const result = this.coverLetterValidator.validateId("user_id", value);
     this.pushIfError(result);
   }
 }

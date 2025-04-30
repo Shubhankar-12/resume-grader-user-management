@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { MiddleWareFunctionType, Responses } from "../../../helpers";
 import { CreateCoverLetterParser } from "./parser";
-import { userResumeValidator } from "../UserResumeValidator";
+import { userResumeValidator } from "../../user_resume/UserResumeValidator";
 import { logValidationError } from "../../../logger";
 
 export class CreateCoverLetterRequestValidator extends Responses {

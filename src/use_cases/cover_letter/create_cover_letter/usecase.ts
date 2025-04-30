@@ -8,7 +8,7 @@ import {
   UseCaseError,
 } from "../../../interfaces";
 import { logUnexpectedUsecaseError } from "../../../logger";
-import { InternalServerError } from "../create/errors";
+import { InternalServerError } from "../../user_resume/create/errors";
 import { ICreateCoverLetterDto } from "./dto";
 import {
   CoverLetterAlreadyExistsError,
@@ -24,7 +24,6 @@ export class CreateCoverLetterUseCase
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ICreateCoverLetterDto): Promise<Response> {
     try {
-      console.log("request", request);
       const existingCoverLetter =
         await coverLetterQueries.getCoverLetterbyResumeId({
           resume_id: request.resume_id,
@@ -34,7 +33,6 @@ export class CreateCoverLetterUseCase
       if (existingCoverLetter.length > 0) {
         return successClass(existingCoverLetter[0]);
       }
-      console.log("existingCoverLetter", existingCoverLetter);
 
       const extractedResume =
         await extractedResumeQueries.getExtractedResumebyResumeId(request);
@@ -45,7 +43,6 @@ export class CreateCoverLetterUseCase
       }
 
       const extractedResumeData = extractedResume[0];
-      console.log("extractedResumeData", extractedResumeData);
 
       const createCoverLetterData =
         await generateResumeCoverLetterFromExtractedText(
@@ -57,7 +54,6 @@ export class CreateCoverLetterUseCase
           new ResumeExtractionFailedError(request.resume_id, "resume_id")
         );
       }
-      console.log("createCoverLetterData", createCoverLetterData);
 
       const createdCoverLetter = await coverLetterQueries.create({
         ...createCoverLetterData,

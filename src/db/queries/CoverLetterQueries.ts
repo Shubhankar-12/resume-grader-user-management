@@ -99,7 +99,7 @@ export class CoverLetterQueries {
     return result;
   }
 
-  async getResmesByUserId(data: any): Promise<any[]> {
+  async getCoverLetterByUserId(data: any): Promise<any[]> {
     let aggregateQuery: any[] = [];
 
     aggregateQuery.push({
@@ -150,26 +150,14 @@ export class CoverLetterQueries {
     aggregateQuery.push({
       $project: {
         _id: 0,
-        tailored_resume_id: "$_id",
-        atsScore: 1,
+        cover_letter_id: "$_id",
+        resume_id: 1,
         user_id: 1,
-        category: 1,
         job_description: 1,
+        cover_letter: 1,
         cover_letter_summary: 1,
-        name: 1,
-        summary: 1,
-        email: 1,
-        phone: 1,
-        location: 1,
-        skills: 1,
-        experience: 1,
-        education: 1,
-        projects: 1,
-        achievments: 1,
-        certifications: 1,
-        languages: 1,
-        intrests: 1,
         created_on: 1,
+        updated_on: 1,
       },
     });
 

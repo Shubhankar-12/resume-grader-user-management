@@ -26,7 +26,7 @@ import {
 import {
   createCoverLetterController,
   createCoverLetterMiddleware,
-} from "../use_cases/user_resume/create_cover_letter";
+} from "../use_cases/cover_letter/create_cover_letter";
 export const resumeRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
