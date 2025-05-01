@@ -121,10 +121,20 @@ export class CoverLetterQueries {
         : "";
       aggregateQuery.push({
         $match: {
-          "resume.name": {
-            $regex: dataSearch,
-            $options: "i",
-          },
+          $or: [
+            {
+              role: {
+                $regex: dataSearch,
+                $options: "i",
+              },
+            },
+            {
+              company: {
+                $regex: dataSearch,
+                $options: "i",
+              },
+            },
+          ],
         },
       });
     }

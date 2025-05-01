@@ -14,6 +14,10 @@ import {
   updateCoverLetterController,
   updateCoverLetterMiddleware,
 } from "../use_cases/cover_letter/update";
+import {
+  getCoverLetterByIdController,
+  getCoverLetterByIdMiddleware,
+} from "../use_cases/cover_letter/get_by_id";
 export const coverLetterRouter = express.Router();
 baseRouterHandler.handleWithHooks(
   coverLetterRouter,
@@ -33,6 +37,15 @@ baseRouterHandler.handleWithHooks(
   getAllCoverLettersMiddleware.ensureLoggedIn(),
   getAllCoverLettersMiddleware.ensureValidation(),
   getAllCoverLettersController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  coverLetterRouter,
+  "get",
+  "/",
+  getCoverLetterByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  getCoverLetterByIdMiddleware.ensureLoggedIn(),
+  getCoverLetterByIdMiddleware.ensureValidation(),
+  getCoverLetterByIdController.execute()
 );
 baseRouterHandler.handleWithHooks(
   coverLetterRouter,
