@@ -50,4 +50,30 @@ export class ProjectAnalysisQueries {
 
     return await this.projectAnalysisModel.aggregate(aggregateQuery);
   }
+  async getProjectAnalysisById(id: any) {
+    let aggregateQuery: any[] = [];
+
+    aggregateQuery.push({
+      $match: {
+        _id: new ObjectId(id),
+        status: {
+          $ne: "DISABLED",
+        },
+      },
+    });
+
+    aggregateQuery.push({
+      $project: {
+        _id: 0,
+        project_analysis_id: "$_id",
+        user_id: 1,
+        role: 1,
+        project_ids: 1,
+        selected_project: 1,
+        status: 1,
+      },
+    });
+
+    return await this.projectAnalysisModel.aggregate(aggregateQuery);
+  }
 }

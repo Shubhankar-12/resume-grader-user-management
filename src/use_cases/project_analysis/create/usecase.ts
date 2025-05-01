@@ -57,9 +57,8 @@ export class CreateProjectAnalysisUseCase
         status: "ENABLED",
       };
       const resp = await projectAnalysisQueries.create(creatObj);
-      const projectAnalysis = await projectAnalysisQueries.getProjectAnalysis(
-        resp
-      );
+      const projectAnalysis =
+        await projectAnalysisQueries.getProjectAnalysisById(resp._id);
       return successClass(projectAnalysis[0]);
     } catch (error) {
       console.error("Unexpected error in CreateProjectAnalysisUseCase:", error);
