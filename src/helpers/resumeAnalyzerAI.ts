@@ -471,3 +471,82 @@ ${company}
     throw new Error("Invalid AI Report Format");
   }
 }
+
+export async function generateResumeProjectAnalysis(
+  role: string,
+  projects: {
+    id: number;
+    name: string;
+    description: string;
+    stars: number;
+    language: string;
+    languageColor: string;
+    topics: string[];
+    updated_at: string;
+    additional_comments?: string;
+  }[]
+) {
+  const projectDescriptions = projects
+    .map((project, index) => {
+      return `Project ${index + 1}:
+- ID: ${project.id}
+- Name: ${project.name}
+- Description: ${project.description || "N/A"}
+- Stars: ${project.stars}
+- Language: ${project.language}
+- Topics: ${project.topics?.join(", ") || "None"}
+- Additional Comments: ${project.additional_comments || "None"}
+- Last Updated: ${project.updated_at}`;
+    })
+    .join("\n\n");
+
+  const prompt = `
+You are a technical recruiter helping to evaluate GitHub projects for a software developer applying for the role of **${role}**.
+
+Based on the project details below, evaluate each project and provide:
+1. AI Score (0–100) based on relevance, quality, stars, description, and topics.
+2. Relevance: HIGH / MEDIUM / LOW (based on fit for the role).
+3. Reason: A short explanation of why this project is relevant or not.
+4. Project ID: The ID of the project same as in the project details.
+5. Select Top 3 projects that are most relevant for the role.
+6. If Additional Comments are provided, use them to for the evaluation.
+
+Projects:
+${projectDescriptions}
+
+Respond only with valid JSON of 3 top projects. 
+
+No extra explanation, no wrapping text, no markdown — just pure JSON output.
+
+Output format:
+[
+  {
+    "id": <project_id>,
+    "ai_score": <score>,
+    "relevance": "HIGH" | "MEDIUM" | "LOW",
+    "reason": "<short explanation>"
+  },
+  ...
+]
+`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    temperature: 0.4,
+  });
+
+  const content = response.choices[0]?.message?.content || "[]";
+  try {
+    const parsed = JSON.parse(content);
+    return parsed; // Should be array of { id, ai_score, relevance, reason }
+  } catch (err) {
+    console.error("Failed to parse AI response:", content);
+    throw new Error("Invalid AI response format.");
+  }
+}
