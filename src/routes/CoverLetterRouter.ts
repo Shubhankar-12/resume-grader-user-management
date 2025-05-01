@@ -10,6 +10,10 @@ import {
   getAllCoverLettersController,
   getAllCoverLettersMiddleware,
 } from "../use_cases/cover_letter/get_all";
+import {
+  updateCoverLetterController,
+  updateCoverLetterMiddleware,
+} from "../use_cases/cover_letter/update";
 export const coverLetterRouter = express.Router();
 baseRouterHandler.handleWithHooks(
   coverLetterRouter,
@@ -29,4 +33,13 @@ baseRouterHandler.handleWithHooks(
   getAllCoverLettersMiddleware.ensureLoggedIn(),
   getAllCoverLettersMiddleware.ensureValidation(),
   getAllCoverLettersController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  coverLetterRouter,
+  "patch",
+  "/update",
+  updateCoverLetterMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  updateCoverLetterMiddleware.ensureLoggedIn(),
+  updateCoverLetterMiddleware.ensureValidation(),
+  updateCoverLetterController.execute()
 );
