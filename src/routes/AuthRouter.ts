@@ -7,6 +7,14 @@ import {
   githubAuthController,
   githubAuthMiddleware,
 } from "../use_cases/login/github_auth";
+import {
+  loginUserWithEmailController,
+  loginUserWithEmailMiddleware,
+} from "../use_cases/login/email";
+import {
+  registerUserWithEmailController,
+  registerUserWithEmailMiddleware,
+} from "../use_cases/login/register";
 export const authRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -17,4 +25,22 @@ baseRouterHandler.handleWithHooks(
   // githubAuthMiddleware.ensureAuthorization(),
   githubAuthMiddleware.ensureValidation(),
   githubAuthController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  authRouter,
+  "post",
+  "/login",
+  // loginUserWithEmailMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY])
+  // loginUserWithEmailMiddleware.ensureAuthorization(),
+  loginUserWithEmailMiddleware.ensureValidation(),
+  loginUserWithEmailController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  authRouter,
+  "post",
+  "/register",
+  // registerUserWithEmailMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY])
+  // registerUserWithEmailMiddleware.ensureAuthorization(),
+  registerUserWithEmailMiddleware.ensureValidation(),
+  registerUserWithEmailController.execute()
 );

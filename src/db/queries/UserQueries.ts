@@ -47,4 +47,28 @@ export class UserQueries {
 
     return user;
   }
+  async getUserByEmail(data: any): Promise<any> {
+    let aggregateQuery: any[] = [];
+
+    aggregateQuery.push({
+      $match: {
+        email: data.email,
+
+        status: {
+          $ne: "DISABLED",
+        },
+      },
+    });
+    if (data.password) {
+      aggregateQuery.push({
+        $match: {
+          password: data.password,
+        },
+      });
+    }
+
+    const user = await this.userModel.aggregate(aggregateQuery);
+
+    return user;
+  }
 }

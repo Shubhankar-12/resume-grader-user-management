@@ -41,6 +41,36 @@ export class EmployeeValidator extends BaseValidator {
       return successClass(true);
     }
   }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validateEmail(value: any): Response {
+    if (value == undefined) {
+      return errClass(new NotFound("email"));
+    } else if (typeof value != "string") {
+      return errClass(new InvalidDataType("email", "string"));
+    } else if (value.length == 0) {
+      return errClass(new NullOrUndefined("email"));
+    } else if (!validator.isEmail(value)) {
+      return errClass(new InvalidEmail("email"));
+    } else {
+      return successClass(true);
+    }
+  }
+
+  @logUnexpectedValidatorError({ level: "error" })
+  validatePassword(value: any): Response {
+    if (value == undefined) {
+      return errClass(new NotFound("password"));
+    } else if (typeof value != "string") {
+      return errClass(new InvalidDataType("password", "string"));
+    } else if (value.length == 0) {
+      return errClass(new NullOrUndefined("password"));
+    } else if (value.length < 8 || value.length > 20) {
+      return errClass(new InvalidLength(8, 20, "password"));
+    } else {
+      return successClass(true);
+    }
+  }
 }
 
 export const employeeValidator = new EmployeeValidator();

@@ -5,7 +5,7 @@ interface IUser {
   username?: string;
   password?: string;
   email: string;
-  avatar: {
+  avatar?: {
     name?: string;
     url?: string;
     mimetype?: string;
