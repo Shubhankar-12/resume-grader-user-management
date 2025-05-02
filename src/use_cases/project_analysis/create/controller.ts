@@ -16,9 +16,10 @@ class CreateProjectAnalysisController extends BaseController {
   async executeImpl(req: Request, res: Response): Promise<void> {
     const data: ICreateProjectAnalysisRequest = req.body;
     const dtoObj = new CreateProjectAnalysisDtoConverter(data);
-    const result = await this.createProjectAnalysisUseCase.execute(
-      dtoObj.getDtoObject()
-    );
+    const result = await this.createProjectAnalysisUseCase.execute({
+      request: dtoObj.getDtoObject(),
+      auth: res.locals.auth,
+    });
     if (result.isErrClass()) {
       logUseCaseError([result.value], { level: "error" }, res);
       res.locals.response = this.fail({

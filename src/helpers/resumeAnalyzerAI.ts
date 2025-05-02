@@ -484,6 +484,7 @@ export async function generateResumeProjectAnalysis(
     topics: string[];
     updated_at: string;
     additional_comments?: string;
+    readme?: string;
   }[]
 ) {
   const projectDescriptions = projects
@@ -496,6 +497,7 @@ export async function generateResumeProjectAnalysis(
 - Language: ${project.language}
 - Topics: ${project.topics?.join(", ") || "None"}
 - Additional Comments: ${project.additional_comments || "None"}
+- Readme: ${project.readme || "None"}
 - Last Updated: ${project.updated_at}`;
     })
     .join("\n\n");
@@ -511,6 +513,7 @@ Based on the project details below, evaluate each project and provide:
 5. Select Top 3 projects that are most relevant for the role.
 6. If Additional Comments are provided, use them to for the evaluation.
 7. Add 2-3 key points for each project to highlight things that are most relevant to the role.
+8. If Readme is provided, use it to for the evaluation.
 
 Projects:
 ${projectDescriptions}

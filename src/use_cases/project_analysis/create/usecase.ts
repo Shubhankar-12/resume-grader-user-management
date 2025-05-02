@@ -1,4 +1,5 @@
 import { projectAnalysisQueries } from "../../../db";
+import { fetchReadme } from "../../../helpers/fetchReadme";
 import { generateResumeProjectAnalysis } from "../../../helpers/resumeAnalyzerAI";
 import {
   UseCase,
@@ -6,18 +7,25 @@ import {
   errClass,
   successClass,
   UseCaseError,
+  ResponseLocalAuth,
 } from "../../../interfaces";
 import { logUnexpectedUsecaseError } from "../../../logger";
 import { InternalServerError } from "../../user_resume/create/errors";
 import { ICreateProjectAnalysisDto } from "./dto";
 
+import jwt from "jsonwebtoken";
+
 type Response = Either<UseCaseError, any>;
+type AnalysisRequest = {
+  request: ICreateProjectAnalysisDto;
+  auth: ResponseLocalAuth;
+};
 
 export class CreateProjectAnalysisUseCase
-  implements UseCase<ICreateProjectAnalysisDto, Response>
+  implements UseCase<AnalysisRequest, Response>
 {
   @logUnexpectedUsecaseError({ level: "error" })
-  async execute(request: ICreateProjectAnalysisDto): Promise<Response> {
+  async execute({ request, auth }: AnalysisRequest): Promise<Response> {
     try {
       const req_project_ids = request.projects.map((project) => project.id);
       const existingAnalysis = await projectAnalysisQueries.getProjectAnalysis({
@@ -28,9 +36,23 @@ export class CreateProjectAnalysisUseCase
       if (existingAnalysis.length > 0) {
         return successClass(existingAnalysis[0]);
       }
+      const token = auth.token;
+      const decodedToken = jwt.decode(token) as any;
+      const github_username = decodedToken.user.username;
+
+      const projectsWithReadmes = await Promise.all(
+        request.projects.map(async (project) => {
+          const readme = await fetchReadme(github_username, project.name);
+          return {
+            ...project,
+            readme,
+          };
+        })
+      );
+
       const analysisResult = await generateResumeProjectAnalysis(
         request.role,
-        request.projects
+        projectsWithReadmes
       );
 
       const selected_projects = request.projects
