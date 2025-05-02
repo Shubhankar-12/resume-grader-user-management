@@ -32,7 +32,7 @@ export class RegisterUserWithEmailUseCase
       ...request,
       status: "ENABLED",
     });
-    console.log("userResult", userResult);
+    // console.log("userResult", userResult);
 
     const loginObj = await loginQueries.findLoginByUserId(userResult._id);
 

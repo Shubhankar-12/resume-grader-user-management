@@ -14,6 +14,13 @@ export class UserQueries {
     return await this.userModel.create(user);
   }
 
+  async updateUser(data: any): Promise<any> {
+    const filter = { _id: data.user_id };
+    return await this.userModel.updateOne(filter, {
+      $set: data,
+    });
+  }
+
   async getUserByGithubLogin(github_login: string): Promise<any> {
     let aggregateQuery: any[] = [];
 

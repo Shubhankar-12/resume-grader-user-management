@@ -11,6 +11,10 @@ import {
   createProjectAnalysisController,
   createProjectAnalysisMiddleware,
 } from "../use_cases/project_analysis/create";
+import {
+  githubUpdateController,
+  githubUpdateMiddleware,
+} from "../use_cases/users/github_auth";
 export const userRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -30,4 +34,13 @@ baseRouterHandler.handleWithHooks(
   getUserByIdMiddleware.ensureLoggedIn(),
   getUserByIdMiddleware.ensureValidation(),
   getUserByIdController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  userRouter,
+  "patch",
+  "/connect-github",
+  githubUpdateMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  githubUpdateMiddleware.ensureLoggedIn(),
+  githubUpdateMiddleware.ensureValidation(),
+  githubUpdateController.execute()
 );
