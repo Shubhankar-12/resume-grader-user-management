@@ -75,7 +75,9 @@ export class CreateProjectAnalysisUseCase
       const creatObj = {
         user_id: request.user_id,
         role: request.role,
-        selected_project: selected_projects,
+        selected_project: selected_projects.sort(
+          (a, b) => b.ai_score - a.ai_score
+        ),
         project_ids: req_project_ids,
         status: "ENABLED",
       };
