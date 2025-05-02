@@ -45,6 +45,7 @@ export class ProjectAnalysisQueries {
         project_ids: 1,
         selected_project: 1,
         status: 1,
+        key_points: 1,
       },
     });
 
@@ -71,6 +72,7 @@ export class ProjectAnalysisQueries {
         project_ids: 1,
         selected_project: 1,
         status: 1,
+        key_points: 1,
       },
     });
 

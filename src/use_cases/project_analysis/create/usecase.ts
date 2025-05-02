@@ -46,6 +46,7 @@ export class CreateProjectAnalysisUseCase
             ai_score: analysis?.ai_score,
             relevance: analysis?.relevance,
             reason: analysis?.reason,
+            key_points: analysis?.key_points,
           };
         });
 

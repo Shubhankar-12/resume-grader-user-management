@@ -13,6 +13,7 @@ interface Project {
   relevance: string; // e.g. HIGH, MEDIUM, LOW
   reason: string;
   additional_comments: string;
+  key_points: string[];
 }
 
 interface IProjectAnalysis {

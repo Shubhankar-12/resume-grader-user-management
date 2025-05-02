@@ -31,6 +31,7 @@ const ProjectAnalysisSchema = new Schema(
         relevance: { type: String }, // e.g. HIGH, MEDIUM, LOW
         reason: { type: String },
         additional_comments: { type: String },
+        key_points: [{ type: String }],
       },
     ],
     status: {

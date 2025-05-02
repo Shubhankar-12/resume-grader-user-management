@@ -510,6 +510,7 @@ Based on the project details below, evaluate each project and provide:
 4. Project ID: The ID of the project same as in the project details.
 5. Select Top 3 projects that are most relevant for the role.
 6. If Additional Comments are provided, use them to for the evaluation.
+7. Add 2-3 key points for each project to highlight things that are most relevant to the role.
 
 Projects:
 ${projectDescriptions}
@@ -525,6 +526,7 @@ Output format:
     "ai_score": <score>,
     "relevance": "HIGH" | "MEDIUM" | "LOW",
     "reason": "<short explanation>"
+    "key_points": ["<key points>"]
   },
   ...
 ]
