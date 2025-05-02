@@ -497,61 +497,228 @@ export async function generateResumeProjectAnalysis(
 - Language: ${project.language}
 - Topics: ${project.topics?.join(", ") || "None"}
 - Additional Comments: ${project.additional_comments || "None"}
-- Readme: ${project.readme || "None"}
+${
+  project.readme
+    ? `- Readme Excerpt: ${project.readme.substring(0, 500)}${
+        project.readme.length > 500 ? "..." : ""
+      }`
+    : "- Readme: None"
+}
 - Last Updated: ${project.updated_at}`;
     })
     .join("\n\n");
 
+  const roleSpecificKeywords = getRoleKeywords(role);
+
   const prompt = `
-You are a technical recruiter helping to evaluate GitHub projects for a software developer applying for the role of **${role}**.
+You are an expert technical recruiter with deep knowledge of software development evaluating GitHub projects for a candidate applying for a **${role}** position.
 
-Based on the project details below, evaluate each project and provide:
-1. AI Score (0–100) based on relevance, quality, stars, description, and topics.
-2. Relevance: HIGH / MEDIUM / LOW (based on fit for the role).
-3. Reason: A short explanation of why this project is relevant or not.
-4. Project ID: The ID of the project same as in the project details.
-5. Select Top 3 projects that are most relevant for the role.
-6. If Additional Comments are provided, use them to for the evaluation.
-7. Add 2-3 key points for each project to highlight things that are most relevant to the role.
-8. If Readme is provided, use it to for the evaluation.
-
-Projects:
+# Candidate Projects
 ${projectDescriptions}
 
-Respond only with valid JSON of 3 top projects. 
+# Task
+Analyze these projects and identify the 3 most impressive and relevant repositories for a **${role}** position. 
 
-No extra explanation, no wrapping text, no markdown — just pure JSON output.
+# Evaluation Criteria
+For each project, evaluate:
 
-Output format:
+1. Technical alignment with ${role} (languages, frameworks, tools commonly used in this role)
+2. Project complexity and sophistication
+3. Code quality indicators (from description, topics, and readme)
+4. Industry relevance and practical application
+5. Project activity and maintenance (stars, update frequency)
+6. Demonstration of key skills: ${roleSpecificKeywords}
+
+# Required Output Format
+Provide a JSON array of exactly 3 project objects, selecting only the most relevant projects for a ${role} position:
+
 [
   {
     "id": <project_id>,
-    "ai_score": <score>,
+    "ai_score": <0-100 score based on overall quality and relevance>,
     "relevance": "HIGH" | "MEDIUM" | "LOW",
-    "reason": "<short explanation>"
-    "key_points": ["<key points>"]
+    "reason": "<concise explanation of why this project demonstrates qualifications for the role>",
+    "key_points": [
+      "<3 specific, quantifiable achievements with metrics and action verbs>",
+      "<focus on technical accomplishments that would impress a hiring manager>"
+    ]
   },
   ...
 ]
+
+# Important Instructions
+- Only include 3 projects with the highest relevance to ${role}
+- Award higher scores to projects matching ${role} requirements
+- Infer technical achievements even if not explicitly stated
+- Convert technical features into business value statements when possible
+- Prioritize projects with measurable impacts (performance, scale, efficiency)
+- ONLY output valid JSON - no explanations, markdown, or text outside the JSON array
+- Each "key_points" must contain specific metrics (%, numbers, timeframes) in  ["<key points>"] format
+- Use strong action verbs at the start of each key point (Implemented, Developed, Architected, Optimized, etc.)
 `;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
+        role: "system",
+        content:
+          "You are a technical recruiter expert specializing in evaluating software projects for resume optimization. Provide precise, data-driven project evaluations in clean JSON format.",
+      },
+      {
         role: "user",
         content: prompt,
       },
     ],
-    temperature: 0.4,
+    response_format: { type: "json_object" },
+    temperature: 0.3,
   });
 
   const content = response.choices[0]?.message?.content || "[]";
   try {
     const parsed = JSON.parse(content);
-    return parsed; // Should be array of { id, ai_score, relevance, reason }
+    return parsed; // Array of { id, ai_score, relevance, reason, key_points }
   } catch (err) {
     console.error("Failed to parse AI response:", content);
     throw new Error("Invalid AI response format.");
   }
+}
+
+/**
+ * Helper function to get role-specific keywords based on job title
+ */
+function getRoleKeywords(role: string): string {
+  const roleLower = role.toLowerCase();
+
+  const keywordMap: Record<string, string> = {
+    // Development Roles
+    "frontend developer":
+      "UI/UX implementation, responsive design, component architecture, state management, performance optimization, accessibility, CSS frameworks, frontend testing, bundling tools, animation",
+    "backend developer":
+      "API design, database optimization, microservices, security, scalability, performance tuning, caching strategies, queue management, logging, authentication",
+    "fullstack developer":
+      "end-to-end implementation, full application lifecycle, cross-stack optimization, system architecture, API integration, database design, UI/UX, testing strategies, deployment pipelines",
+    "software engineer":
+      "software architecture, system design, algorithm optimization, testing strategy, technical documentation, code quality, design patterns, performance analysis, scalability solutions",
+    "mobile developer":
+      "native app development, cross-platform solutions, mobile UI/UX, performance optimization, offline capabilities, app store deployment, push notifications, mobile-specific APIs, responsive layouts",
+    "android developer":
+      "Java/Kotlin development, Android SDK, material design, app lifecycle management, background processing, UI performance, Play Store deployment, device compatibility",
+    "ios developer":
+      "Swift/Objective-C, UIKit/SwiftUI, Core Data, app lifecycle, performance optimization, App Store guidelines, TestFlight, Apple design principles",
+    "web developer":
+      "responsive web design, browser compatibility, progressive enhancement, web performance, SEO optimization, accessibility standards, modern web APIs, HTML/CSS/JavaScript mastery",
+    "game developer":
+      "game engine expertise, 3D modeling integration, physics simulation, game performance optimization, animation, shader programming, multiplayer implementation, game UI/UX",
+
+    // Data Roles
+    "data scientist":
+      "data analysis, machine learning models, statistical analysis, data visualization, predictive modeling, hypothesis testing, feature engineering, A/B testing, experiment design",
+    "data engineer":
+      "data pipeline architecture, ETL processes, data warehousing, distributed computing, data cleaning, schema design, data governance, real-time processing, data integration",
+    "machine learning engineer":
+      "model development, ML pipelines, algorithm optimization, feature engineering, model deployment, MLOps, experiment tracking, hyperparameter tuning, model monitoring",
+    "data analyst":
+      "data visualization, SQL expertise, statistical analysis, business intelligence tools, dashboard creation, metric definition, data cleaning, reporting automation, insight generation",
+    "business intelligence developer":
+      "dashboard development, KPI monitoring, data storytelling, ETL processes, SQL optimization, data modeling, report automation, business metrics, executive reporting",
+    "computer vision engineer":
+      "image processing algorithms, neural network architectures, feature extraction, model optimization, video analysis, object detection, segmentation, tracking systems",
+    "nlp engineer":
+      "text processing, sentiment analysis, language models, entity recognition, text classification, information extraction, document understanding, conversational AI",
+
+    // Infrastructure Roles
+    "devops engineer":
+      "CI/CD pipelines, infrastructure as code, container orchestration, monitoring, security automation, configuration management, cloud services, automated testing, deployment strategies",
+    "site reliability engineer":
+      "system reliability, incident response, scalability planning, performance optimization, observability, automated recovery, service level objectives, capacity planning",
+    "cloud engineer":
+      "multi-cloud architecture, serverless computing, cloud security, cost optimization, resource management, cloud migration, high availability design, disaster recovery",
+    "security engineer":
+      "threat modeling, security testing, vulnerability management, incident response, security architecture, authentication systems, encryption implementation, compliance frameworks",
+    "network engineer":
+      "network architecture, protocol implementation, traffic optimization, network security, load balancing, routing algorithms, failover systems, latency minimization",
+    "systems administrator":
+      "server management, user administration, backup systems, OS optimization, automation scripting, security patching, resource monitoring, troubleshooting, disaster recovery",
+
+    // Product Development Roles
+    "qa engineer":
+      "test automation, test case design, regression testing, performance testing, bug reporting, quality metrics, CI integration, test coverage analysis, user acceptance testing",
+    "product manager":
+      "feature prioritization, user research, product roadmap, market analysis, stakeholder management, requirement specification, user stories, product metrics, launch planning",
+    "ux designer":
+      "user research, usability testing, wireframing, prototyping, information architecture, user flows, accessibility standards, visual design principles, interaction design",
+    "technical product manager":
+      "technical roadmapping, feature specification, cross-team collaboration, technical debt management, API planning, system architecture, product metrics, release planning",
+
+    // Architecture Roles
+    "solutions architect":
+      "enterprise architecture, technology stack selection, integration design, scalability planning, technical documentation, stakeholder management, best practices, cost optimization",
+    "enterprise architect":
+      "technology standardization, business-IT alignment, system integration, architectural governance, technology roadmap, legacy modernization, compliance architecture",
+    "security architect":
+      "security framework design, threat modeling, risk assessment, compliance architecture, zero-trust implementation, authentication/authorization design, security governance",
+    "cloud architect":
+      "multi-cloud strategy, migration architecture, cloud-native design, security controls, cost optimization, performance architecture, disaster recovery planning",
+
+    // Leadership Roles
+    "engineering manager":
+      "team leadership, technical mentorship, project planning, performance management, hiring, process improvement, cross-team collaboration, delivery management",
+    "technical lead":
+      "technical direction, architecture decisions, code quality standards, mentoring, technical debt management, code reviews, technology selection, implementation strategies",
+    cto: "technology strategy, technical vision, architecture oversight, technology stack decisions, innovation leadership, technical team building, executive communication, digital transformation",
+    "vp of engineering":
+      "engineering organization, delivery frameworks, technical leadership, team structure, hiring strategy, technology roadmap, cross-department collaboration, resource planning",
+    "director of engineering":
+      "department management, technical strategy, team growth, delivery predictability, engineering culture, cross-functional leadership, resource allocation",
+
+    // Specialized Development Roles
+    "blockchain developer":
+      "smart contract development, consensus mechanisms, cryptographic implementations, decentralized applications, token economics, blockchain security, web3 integration",
+    "embedded systems engineer":
+      "firmware development, hardware interfaces, real-time operating systems, power optimization, device drivers, sensor integration, memory management",
+    "robotics engineer":
+      "motion planning, sensor integration, control systems, hardware interfaces, real-time processing, simulator development, robotic operating system, calibration systems",
+    "ar/vr developer":
+      "3D rendering, spatial computing, gesture recognition, immersive UI/UX, performance optimization, 3D asset integration, physics simulation, tracking systems",
+    "graphics programmer":
+      "rendering pipelines, shader development, 3D mathematics, optimization techniques, physics simulation, graphics APIs, visual effects, animation systems",
+    "quantum computing engineer":
+      "quantum algorithms, quantum circuit design, qubit manipulation, quantum simulation, error correction, quantum-classical integration, quantum advantage analysis",
+
+    // Database Roles
+    "database administrator":
+      "database optimization, query performance, backup strategies, high availability configuration, data security, schema design, migration planning, monitoring setup",
+    "database engineer":
+      "database architecture, query optimization, indexing strategies, data modeling, sharding implementation, replication setup, database security, scaling solutions",
+    "data architect":
+      "enterprise data modeling, data governance, master data management, data integration, warehouse architecture, data quality frameworks, metadata management",
+
+    // AI/ML Roles
+    "ai research scientist":
+      "algorithm development, research papers, experimental design, model innovation, baseline comparison, literature review, theoretical frameworks, proof-of-concept implementation",
+    "mlops engineer":
+      "ML pipeline automation, model deployment, monitoring systems, feature store implementation, experiment tracking, model versioning, infrastructure scaling, CI/CD for ML",
+    "reinforcement learning engineer":
+      "policy optimization, environment modeling, reward function design, multi-agent systems, simulation integration, RL algorithm implementation, state representation",
+
+    // Other Technical Roles
+    "technical writer":
+      "documentation strategy, API documentation, user guides, technical tutorials, information architecture, content standards, documentation testing, audience analysis",
+    "developer advocate":
+      "technical content creation, community engagement, sample application development, technical presentations, API feedback collection, developer experience improvement",
+    "developer relations":
+      "technical community building, developer feedback collection, technical content strategy, platform evangelism, partnership programs, technical workshops, API advocacy",
+    "sales engineer":
+      "technical demonstrations, solution architecture, customer requirements mapping, technical objection handling, proof-of-concept development, integration planning",
+  };
+
+  // Find the closest matching role or return a generic set of keywords
+  for (const [key, value] of Object.entries(keywordMap)) {
+    if (roleLower.includes(key) || key.includes(roleLower)) {
+      return value;
+    }
+  }
+
+  return "code quality, technical documentation, problem-solving, system design, scalability, performance optimization";
 }

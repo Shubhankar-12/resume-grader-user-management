@@ -50,10 +50,14 @@ export class CreateProjectAnalysisUseCase
         })
       );
 
-      const analysisResult = await generateResumeProjectAnalysis(
+      const analysisResp = await generateResumeProjectAnalysis(
         request.role,
         projectsWithReadmes
       );
+
+      if (!analysisResp) return errClass(new InternalServerError());
+
+      const analysisResult = analysisResp.projects;
 
       const selected_projects = request.projects
         .filter((project) =>
