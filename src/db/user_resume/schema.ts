@@ -19,7 +19,12 @@ const UserResumeSchema = new Schema(
     analysis: {
       gradingScore: { type: Number },
       atsScore: { type: Number },
-      suggestions: [{ type: String }],
+      suggestions: [
+        {
+          title: { type: String },
+          description: { type: String },
+        },
+      ],
     },
     status: {
       type: String,

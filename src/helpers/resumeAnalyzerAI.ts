@@ -18,7 +18,8 @@ Strictly respond ONLY in this JSON format:
 {
   gradingScore: number,
   atsScore: number,
-  suggestions: string[]
+  suggestions: {
+  title: string, description: string}[]
 }
 
 DO NOT include any explanation. Only return JSON.`,

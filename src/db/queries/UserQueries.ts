@@ -182,6 +182,7 @@ export class UserQueries {
         user_resumes: 1,
         cover_letters: 1,
         name: 1,
+        avatar: 1,
         provider: 1,
         githubProfile: 1,
         user_resume: {

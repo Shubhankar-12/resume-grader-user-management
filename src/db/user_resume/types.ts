@@ -11,7 +11,10 @@ interface IUserResume {
   analysis: {
     gradingScore: number;
     atsScore: number;
-    suggestions: string[];
+    suggestions: {
+      title: string;
+      description: string;
+    }[];
   };
 
   status: string;
