@@ -15,6 +15,10 @@ import {
   githubUpdateController,
   githubUpdateMiddleware,
 } from "../use_cases/users/github_auth";
+import {
+  getDashboardStatsByIdController,
+  getDashboardStatsByIdMiddleware,
+} from "../use_cases/users/get-stats";
 export const userRouter = express.Router();
 
 baseRouterHandler.handleWithHooks(
@@ -34,6 +38,15 @@ baseRouterHandler.handleWithHooks(
   getUserByIdMiddleware.ensureLoggedIn(),
   getUserByIdMiddleware.ensureValidation(),
   getUserByIdController.execute()
+);
+baseRouterHandler.handleWithHooks(
+  userRouter,
+  "get",
+  "/stats",
+  getDashboardStatsByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+  getDashboardStatsByIdMiddleware.ensureLoggedIn(),
+  getDashboardStatsByIdMiddleware.ensureValidation(),
+  getDashboardStatsByIdController.execute()
 );
 baseRouterHandler.handleWithHooks(
   userRouter,

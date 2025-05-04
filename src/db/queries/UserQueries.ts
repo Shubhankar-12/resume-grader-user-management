@@ -78,4 +78,134 @@ export class UserQueries {
 
     return user;
   }
+
+  async getDashboardStats(user_id: string): Promise<any> {
+    let aggregateQuery: any[] = [];
+
+    aggregateQuery.push({
+      $match: {
+        _id: new ObjectId(user_id),
+        status: {
+          $ne: "DISABLED",
+        },
+      },
+    });
+
+    aggregateQuery.push({
+      $lookup: {
+        from: "user_resumes",
+        localField: "_id",
+        foreignField: "user_id",
+        as: "user_resumes",
+        pipeline: [
+          {
+            $match: {
+              status: {
+                $ne: "DISABLED",
+              },
+            },
+          },
+          {
+            $sort: {
+              created_on: -1,
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              user_resume_id: "$_id",
+              analysis: 1,
+              resume: 1,
+              status: 1,
+              created_on: 1,
+              updated_on: 1,
+            },
+          },
+        ],
+      },
+    });
+
+    aggregateQuery.push({
+      $unwind: {
+        path: "$user_resumes",
+        preserveNullAndEmptyArrays: true,
+      },
+    });
+
+    aggregateQuery.push({
+      $lookup: {
+        from: "cover_letters",
+        localField: "_id",
+        foreignField: "user_id",
+        as: "cover_letters",
+        pipeline: [
+          {
+            $match: {
+              status: {
+                $ne: "DISABLED",
+              },
+            },
+          },
+          {
+            $sort: {
+              created_on: -1,
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              cover_letter_id: "$_id",
+              resume_id: 1,
+              user_id: 1,
+              role: 1,
+              company: 1,
+              job_description: 1,
+              created_on: 1,
+              updated_on: 1,
+            },
+          },
+        ],
+      },
+    });
+
+    aggregateQuery.push({
+      $unwind: {
+        path: "$cover_letters",
+        preserveNullAndEmptyArrays: true,
+      },
+    });
+
+    aggregateQuery.push({
+      $project: {
+        _id: 0,
+        user_id: "$_id",
+        user_resumes: 1,
+        cover_letters: 1,
+        name: 1,
+        provider: 1,
+        githubProfile: 1,
+        user_resume: {
+          // if user_resume is null, then return empty object else return user_resume[0]
+          $cond: {
+            if: { $eq: ["$user_resumes", []] },
+            then: {},
+            else: "$user_resumes[0]",
+          },
+        },
+        cover_letter: {
+          // if cover_letter is null, then return empty object else return cover_letter[0]
+          $cond: {
+            if: { $eq: ["$cover_letters", []] },
+            then: {},
+            else: "$cover_letters[0]",
+          },
+        },
+      },
+    });
+
+    const user = await this.userModel.aggregate(aggregateQuery);
+    // console.log("user", user);
+
+    return user;
+  }
 }
