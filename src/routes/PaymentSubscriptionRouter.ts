@@ -7,6 +7,10 @@ import {
   createPaymentSubscriptionController,
   createPaymentSubscriptionMiddleware,
 } from "../use_cases/payment_subscription/create";
+import {
+  webhookPaymentSubscriptionController,
+  webhookPaymentSubscriptionMiddleware,
+} from "../use_cases/payment_subscription/webhook";
 
 export const paymentSubscriptionRouter = express.Router();
 
@@ -18,4 +22,14 @@ baseRouterHandler.handleWithHooks(
   // createPaymentSubscriptionMiddleware.ensureAuthorization(),
   createPaymentSubscriptionMiddleware.ensureValidation(),
   createPaymentSubscriptionController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+  paymentSubscriptionRouter,
+  "post",
+  "/webhook",
+  // webhookPaymentSubscriptionMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY])
+  // webhookPaymentSubscriptionMiddleware.ensureAuthorization(),
+  webhookPaymentSubscriptionMiddleware.ensureValidation(),
+  webhookPaymentSubscriptionController.execute()
 );

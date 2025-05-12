@@ -4,7 +4,7 @@ import { WebhookPaymentSubscriptionParser } from "./parser";
 import { userResumeValidator } from "../../user_resume/UserResumeValidator";
 import { logValidationError } from "../../../logger";
 
-export class CreatePaymentSubscriptionRequestValidator extends Responses {
+export class WebhookPaymentSubscriptionRequestValidator extends Responses {
   constructor() {
     super();
   }
@@ -30,6 +30,6 @@ export class CreatePaymentSubscriptionRequestValidator extends Responses {
   }
 }
 
-const createPaymentSubscriptionValidator =
-  new CreatePaymentSubscriptionRequestValidator();
-export { createPaymentSubscriptionValidator };
+const webhookPaymentSubscriptionValidator =
+  new WebhookPaymentSubscriptionRequestValidator();
+export { webhookPaymentSubscriptionValidator };

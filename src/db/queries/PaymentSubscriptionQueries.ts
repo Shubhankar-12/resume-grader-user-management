@@ -97,7 +97,7 @@ export class PaymentSubscriptionQueries {
   }
 
   async updatePaymentSubscription(data: any): Promise<any> {
-    const filter = { _id: data.payment_subscription_id };
+    const filter = { payment_subscription_id: data.payment_subscription_id };
     return await this.paymentSubscriptionModel.updateOne(filter, {
       $set: data,
     });

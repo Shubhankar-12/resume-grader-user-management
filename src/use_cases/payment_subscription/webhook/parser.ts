@@ -10,6 +10,8 @@ export class WebhookPaymentSubscriptionParser extends BaseParser {
   constructor(data: any, paymentSubscriptionValidator: UserResumeValidator) {
     super();
     this.paymentSubscriptionValidator = paymentSubscriptionValidator;
+    this.parseEmployeeId(data.resume_id);
+    this.parseForeignId(data.user_id);
   }
 
   // parseTitle(value: any): void {
