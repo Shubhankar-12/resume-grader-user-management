@@ -73,6 +73,7 @@
     "pdf-parse": "^1.1.1",
     "puppeteer": "^23.11.1",
     "qrcode": "^1.5.4",
+    "razorpay": "^2.9.6",
     "sequelize": "^6.37.5",
     "slugify": "^1.6.6",
     "swagger-jsdoc": "^6.2.8",

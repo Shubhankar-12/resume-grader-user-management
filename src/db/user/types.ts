@@ -5,6 +5,7 @@ interface IUser {
   username?: string;
   password?: string;
   email: string;
+  razorpay_customer_id?: string;
   avatar?: {
     name?: string;
     url?: string;

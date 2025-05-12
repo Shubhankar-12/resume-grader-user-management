@@ -19,6 +19,9 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    razorpay_customer_id: {
+      type: String,
+    },
     avatar: {
       name: { type: String },
       url: { type: String },
