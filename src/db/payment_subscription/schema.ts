@@ -17,7 +17,7 @@ const PaymentSubscriptionSchema = new Schema(
     plan: {
       type: String,
       required: true,
-      enum: ["FREE", "BASIC", "PREMIUM"],
+      enum: ["FREE", "BASIC", "PRO"],
     },
     start_date: {
       type: Date,

@@ -58,8 +58,8 @@ export class CreatePaymentSubscriptionUseCase
       }
       const plans = {
         FREE: { price: 0 },
-        PRO: { plan_id: "plan_QTu2HPbrKFcUan" },
-        PREMIUM: { plan_id: "plan_QTu8KEDYX7ZxVI" },
+        BASIC: { plan_id: "plan_QWRQdP8yGRIAek" },
+        PRO: { plan_id: "plan_QWRQ7ZlOgwdNgS" },
       };
 
       if (request.plan === "FREE") {
@@ -83,14 +83,18 @@ export class CreatePaymentSubscriptionUseCase
         plan_id: plans[request.plan].plan_id,
         customer_notify: 1,
         total_count: 12,
+        start_at: Math.floor(new Date().getTime() / 1000),
       });
+      console.log("subscription", subscription);
 
       await paymentSubscriptionQueries.create({
         user_id: existingUser[0]._id,
         razorpayCustomerId: customerId,
         razorpaySubscriptionId: subscription.id,
+        start_date: subscription.created_at,
+        end_date: subscription.created_at + 12 * 30 * 24 * 60 * 60 * 1000,
         plan: request.plan,
-        status: "INACTIVE",
+        status: "ACTIVE",
       });
 
       return successClass({
@@ -98,7 +102,9 @@ export class CreatePaymentSubscriptionUseCase
         payment_subscription_id: subscription.id,
         razorpay_customer_id: customerId,
         plan: request.plan,
-        status: "INACTIVE",
+        start_date: subscription.created_at,
+        end_date: subscription.ended_at,
+        status: "ACTIVE",
       });
     } catch (error) {
       console.error(

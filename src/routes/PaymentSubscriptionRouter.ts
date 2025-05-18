@@ -18,8 +18,10 @@ baseRouterHandler.handleWithHooks(
   paymentSubscriptionRouter,
   "post",
   "/create",
-  // createPaymentSubscriptionMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY])
-  // createPaymentSubscriptionMiddleware.ensureAuthorization(),
+  createPaymentSubscriptionMiddleware.ensureAuthentication([
+    POLICIES.ADMIN_POLICY,
+  ]),
+  createPaymentSubscriptionMiddleware.ensureLoggedIn(),
   createPaymentSubscriptionMiddleware.ensureValidation(),
   createPaymentSubscriptionController.execute()
 );
