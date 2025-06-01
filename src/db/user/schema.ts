@@ -44,6 +44,13 @@ const UserSchema = new Schema(
       googleId: { type: String },
       locale: { type: String },
     },
+    usage: {
+      resumeUploads: { type: Number, default: 0 },
+      tailoredResumes: { type: Number, default: 0 },
+      coverLetters: { type: Number, default: 0 },
+      githubAnalyses: { type: Number, default: 0 },
+    },
+
     status: {
       type: String,
       enum: ["ENABLED", "DISABLED"],

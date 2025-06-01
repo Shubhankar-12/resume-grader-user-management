@@ -23,6 +23,12 @@ interface IUser {
     id: string;
     locale: string;
   };
+  usage?: {
+    resumeUploads: number;
+    tailoredResumes: number;
+    coverLetters: number;
+    githubAnalyses: number;
+  };
   status: string;
 }
 

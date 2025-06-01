@@ -84,6 +84,8 @@ export class CreateUserResumeUseCase
         return errClass(new ExtractedResumeNotFoundError());
       }
 
+      await userQueries.updateUserUsage(request.user_id, "resumeUploads");
+
       return successClass({
         resume_id: createdResume._id,
         user_id: createdResume.user_id,

@@ -102,4 +102,21 @@ export class PaymentSubscriptionQueries {
       $set: data,
     });
   }
+  async getUserCurrentSubscription(userId: string): Promise<any> {
+    let aggregateQuery: any[] = [];
+    aggregateQuery.push({
+      $match: {
+        user_id: new ObjectId(userId),
+        status: "ACTIVE",
+      },
+    });
+
+    aggregateQuery.push({
+      $sort: {
+        created_on: -1,
+      },
+    });
+
+    return await this.paymentSubscriptionModel.aggregate(aggregateQuery);
+  }
 }

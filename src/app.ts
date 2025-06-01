@@ -25,6 +25,7 @@ import { v1Router } from "./routes";
 import swaggerOptions from "./swagger";
 // opening a db connection
 import { DataBase } from "./db/connection";
+import { resetUsageCron } from "./helpers/crons/resetUsage";
 DataBase.getDatabaseConnection();
 
 // initializing the logger and storing it to global scope
@@ -47,6 +48,19 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/v1", v1Router);
+
+// reset usage cron job every month on the 1st at 00:00
+cron.schedule(
+  "0 0 1 * *",
+  async () => {
+    console.log("Running reset usage cron job");
+    await resetUsageCron();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Kolkata", // Set the timezone to Asia/Kolkata
+  }
+);
 
 app.use("*", (req, res) => {
   res.status(404);

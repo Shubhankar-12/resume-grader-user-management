@@ -69,3 +69,24 @@ export enum OtpStatus {
 
 export const BUCKET_URL_HTTP = "http://hireavilla-images.s3.amazonaws.com/";
 export const BUCKET_URL_HTTPS = "https://hireavilla-images.s3.amazonaws.com/";
+
+export const planLimits = {
+  FREE: {
+    resumeUploads: 1,
+    tailoredResumes: 1,
+    coverLetters: 1,
+    githubAnalyses: 0,
+  },
+  BASIC: {
+    resumeUploads: 3,
+    tailoredResumes: 3,
+    coverLetters: 3,
+    githubAnalyses: 3,
+  },
+  PRO: {
+    resumeUploads: Infinity,
+    tailoredResumes: Infinity,
+    coverLetters: Infinity,
+    githubAnalyses: Infinity,
+  },
+};
