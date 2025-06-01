@@ -74,6 +74,7 @@ export class PlanLimitChecker {
 
     if (currentUsage >= limit) {
       res.status(403).json({
+        error: "LIMIT_EXCEEDED",
         message: `You have reached your ${this.usageType} limit for the ${plan} plan. Please upgrade your plan to continue.`,
       });
       return;

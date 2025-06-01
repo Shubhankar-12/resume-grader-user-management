@@ -19,8 +19,10 @@ import {
   getAllTailoredResumesController,
   getAllTailoredResumesMiddleware,
 } from "../use_cases/tailored_resume/get_all";
+import { PlanLimitChecker } from "../common_middleware/planMiddleware";
 
 export const tailoredResumeRouter = express.Router();
+const tailoredResumeLimiter = new PlanLimitChecker("tailoredResumes").check();
 
 baseRouterHandler.handleWithHooks(
   tailoredResumeRouter,
@@ -39,6 +41,7 @@ baseRouterHandler.handleWithHooks(
   createTailoredResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
   createTailoredResumeMiddleware.ensureLoggedIn(),
   createTailoredResumeMiddleware.ensureValidation(),
+  tailoredResumeLimiter,
   createTailoredResumeController.execute()
 );
 baseRouterHandler.handleWithHooks(
@@ -58,5 +61,6 @@ baseRouterHandler.handleWithHooks(
   createMatchReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
   createMatchReportMiddleware.ensureLoggedIn(),
   createMatchReportMiddleware.ensureValidation(),
+  tailoredResumeLimiter,
   createMatchReportController.execute()
 );
