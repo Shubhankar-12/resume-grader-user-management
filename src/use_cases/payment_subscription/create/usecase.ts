@@ -70,6 +70,16 @@ export class CreatePaymentSubscriptionUseCase
           status: "ACTIVE",
         });
 
+        await userQueries.updateUser({
+          user_id: userId,
+          usage: {
+            coverLetters: 1,
+            tailoredResumes: 1,
+            githubAnalyses: 1,
+            resumeUploads: 0,
+          },
+        });
+
         return successClass({
           user_id: existingUser[0]._id,
           payment_subscription_id: undefined,
@@ -95,6 +105,16 @@ export class CreatePaymentSubscriptionUseCase
         end_date: subscription.created_at + 12 * 30 * 24 * 60 * 60 * 1000,
         plan: request.plan,
         status: "ACTIVE",
+      });
+
+      await userQueries.updateUser({
+        user_id: userId,
+        usage: {
+          coverLetters: request.plan === "PRO" ? Infinity : 3,
+          tailoredResumes: request.plan === "PRO" ? Infinity : 3,
+          githubAnalyses: request.plan === "PRO" ? Infinity : 3,
+          resumeUploads: request.plan === "PRO" ? Infinity : 3,
+        },
       });
 
       return successClass({
