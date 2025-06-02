@@ -3,7 +3,7 @@ import { app } from "./app";
 const PORT: number = Number(process.env.PORT) || 3000;
 const HOST = "192.168.29.137"; // important
 
-app.listen(PORT, HOST, listener);
+app.listen(PORT, listener);
 
 function listener() {
   setTimeout(() => {
