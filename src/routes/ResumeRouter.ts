@@ -68,7 +68,7 @@ baseRouterHandler.handleWithHooks(
   createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
   createReportMiddleware.ensureLoggedIn(),
   createReportMiddleware.ensureValidation(),
-  resumeLimiter,
+  // resumeLimiter,
   createReportController.execute()
 );
 baseRouterHandler.handleWithHooks(
