@@ -26,55 +26,60 @@ import swaggerOptions from "./swagger";
 // opening a db connection
 import { DataBase } from "./db/connection";
 import { resetUsageCron } from "./helpers/crons/resetUsage";
-DataBase.getDatabaseConnection();
 
-// initializing the logger and storing it to global scope
-global.logger = makeLogger({
-  logFile: config.logger.LOG_IN_FILE,
-  FILE_PATH: LOG_FILE_PATH,
-});
+async function startServer() {
+  try {
+    // Initialize database connection
+    await DataBase.getDatabaseConnection();
 
-global.dbLogger = new DataBaseLogger();
-global.dbLogger.connect();
+    // Initialize loggers
+    global.logger = makeLogger({
+      logFile: config.logger.LOG_IN_FILE,
+      FILE_PATH: LOG_FILE_PATH,
+    });
 
-const app: Application = express();
+    global.dbLogger = new DataBaseLogger();
+    await global.dbLogger.connect(); // ✅ Await this to ensure it's ready
 
-app.use(cors());
+    const app: Application = express();
 
-app.use(bodyParser.json());
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(bodyParser.urlencoded({ extended: true }));
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+    const swaggerSpec = swaggerJSDoc(swaggerOptions);
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    app.use("/api/v1", v1Router);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/api/v1", v1Router);
-
-// reset usage cron job every month on the 1st at 00:00
-cron.schedule(
-  "0 0 1 * *",
-  async () => {
-    console.log("Running reset usage cron job");
-    await resetUsageCron();
-  },
-  {
-    scheduled: true,
-    timezone: "Asia/Kolkata", // Set the timezone to Asia/Kolkata
-  }
-);
-
-app.use("*", (req, res) => {
-  res.status(404);
-  res.send({
-    isSuccess: false,
-    data: null,
-    statusCode: 404,
-    errors: [
-      {
-        code: 404,
-        message: "Error 404",
+    cron.schedule(
+      "0 0 1 * *",
+      async () => {
+        console.log("Running reset usage cron job");
+        await resetUsageCron();
       },
-    ],
-  });
-});
+      {
+        scheduled: true,
+        timezone: "Asia/Kolkata",
+      }
+    );
 
-export { app };
+    app.use("*", (req, res) => {
+      res.status(404).send({
+        isSuccess: false,
+        data: null,
+        statusCode: 404,
+        errors: [{ code: 404, message: "Error 404" }],
+      });
+    });
+
+    const PORT = process.env.PORT || 8010;
+    app.listen(PORT, () => {
+      console.log(`User-Management Server is listening on ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+export { startServer };

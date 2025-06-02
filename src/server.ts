@@ -1,9 +1,9 @@
-import { app } from "./app";
+import { startServer } from "./app";
 
 const PORT: number = Number(process.env.PORT) || 3000;
 const HOST = "192.168.29.137"; // important
 
-app.listen(PORT, listener);
+startServer();
 
 function listener() {
   setTimeout(() => {
