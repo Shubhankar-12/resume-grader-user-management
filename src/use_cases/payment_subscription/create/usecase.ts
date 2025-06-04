@@ -70,15 +70,15 @@ export class CreatePaymentSubscriptionUseCase
           status: "ACTIVE",
         });
 
-        await userQueries.updateUser({
-          user_id: userId,
-          usage: {
-            coverLetters: 1,
-            tailoredResumes: 1,
-            githubAnalyses: 1,
-            resumeUploads: 0,
-          },
-        });
+        // await userQueries.updateUser({
+        //   user_id: userId,
+        //   usage: {
+        //     coverLetters: 1,
+        //     tailoredResumes: 1,
+        //     githubAnalyses: 1,
+        //     resumeUploads: 0,
+        //   },
+        // });
 
         return successClass({
           user_id: existingUser[0]._id,
