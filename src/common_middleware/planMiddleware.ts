@@ -83,6 +83,8 @@ export class PlanLimitChecker {
         message: `You have reached your ${this.usageType} limit for the ${plan} plan. Please upgrade your plan to continue.`,
       });
       return;
+    } else {
+      await userQueries.updateUserUsage(userId, this.usageType);
     }
 
     return next();
