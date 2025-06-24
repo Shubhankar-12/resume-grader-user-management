@@ -72,7 +72,7 @@ export class PlanLimitChecker {
     //   `currentUsage: ${currentUsage}, limit: ${limit}, plan: ${plan}`
     // );
 
-    if (currentUsage >= limit) {
+    if (currentUsage !== Infinity && currentUsage >= limit) {
       res.status(403).json({
         statusCode: 403,
         type: "LIMIT_EXCEEDED",
