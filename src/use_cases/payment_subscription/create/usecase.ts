@@ -93,7 +93,8 @@ export class CreatePaymentSubscriptionUseCase
         plan_id: plans[request.plan].plan_id,
         customer_notify: 1,
         total_count: 12,
-        start_at: Math.floor(new Date().getTime() / 1000),
+        // start_at: Math.floor(new Date().getTime() / 1000), // add 1 minute to start immediately
+        start_at: Math.floor(Date.now() / 1000) + 60, // add 1 minute to start immediately
       });
       console.log("subscription", subscription);
 
