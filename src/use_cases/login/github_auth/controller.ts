@@ -20,6 +20,13 @@ export class GithubAuthController extends BaseController {
 
     const result = await this.GithubAuthUseCase.execute(dtoObj.getDtoObject());
     if (result.isSuccessClass()) {
+      res.cookie("token", result.value.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax" as const,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: "/",
+      });
       res.locals.response = this.created(result.value);
     } else {
       logUseCaseError([result.value], { level: "error" }, res);

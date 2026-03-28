@@ -20,6 +20,8 @@ const FILE_NAME = "logs";
 const LOG_FILE_PATH = path.join(__dirname, "log", FILE_NAME);
 console.log("logger file path " + LOG_FILE_PATH);
 
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 import { v1Router } from "./routes";
 
 import swaggerOptions from "./swagger";
@@ -43,9 +45,14 @@ async function startServer() {
 
     const app: Application = express();
 
-    app.use(cors({ origin: "*" }));
+    app.use(cors({
+      origin: process.env.FRONTEND_URL || "http://localhost:3000",
+      credentials: true,
+    }));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(helmet());
+    app.use(mongoSanitize());
 
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

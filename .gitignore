@@ -8,3 +8,7 @@ package-lock.json
 logs
 
 doc
+
+#Claude Code
+.claude/
+.claudeignore

@@ -45,7 +45,18 @@ export class PlanLimitChecker {
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.decode(token) as any;
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, process.env.CUSTOMER_POLICY_JWT_KEY as string);
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: "INVALID_TOKEN",
+          message: "Authentication failed",
+        },
+      });
+    }
 
     if (!decoded || !decoded.user || !decoded.user.id) {
       res.status(401).json({ message: "Invalid token" });
