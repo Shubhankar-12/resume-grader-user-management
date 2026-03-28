@@ -12,3 +12,5 @@ doc
 #Claude Code
 .claude/
 .claudeignore
+*.md
+.sentryclirc
