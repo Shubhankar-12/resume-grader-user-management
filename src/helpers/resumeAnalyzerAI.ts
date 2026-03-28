@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { logAICost } from "./aiCostLogger";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -6,6 +7,7 @@ const openai = new OpenAI({
 
 // First Query: Grading + ATS + Suggestions
 export async function getResumeScoreAndSuggestions(text: string) {
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -31,6 +33,15 @@ DO NOT include any explanation. Only return JSON.`,
     ],
     temperature: 0,
   });
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "getResumeScoreAndSuggestions",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
+  });
 
   const aiContent = response.choices[0].message.content;
 
@@ -45,6 +56,7 @@ DO NOT include any explanation. Only return JSON.`,
 
 // Second Query: Extract Personal Info, Skills, Experience, Education
 export async function getResumeExtractedFields(text: string) {
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -108,6 +120,15 @@ DO NOT include any explanation. Only return JSON.`,
     ],
     temperature: 0,
   });
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "getResumeExtractedFields",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
+  });
 
   const aiContent = response.choices[0].message.content;
 
@@ -123,6 +144,7 @@ DO NOT include any explanation. Only return JSON.`,
 export async function generateResumeReportFromExtractedText(
   extractedFields: any
 ) {
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini", // or "gpt-4" if you want more quality
     messages: [
@@ -190,6 +212,15 @@ No extra explanation, no wrapping text, no markdown — just pure JSON output.`,
     ],
     temperature: 0,
   });
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "generateResumeReportFromExtractedText",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
+  });
 
   const aiContent = response.choices[0].message.content;
 
@@ -206,6 +237,7 @@ export async function generateTailoredResume(
   extractedFields: any,
   jobDescription: string
 ) {
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -302,6 +334,16 @@ Important Rules:
     temperature: 0,
   });
 
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "generateTailoredResume",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
+  });
+
   const aiContent = response.choices[0].message.content;
 
   try {
@@ -320,6 +362,7 @@ export async function generateResumeJobMatchReport(
   extractedFields: any,
   jobDescription: string
 ) {
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini", // or "gpt-4" if you want more quality
     messages: [
@@ -391,6 +434,15 @@ ${jobDescription}`,
     ],
     temperature: 0,
   });
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "generateResumeJobMatchReport",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
+  });
 
   const aiContent = response.choices[0].message.content;
 
@@ -412,6 +464,7 @@ export async function generateResumeCoverLetterFromExtractedText(
   role: string,
   company: string
 ) {
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini", // or "gpt-4" if you want more quality
     messages: [
@@ -457,6 +510,15 @@ ${company}
       },
     ],
     temperature: 0,
+  });
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "generateResumeCoverLetterFromExtractedText",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
   });
 
   const aiContent = response.choices[0].message.content;
@@ -558,6 +620,7 @@ Provide a JSON array of exactly 3 project objects, selecting only the most relev
 - Use strong action verbs at the start of each key point (Implemented, Developed, Architected, Optimized, etc.)
 `;
 
+  const start = Date.now();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -573,6 +636,15 @@ Provide a JSON array of exactly 3 project objects, selecting only the most relev
     ],
     response_format: { type: "json_object" },
     temperature: 0.3,
+  });
+  const latencyMs = Date.now() - start;
+
+  logAICost({
+    functionName: "generateResumeProjectAnalysis",
+    model: "gpt-4o-mini",
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+    latencyMs,
   });
 
   const content = response.choices[0]?.message?.content || "[]";
