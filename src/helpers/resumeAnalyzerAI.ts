@@ -1,5 +1,8 @@
 import OpenAI from "openai";
 import { logAICost } from "./aiCostLogger";
+import { makeLogger } from "../logger/Config";
+
+const logger = makeLogger({});
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -32,6 +35,7 @@ DO NOT include any explanation. Only return JSON.`,
       },
     ],
     temperature: 0,
+    response_format: { type: "json_object" as const },
   });
   const latencyMs = Date.now() - start;
 
@@ -49,7 +53,7 @@ DO NOT include any explanation. Only return JSON.`,
     const gradingResult = JSON.parse(aiContent!);
     return gradingResult;
   } catch (error) {
-    console.error("Failed to parse grading AI response:", aiContent);
+    logger.error("Failed to parse grading AI response:", aiContent);
     throw new Error("Invalid AI Grading Response Format");
   }
 }
@@ -119,6 +123,7 @@ DO NOT include any explanation. Only return JSON.`,
       },
     ],
     temperature: 0,
+    response_format: { type: "json_object" as const },
   });
   const latencyMs = Date.now() - start;
 
@@ -136,7 +141,7 @@ DO NOT include any explanation. Only return JSON.`,
     const extractedFields = JSON.parse(aiContent!);
     return extractedFields;
   } catch (error) {
-    console.error("Failed to parse extracted fields AI response:", aiContent);
+    logger.error("Failed to parse extracted fields AI response:", aiContent);
     throw new Error("Invalid AI Extract Fields Response Format");
   }
 }
@@ -211,6 +216,7 @@ No extra explanation, no wrapping text, no markdown — just pure JSON output.`,
       },
     ],
     temperature: 0,
+    response_format: { type: "json_object" as const },
   });
   const latencyMs = Date.now() - start;
 
@@ -228,7 +234,7 @@ No extra explanation, no wrapping text, no markdown — just pure JSON output.`,
     const report = JSON.parse(aiContent!);
     return report;
   } catch (error) {
-    console.error("Failed to parse AI response for resume report:", aiContent);
+    logger.error("Failed to parse AI response for resume report:", aiContent);
     throw new Error("Invalid AI Report Format");
   }
 }
@@ -332,6 +338,7 @@ Important Rules:
       },
     ],
     temperature: 0,
+    response_format: { type: "json_object" as const },
   });
 
   const latencyMs = Date.now() - start;
@@ -350,7 +357,7 @@ Important Rules:
     const tailoredResume = JSON.parse(aiContent!);
     return tailoredResume;
   } catch (error) {
-    console.error(
+    logger.error(
       "Failed to parse AI response for tailored resume:",
       aiContent
     );
@@ -433,6 +440,7 @@ ${jobDescription}`,
       },
     ],
     temperature: 0,
+    response_format: { type: "json_object" as const },
   });
   const latencyMs = Date.now() - start;
 
@@ -450,7 +458,7 @@ ${jobDescription}`,
     const report = JSON.parse(aiContent!);
     return report;
   } catch (error) {
-    console.error(
+    logger.error(
       "Failed to parse AI response for job match report:",
       aiContent
     );
@@ -510,6 +518,7 @@ ${company}
       },
     ],
     temperature: 0,
+    response_format: { type: "json_object" as const },
   });
   const latencyMs = Date.now() - start;
 
@@ -527,7 +536,7 @@ ${company}
     const report = JSON.parse(aiContent!);
     return report;
   } catch (error) {
-    console.error(
+    logger.error(
       "Failed to parse AI response for job match report:",
       aiContent
     );
@@ -652,7 +661,7 @@ Provide a JSON array of exactly 3 project objects, selecting only the most relev
     const parsed = JSON.parse(content);
     return parsed; // Array of { id, ai_score, relevance, reason, key_points }
   } catch (err) {
-    console.error("Failed to parse AI response:", content);
+    logger.error("Failed to parse AI response:", content);
     throw new Error("Invalid AI response format.");
   }
 }

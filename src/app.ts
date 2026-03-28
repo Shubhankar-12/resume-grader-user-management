@@ -30,6 +30,7 @@ console.log("logger file path " + LOG_FILE_PATH);
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import { requestLogger } from "./common_middleware/requestLogger";
+import { createGeneralRateLimiter } from "./common_middleware/rateLimiter";
 import { v1Router } from "./routes";
 
 import swaggerOptions from "./swagger";
@@ -62,6 +63,7 @@ async function startServer() {
     app.use(helmet());
     app.use(mongoSanitize());
     app.use(requestLogger);
+    app.use(createGeneralRateLimiter());
 
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -19,7 +19,9 @@ import {
   getDashboardStatsByIdController,
   getDashboardStatsByIdMiddleware,
 } from "../use_cases/users/get-stats";
+import { createAIRateLimiter } from "../common_middleware/rateLimiter";
 export const userRouter = express.Router();
+const aiLimiter = createAIRateLimiter();
 
 baseRouterHandler.handleWithHooks(
   userRouter,
@@ -28,6 +30,7 @@ baseRouterHandler.handleWithHooks(
   createProjectAnalysisMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
   createProjectAnalysisMiddleware.ensureLoggedIn(),
   createProjectAnalysisMiddleware.ensureValidation(),
+  aiLimiter,
   createProjectAnalysisController.execute()
 );
 baseRouterHandler.handleWithHooks(

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import chalk from "chalk";
+import { ensureIndexes } from "./indexes";
 if (process.env.DB_URI === undefined) {
   throw new Error("Please provide a DB_URI in .env");
 }
@@ -36,6 +37,7 @@ export class DataBase {
       .connect(dbUri, options)
       .then(() => {
         console.log(chalk.bgGreen("Connected to database"));
+        ensureIndexes();
       })
       .catch((err) => {
         console.log(

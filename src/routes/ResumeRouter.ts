@@ -28,7 +28,9 @@ import {
   createCoverLetterMiddleware,
 } from "../use_cases/cover_letter/create_cover_letter";
 import { PlanLimitChecker } from "../common_middleware/planMiddleware";
+import { createAIRateLimiter } from "../common_middleware/rateLimiter";
 export const resumeRouter = express.Router();
+const aiLimiter = createAIRateLimiter();
 const resumeLimiter = new PlanLimitChecker("resumeUploads").check();
 const coverLetterLimiter = new PlanLimitChecker("coverLetters").check();
 baseRouterHandler.handleWithHooks(
@@ -38,6 +40,7 @@ baseRouterHandler.handleWithHooks(
   createUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
   createUserResumeMiddleware.ensureLoggedIn(),
   createUserResumeMiddleware.ensureValidation(),
+  aiLimiter,
   resumeLimiter,
   createUserResumeController.execute()
 );
@@ -68,7 +71,7 @@ baseRouterHandler.handleWithHooks(
   createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
   createReportMiddleware.ensureLoggedIn(),
   createReportMiddleware.ensureValidation(),
-  // resumeLimiter,
+  aiLimiter,
   createReportController.execute()
 );
 baseRouterHandler.handleWithHooks(
