@@ -18,11 +18,11 @@ export enum OtpStatus {
   EXPIRED = "EXPIRED",
 }
 
-export const BUCKET_URL_HTTPS = "https://hireavilla-images.s3.amazonaws.com/";
+export const BUCKET_URL_HTTPS = "https://advait-demo.s3.ap-southeast-2.amazonaws.com";
 
 export const planLimits = {
   FREE: {
-    resumeUploads: 1,
+    resumeUploads: 3,
     tailoredResumes: 1,
     coverLetters: 1,
     githubAnalyses: 0,
