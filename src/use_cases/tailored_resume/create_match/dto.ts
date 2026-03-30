@@ -1,4 +1,4 @@
-import { ICreateMatchReportRequest } from "./request";
+import { ICreateMatchReportRequest } from './request';
 
 export interface ICreateMatchReportDto {
   resume_id: string;

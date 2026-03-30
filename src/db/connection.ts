@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import chalk from "chalk";
-import { ensureIndexes } from "./indexes";
+import mongoose from 'mongoose';
+import chalk from 'chalk';
+import { ensureIndexes } from './indexes';
 if (process.env.DB_URI === undefined) {
-  throw new Error("Please provide a DB_URI in .env");
+  throw new Error('Please provide a DB_URI in .env');
 }
 const dbUri: string = process.env.DB_URI;
 // console.log('process.env.DB_URI', process.env.DB_URI);
@@ -34,16 +34,16 @@ export class DataBase {
   }
   private spawnConnection(): void {
     mongoose
-      .connect(dbUri, options)
-      .then(() => {
-        console.log(chalk.bgGreen("Connected to database"));
-        ensureIndexes();
-      })
-      .catch((err) => {
-        console.log(
-          chalk.bgRed("Error Connecting to the database:", err.message)
-        );
-      });
+        .connect(dbUri, options)
+        .then(() => {
+          console.log(chalk.bgGreen('Connected to database'));
+          ensureIndexes();
+        })
+        .catch((err) => {
+          console.log(
+              chalk.bgRed('Error Connecting to the database:', err.message)
+          );
+        });
     this.connection = mongoose.connection;
   }
 }

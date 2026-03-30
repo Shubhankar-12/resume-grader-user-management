@@ -6,21 +6,26 @@ import {
   ResponseLocalAuth,
   Token,
   UseCaseError,
-} from "../../../interfaces";
-import { loginQueries, ILogin, userQueries } from "../../../db";
-import { InvalidEmailOrPassword, RoleDosentExists } from "./errors";
-import { ILoginOwnerDto } from "./dto";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { BUCKET_URL_HTTPS, TokenStatus } from "../../../helpers";
-import { createToken } from "../../common/CreateToken";
+} from '../../../interfaces';
+import {
+  loginQueries, ILogin, userQueries,
+} from '../../../db';
+import {
+  InvalidEmailOrPassword, RoleDosentExists,
+} from './errors';
+import { ILoginOwnerDto } from './dto';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import {
+  BUCKET_URL_HTTPS, TokenStatus,
+} from '../../../helpers';
+import { createToken } from '../../common/CreateToken';
 
 type Response = Either<UseCaseError, { token: string }>;
 
 type UseCaseRequest = { request: ILoginOwnerDto; auth: ResponseLocalAuth };
 
 export class LoginUserWithEmailUseCase
-  implements UseCase<ILoginOwnerDto, Response>
-{
+implements UseCase<ILoginOwnerDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ILoginOwnerDto): Promise<Response> {
     // if not logged in
@@ -56,7 +61,7 @@ export class LoginUserWithEmailUseCase
     await loginQueries.createLogin({
       ...login_document,
       token,
-      status: "ENABLED",
+      status: 'ENABLED',
     });
 
     // send back the new token

@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface ITailoredResume {
   resume_id: string;
@@ -54,4 +56,6 @@ interface ITailoredResumeDocument extends ITailoredResume, Document {}
 
 type ITailoredResumeModel = Model<ITailoredResumeDocument>;
 
-export { ITailoredResume, ITailoredResumeDocument, ITailoredResumeModel };
+export {
+  ITailoredResume, ITailoredResumeDocument, ITailoredResumeModel,
+};

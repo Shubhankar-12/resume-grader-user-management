@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BaseParser } from "../../../base_classes";
-import { UserResumeValidator } from "../../user_resume/UserResumeValidator";
+import { BaseParser } from '../../../base_classes';
+import { UserResumeValidator } from '../../user_resume/UserResumeValidator';
 
 export class WebhookPaymentSubscriptionParser extends BaseParser {
   private paymentSubscriptionValidator: UserResumeValidator;
@@ -24,16 +24,16 @@ export class WebhookPaymentSubscriptionParser extends BaseParser {
 
   parseEmployeeId(value: any): void {
     const result = this.paymentSubscriptionValidator.validateId(
-      "resume_id",
-      value
+        'resume_id',
+        value
     );
     this.pushIfError(result);
   }
 
   parseForeignId(value: any): void {
     const result = this.paymentSubscriptionValidator.validateId(
-      "user_id",
-      value
+        'user_id',
+        value
     );
     this.pushIfError(result);
   }

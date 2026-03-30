@@ -6,21 +6,26 @@ import {
   ResponseLocalAuth,
   Token,
   UseCaseError,
-} from "../../../interfaces";
-import { loginQueries, userQueries } from "../../../db";
-import { UserAlreadyExists, RoleDosentExists } from "./errors";
-import { IRegisterOwnerDto } from "./dto";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { BUCKET_URL_HTTPS, TokenStatus } from "../../../helpers";
-import { createToken } from "../../common/CreateToken";
+} from '../../../interfaces';
+import {
+  loginQueries, userQueries,
+} from '../../../db';
+import {
+  UserAlreadyExists, RoleDosentExists,
+} from './errors';
+import { IRegisterOwnerDto } from './dto';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import {
+  BUCKET_URL_HTTPS, TokenStatus,
+} from '../../../helpers';
+import { createToken } from '../../common/CreateToken';
 
 type Response = Either<UseCaseError, { token: string }>;
 
 type UseCaseRequest = { request: IRegisterOwnerDto; auth: ResponseLocalAuth };
 
 export class RegisterUserWithEmailUseCase
-  implements UseCase<IRegisterOwnerDto, Response>
-{
+implements UseCase<IRegisterOwnerDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: IRegisterOwnerDto): Promise<Response> {
     const users = await userQueries.getUserByEmail({ email: request.email });
@@ -30,7 +35,7 @@ export class RegisterUserWithEmailUseCase
     }
     const userResult = await userQueries.create({
       ...request,
-      status: "ENABLED",
+      status: 'ENABLED',
     });
     // console.log("userResult", userResult);
 
@@ -45,9 +50,9 @@ export class RegisterUserWithEmailUseCase
       user: {
         id: userResult._id,
         name: userResult.name,
-        username: "",
-        provider: "",
-        providerId: "",
+        username: '',
+        provider: '',
+        providerId: '',
       },
     };
 
@@ -57,7 +62,7 @@ export class RegisterUserWithEmailUseCase
     await loginQueries.createLogin({
       ...login_document,
       token,
-      status: "ENABLED",
+      status: 'ENABLED',
     });
 
     // send back the new token

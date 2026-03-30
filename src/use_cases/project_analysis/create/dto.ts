@@ -1,4 +1,4 @@
-import { ICreateProjectAnalysisRequest } from "./request";
+import { ICreateProjectAnalysisRequest } from './request';
 
 export interface ICreateProjectAnalysisDto {
   user_id: string;

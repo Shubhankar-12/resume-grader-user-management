@@ -2,30 +2,29 @@ import {
   extractedResumeQueries,
   resumeMatchQueries,
   tailoredResumeQueries,
-} from "../../../db";
-import { generateResumeJobMatchReport } from "../../../helpers/resumeAnalyzerAI";
+} from '../../../db';
+import { generateResumeJobMatchReport } from '../../../helpers/resumeAnalyzerAI';
 import {
   UseCase,
   Either,
   errClass,
   successClass,
   UseCaseError,
-} from "../../../interfaces";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { ResumeNotFoundError } from "./errors";
-import { ICreateMatchReportDto } from "./dto";
+} from '../../../interfaces';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import { ResumeNotFoundError } from './errors';
+import { ICreateMatchReportDto } from './dto';
 import {
   MatchReportAlreadyExistsError,
   ExtractedResumeNotFoundError,
   ResumeExtractionFailedError,
-} from "./errors";
-import { InternalServerError } from "../../user_resume/create/errors";
+} from './errors';
+import { InternalServerError } from '../../user_resume/create/errors';
 
 type Response = Either<UseCaseError, any>;
 
 export class CreateMatchReportUseCase
-  implements UseCase<ICreateMatchReportDto, Response>
-{
+implements UseCase<ICreateMatchReportDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ICreateMatchReportDto): Promise<Response> {
     try {
@@ -34,7 +33,7 @@ export class CreateMatchReportUseCase
 
       if (existingResume.length == 0) {
         return errClass(
-          new ResumeNotFoundError(request.resume_id, "resume_id")
+            new ResumeNotFoundError(request.resume_id, 'resume_id')
         );
       }
 
@@ -48,8 +47,8 @@ export class CreateMatchReportUseCase
       }
 
       const createMatchReportData = await generateResumeJobMatchReport(
-        existingResume[0],
-        request.resume_id
+          existingResume[0],
+          request.resume_id
       );
 
       await resumeMatchQueries.create({
@@ -65,7 +64,7 @@ export class CreateMatchReportUseCase
         resumeMatchAnalysis: createMatchReportData.resumeMatchAnalysis,
       });
     } catch (error) {
-      console.error("Unexpected error in CreateMatchReportUseCase:", error);
+      console.error('Unexpected error in CreateMatchReportUseCase:', error);
       return errClass(new InternalServerError());
     }
   }

@@ -1,4 +1,4 @@
-import { IGithubUpdateRequest } from "./request";
+import { IGithubUpdateRequest } from './request';
 
 export interface IGithubUpdateDto {
   code: string;

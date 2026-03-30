@@ -1,62 +1,62 @@
-import express from "express";
-import { baseRouterHandler } from "../base_classes";
-import { POLICIES } from "../common_middleware/policies";
+import express from 'express';
+import { baseRouterHandler } from '../base_classes';
+import { POLICIES } from '../common_middleware/policies';
 // For file uploads
-import multer from "multer";
+import multer from 'multer';
 import {
   getUserByIdController,
   getUserByIdMiddleware,
-} from "../use_cases/users/get_by_id";
+} from '../use_cases/users/get_by_id';
 import {
   createProjectAnalysisController,
   createProjectAnalysisMiddleware,
-} from "../use_cases/project_analysis/create";
+} from '../use_cases/project_analysis/create';
 import {
   githubUpdateController,
   githubUpdateMiddleware,
-} from "../use_cases/users/github_auth";
+} from '../use_cases/users/github_auth';
 import {
   getDashboardStatsByIdController,
   getDashboardStatsByIdMiddleware,
-} from "../use_cases/users/get-stats";
-import { createAIRateLimiter } from "../common_middleware/rateLimiter";
+} from '../use_cases/users/get-stats';
+import { createAIRateLimiter } from '../common_middleware/rateLimiter';
 export const userRouter = express.Router();
 const aiLimiter = createAIRateLimiter();
 
 baseRouterHandler.handleWithHooks(
-  userRouter,
-  "post",
-  "/project-analysis/create",
-  createProjectAnalysisMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  createProjectAnalysisMiddleware.ensureLoggedIn(),
-  createProjectAnalysisMiddleware.ensureValidation(),
-  aiLimiter,
-  createProjectAnalysisController.execute()
+    userRouter,
+    'post',
+    '/project-analysis/create',
+    createProjectAnalysisMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createProjectAnalysisMiddleware.ensureLoggedIn(),
+    createProjectAnalysisMiddleware.ensureValidation(),
+    aiLimiter,
+    createProjectAnalysisController.execute()
 );
 baseRouterHandler.handleWithHooks(
-  userRouter,
-  "get",
-  "/",
-  getUserByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  getUserByIdMiddleware.ensureLoggedIn(),
-  getUserByIdMiddleware.ensureValidation(),
-  getUserByIdController.execute()
+    userRouter,
+    'get',
+    '/',
+    getUserByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    getUserByIdMiddleware.ensureLoggedIn(),
+    getUserByIdMiddleware.ensureValidation(),
+    getUserByIdController.execute()
 );
 baseRouterHandler.handleWithHooks(
-  userRouter,
-  "get",
-  "/stats",
-  getDashboardStatsByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  getDashboardStatsByIdMiddleware.ensureLoggedIn(),
-  getDashboardStatsByIdMiddleware.ensureValidation(),
-  getDashboardStatsByIdController.execute()
+    userRouter,
+    'get',
+    '/stats',
+    getDashboardStatsByIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    getDashboardStatsByIdMiddleware.ensureLoggedIn(),
+    getDashboardStatsByIdMiddleware.ensureValidation(),
+    getDashboardStatsByIdController.execute()
 );
 baseRouterHandler.handleWithHooks(
-  userRouter,
-  "patch",
-  "/connect-github",
-  githubUpdateMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  githubUpdateMiddleware.ensureLoggedIn(),
-  githubUpdateMiddleware.ensureValidation(),
-  githubUpdateController.execute()
+    userRouter,
+    'patch',
+    '/connect-github',
+    githubUpdateMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    githubUpdateMiddleware.ensureLoggedIn(),
+    githubUpdateMiddleware.ensureValidation(),
+    githubUpdateController.execute()
 );

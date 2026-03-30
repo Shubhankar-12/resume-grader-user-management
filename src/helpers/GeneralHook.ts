@@ -1,8 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { Hook } from "../interfaces";
-import { BaseLogger } from "../logger";
-import { MongoClient, ObjectId } from "mongodb";
-import { Types } from "mongoose";
+import {
+  Request, Response, NextFunction,
+} from 'express';
+import { Hook } from '../interfaces';
+import { BaseLogger } from '../logger';
+import {
+  MongoClient, ObjectId,
+} from 'mongodb';
+import { Types } from 'mongoose';
 
 class GeneralHook implements Hook {
   baseLogger: BaseLogger;
@@ -14,8 +18,8 @@ class GeneralHook implements Hook {
     const log_data = { req: this.baseLogger.makeRequestLog(req) };
     global.logger.info(log_data);
     const { insertedId } = await global.dbLogger.log({
-      level: "info",
-      category: "request",
+      level: 'info',
+      category: 'request',
       data: log_data,
     });
     res.locals.req_id = new ObjectId(insertedId);
@@ -25,16 +29,16 @@ class GeneralHook implements Hook {
     const log_data = this.baseLogger.makeResponseLog(req, res);
     global.logger.info(log_data);
     global.dbLogger.log({
-      level: "info",
-      category: "response",
+      level: 'info',
+      category: 'response',
       data: log_data,
     });
   }
   public preHook() {
     return async (
-      req: Request,
-      res: Response,
-      next: NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ): Promise<void> => {
       await this.preHookLogger(req, res);
       return next();
@@ -42,9 +46,9 @@ class GeneralHook implements Hook {
   }
   public postHook() {
     return async (
-      req: Request,
-      res: Response,
-      next: NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ): Promise<void> => {
       await this.postHookLogger(req, res);
       return next();

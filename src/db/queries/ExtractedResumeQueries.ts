@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 import {
   IExtractedResume,
   IExtractedResumeDocument,
   IExtractedResumeModel,
-} from "../extracted_resume/types";
+} from '../extracted_resume/types';
 
 export class ExtractedResumeQueries {
   private extractedResumeModel: IExtractedResumeModel;
@@ -19,22 +19,16 @@ export class ExtractedResumeQueries {
   }
 
   async getExtractedResumebyResumeId(data: any): Promise<any[]> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
 
     aggregateQuery.push({
       $match: {
         resume_id: new ObjectId(data.resume_id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 
-    aggregateQuery.push({
-      $sort: {
-        created_on: -1,
-      },
-    });
+    aggregateQuery.push({ $sort: { created_on: -1 } });
 
     aggregateQuery.push({
       $project: {
@@ -63,8 +57,6 @@ export class ExtractedResumeQueries {
 
   async updateResume(data: any): Promise<any> {
     const filter = { _id: data.resume_id };
-    return await this.extractedResumeModel.updateOne(filter, {
-      $set: data,
-    });
+    return await this.extractedResumeModel.updateOne(filter, { $set: data });
   }
 }

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import validator from "validator";
-import mongoose from "mongoose";
-import critical_fields from "./constants/HideFields";
-import jsonwebtoken from "jsonwebtoken";
-import { ObjectId } from "mongodb";
-import axios from "axios";
-import pdf from "pdf-parse";
+import validator from 'validator';
+import mongoose from 'mongoose';
+import critical_fields from './constants/HideFields';
+import jsonwebtoken from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
+import axios from 'axios';
+import pdf from 'pdf-parse';
 
 export class TextUtils {
   public static sanitize(unsafeText: string): string {
@@ -26,8 +26,8 @@ export class TextUtils {
   }
 
   public static createRandomNumericString(numberDigits: number): string {
-    const chars = "0123456789";
-    let value = "";
+    const chars = '0123456789';
+    let value = '';
     for (let i = numberDigits; i > 0; --i) {
       value += chars[Math.round(Math.random() * (chars.length - 1))];
     }
@@ -35,7 +35,7 @@ export class TextUtils {
   }
 
   public static validateMongoId(id: string): boolean {
-    if (id === null || id === undefined || id === "") return false;
+    if (id === null || id === undefined || id === '') return false;
     return ObjectId.isValid(id);
   }
   // public StringToObjectId(id: string): typeof ObjectId {
@@ -55,15 +55,15 @@ export class TextUtils {
     // add a single slash before all periods (.)
     // add ^ at the start and $ at the end of the string
     const len = email.length;
-    let regex = "";
-    regex += "^";
+    let regex = '';
+    regex += '^';
     for (let i = 0; i < len; i++) {
-      if (email[i] == ".") {
-        regex += "\\";
+      if (email[i] == '.') {
+        regex += '\\';
       }
       regex += email[i];
     }
-    regex += "$";
+    regex += '$';
     return regex;
   }
 
@@ -95,14 +95,14 @@ export class LoggerUtils {
    */
   public static replaceCriticalData(obj: any, field: string): any {
     // console.log(obj);
-    if (typeof obj == "object" && obj != null) {
+    if (typeof obj == 'object' && obj != null) {
       if (obj instanceof Array) {
         for (let element of obj) {
           element = LoggerUtils.replaceCriticalData(element, field);
         }
       } else {
         if (obj[field]) {
-          obj[field] = "xxx";
+          obj[field] = 'xxx';
         }
         const keys = Object.keys(obj);
         for (const key of keys) {
@@ -205,20 +205,16 @@ export class TokenUtils {
 export function generateImageLink(path: string): string {
   return `${process.env.IMAGE_PROXY_URL}${path}`;
   if (path == undefined) {
-    return "";
+    return '';
   }
-  if (path[0] == "/") {
+  if (path[0] == '/') {
     path = path.slice(1);
   }
 
   const obj = {
     bucket: process.env.AWS_BUCKET_NAME,
-    key: "" + path,
-    edits: {
-      resize: {
-        fit: "inside",
-      },
-    },
+    key: '' + path,
+    edits: { resize: { fit: 'inside' } },
   };
 
   return `${process.env.IMAGE_PROXY_URL}/${btoa(JSON.stringify(obj))}`;
@@ -226,20 +222,16 @@ export function generateImageLink(path: string): string {
 
 export function generatePdfLink(path: string): string {
   if (path == undefined) {
-    return "";
+    return '';
   }
-  if (path[0] == "/") {
+  if (path[0] == '/') {
     path = path.slice(1);
   }
 
   const obj = {
     bucket: process.env.AWS_BUCKET_NAME,
-    key: "" + path,
-    edits: {
-      resize: {
-        fit: "inside",
-      },
-    },
+    key: '' + path,
+    edits: { resize: { fit: 'inside' } },
   };
 
   return `${process.env.IMAGE_PROXY_URL}/${btoa(JSON.stringify(obj))}`;
@@ -248,8 +240,8 @@ export function generatePdfLink(path: string): string {
 export const generateEmployeeId = () => {
   // Should contain 2 letters and 3 numbers
 
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let employeeId = "";
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let employeeId = '';
   for (let i = 0; i < 2; i++) {
     employeeId += letters.charAt(Math.floor(Math.random() * letters.length));
   }
@@ -262,8 +254,8 @@ export const generateEmployeeId = () => {
 export const generateCompanyOwnerId = () => {
   // Should contain 3 letters and 7 numbers
 
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let employeeId = "";
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let employeeId = '';
   for (let i = 0; i < 3; i++) {
     employeeId += letters.charAt(Math.floor(Math.random() * letters.length));
   }
@@ -278,8 +270,8 @@ export async function extractTextFromPdf(pdfUrl: string): Promise<string> {
   const resumeUrl = process.env.BUCKET_PROXY_URL + pdfUrl;
   // console.log("Resume URL:", resumeUrl);
 
-  const response = await axios.get(resumeUrl, { responseType: "arraybuffer" });
-  const pdfBuffer = Buffer.from(response.data, "binary");
+  const response = await axios.get(resumeUrl, { responseType: 'arraybuffer' });
+  const pdfBuffer = Buffer.from(response.data, 'binary');
   const data = await pdf(pdfBuffer);
-  return data.text || ""; // Return the extracted text or an empty string if not found
+  return data.text || ''; // Return the extracted text or an empty string if not found
 }

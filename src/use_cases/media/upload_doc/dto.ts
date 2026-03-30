@@ -1,8 +1,8 @@
-import validator from "validator";
-import { TextUtils } from "../../../helpers/utils";
-import { IUploadDocRequest } from "./request";
-import { Algorithm } from "../../../helpers";
-import crypto from "crypto";
+import validator from 'validator';
+import { TextUtils } from '../../../helpers/utils';
+import { IUploadDocRequest } from './request';
+import { Algorithm } from '../../../helpers';
+import crypto from 'crypto';
 
 export type IUploadDocDto = IUploadDocRequest;
 

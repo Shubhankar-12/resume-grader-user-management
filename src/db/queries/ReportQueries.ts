@@ -1,5 +1,7 @@
-import { ObjectId } from "mongodb";
-import { IReport, IReportDocument, IReportModel } from "../report/types";
+import { ObjectId } from 'mongodb';
+import {
+  IReport, IReportDocument, IReportModel,
+} from '../report/types';
 
 export class ReportQueries {
   private reportModel: IReportModel;
@@ -13,21 +15,19 @@ export class ReportQueries {
   }
 
   async getReportByResumeId(resume_id: string): Promise<any> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
 
     aggregateQuery.push({
       $match: {
         resume_id: new ObjectId(resume_id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 
     aggregateQuery.push({
       $project: {
         _id: 0,
-        report_id: "$_id",
+        report_id: '$_id',
         resume_id: 1,
         overallGrade: 1,
         scoreOutOf100: 1,

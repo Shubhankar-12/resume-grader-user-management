@@ -1,6 +1,6 @@
-import { WebhookPaymentSubscriptionMiddleware } from "./middleware";
-import { WebhookPaymentSubscriptionUseCase } from "./usecase";
-import { WebhookPaymentSubscriptionController } from "./controller";
+import { WebhookPaymentSubscriptionMiddleware } from './middleware';
+import { WebhookPaymentSubscriptionUseCase } from './usecase';
+import { WebhookPaymentSubscriptionController } from './controller';
 
 const webhookPaymentSubscriptionUseCase =
   new WebhookPaymentSubscriptionUseCase();

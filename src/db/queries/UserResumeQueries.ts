@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 import {
   IUserResume,
   IUserResumeDocument,
   IUserResumeModel,
-} from "../user_resume/types";
+} from '../user_resume/types';
 
 export class UserResumeQueries {
   private userResumeModel: IUserResumeModel;
@@ -19,49 +19,43 @@ export class UserResumeQueries {
   }
 
   async getResmesByUserId(data: any): Promise<any[]> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
 
     aggregateQuery.push({
       $match: {
         user_id: new ObjectId(data.user_id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 
     if (data.search) {
-      const dataSearch = data.search
-        ? data.search.replace(/[()]/g, "\\$&")
-        : "";
+      const dataSearch = data.search ?
+        data.search.replace(/[()]/g, '\\$&') :
+        '';
       aggregateQuery.push({
         $match: {
-          "resume.name": {
+          'resume.name': {
             $regex: dataSearch,
-            $options: "i",
+            $options: 'i',
           },
         },
       });
     }
 
-    aggregateQuery.push({
-      $sort: {
-        created_on: -1,
-      },
-    });
+    aggregateQuery.push({ $sort: { created_on: -1 } });
 
     aggregateQuery.push({
       $lookup: {
-        from: "extracted_resumes",
-        localField: "_id",
-        foreignField: "resume_id",
-        as: "extracted_resume",
+        from: 'extracted_resumes',
+        localField: '_id',
+        foreignField: 'resume_id',
+        as: 'extracted_resume',
       },
     });
 
     aggregateQuery.push({
       $unwind: {
-        path: "$extracted_resume",
+        path: '$extracted_resume',
         preserveNullAndEmptyArrays: true,
       },
     });
@@ -69,7 +63,7 @@ export class UserResumeQueries {
     aggregateQuery.push({
       $project: {
         _id: 0,
-        resume_id: "$_id",
+        resume_id: '$_id',
         user_id: 1,
         resume: 1,
         extractedText: 1,
@@ -83,7 +77,7 @@ export class UserResumeQueries {
 
     const $facet: any = {
       paginatedResults: [],
-      totalCount: [{ $count: "count" }],
+      totalCount: [{ $count: 'count' }],
     };
 
     if (data.skip != undefined) {
@@ -103,19 +97,15 @@ export class UserResumeQueries {
 
   async updateResume(data: any): Promise<any> {
     const filter = { _id: new ObjectId(data.resume_id) };
-    return await this.userResumeModel.updateOne(filter, {
-      $set: data,
-    });
+    return await this.userResumeModel.updateOne(filter, { $set: data });
   }
 
   async getResumeById(id: any): Promise<any> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
     aggregateQuery.push({
       $match: {
         _id: new ObjectId(id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 

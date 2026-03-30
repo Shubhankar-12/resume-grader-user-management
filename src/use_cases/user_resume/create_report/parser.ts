@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BaseParser } from "../../../base_classes";
-import { UserResumeValidator } from "../UserResumeValidator";
+import { BaseParser } from '../../../base_classes';
+import { UserResumeValidator } from '../UserResumeValidator';
 
 export class CreateReportParser extends BaseParser {
   private reportValidator: UserResumeValidator;
@@ -24,12 +24,12 @@ export class CreateReportParser extends BaseParser {
   // }
 
   parseEmployeeId(value: any): void {
-    const result = this.reportValidator.validateId("resume_id", value);
+    const result = this.reportValidator.validateId('resume_id', value);
     this.pushIfError(result);
   }
 
   parseForeignId(value: any): void {
-    const result = this.reportValidator.validateId("foreign_id", value);
+    const result = this.reportValidator.validateId('foreign_id', value);
     this.pushIfError(result);
   }
 }

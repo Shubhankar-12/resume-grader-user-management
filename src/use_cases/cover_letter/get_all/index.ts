@@ -1,9 +1,9 @@
-import { GetAllCoverLettersMiddleware } from "./middleware";
-import { GetAllCoverLettersUseCase } from "./usecase";
-import { GetAllCoverLettersController } from "./controller";
+import { GetAllCoverLettersMiddleware } from './middleware';
+import { GetAllCoverLettersUseCase } from './usecase';
+import { GetAllCoverLettersController } from './controller';
 
 const getAllCoverLettersUseCase = new GetAllCoverLettersUseCase();
 export const getAllCoverLettersController = new GetAllCoverLettersController(
-  getAllCoverLettersUseCase
+    getAllCoverLettersUseCase
 );
 export const getAllCoverLettersMiddleware = new GetAllCoverLettersMiddleware();

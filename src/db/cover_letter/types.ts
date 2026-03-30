@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface ICoverLetter {
   user_id: string;
@@ -15,4 +17,6 @@ interface ICoverLetterDocument extends ICoverLetter, Document {}
 
 type ICoverLetterModel = Model<ICoverLetterDocument>;
 
-export { ICoverLetter, ICoverLetterDocument, ICoverLetterModel };
+export {
+  ICoverLetter, ICoverLetterDocument, ICoverLetterModel,
+};

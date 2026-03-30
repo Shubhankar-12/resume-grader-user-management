@@ -1,4 +1,4 @@
-import { ICreateUserResumeRequest } from "./request";
+import { ICreateUserResumeRequest } from './request';
 
 export interface ICreateUserResumeDto {
   user_id: string;
@@ -25,7 +25,7 @@ export class CreateUserResumeDtoConverter {
       resume: data.resume,
       extractedText: data.extractedText ? data.extractedText : undefined,
       analysis: data.analysis ? data.analysis : undefined,
-      status: data.status ? data.status : "ENABLED",
+      status: data.status ? data.status : 'ENABLED',
     };
   }
   public getDtoObject(): ICreateUserResumeDto {

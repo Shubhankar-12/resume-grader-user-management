@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface Project {
   id: number;
@@ -28,4 +30,6 @@ interface IProjectAnalysisDocument extends IProjectAnalysis, Document {}
 
 type IProjectAnalysisModel = Model<IProjectAnalysisDocument>;
 
-export { IProjectAnalysis, IProjectAnalysisDocument, IProjectAnalysisModel };
+export {
+  IProjectAnalysis, IProjectAnalysisDocument, IProjectAnalysisModel,
+};

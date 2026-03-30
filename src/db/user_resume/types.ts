@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface IUserResume {
   user_id: string;
@@ -24,4 +26,6 @@ interface IUserResumeDocument extends IUserResume, Document {}
 
 type IUserResumeModel = Model<IUserResumeDocument>;
 
-export { IUserResume, IUserResumeDocument, IUserResumeModel };
+export {
+  IUserResume, IUserResumeDocument, IUserResumeModel,
+};

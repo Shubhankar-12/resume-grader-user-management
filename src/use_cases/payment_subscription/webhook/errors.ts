@@ -1,8 +1,8 @@
-import { UseCaseError } from "../../../interfaces";
+import { UseCaseError } from '../../../interfaces';
 
 export class UserNotFoundError extends UseCaseError {
   constructor(id: string, field: string) {
-    super("UserNotFoundError", `The user with id ${id} does not exist`, field);
+    super('UserNotFoundError', `The user with id ${id} does not exist`, field);
   }
 }
 
@@ -10,9 +10,9 @@ export class UserNotFoundError extends UseCaseError {
 export class InternalServerError extends UseCaseError {
   constructor() {
     super(
-      "InternalServerError",
-      "An unexpected error occurred. Please try again later.",
-      ""
+        'InternalServerError',
+        'An unexpected error occurred. Please try again later.',
+        ''
     );
   }
 }
@@ -20,6 +20,6 @@ export class InternalServerError extends UseCaseError {
 // Invalid webhook signature
 export class InvalidWebhookSignatureError extends UseCaseError {
   constructor() {
-    super("InvalidWebhookSignatureError", "Invalid webhook signature", "");
+    super('InvalidWebhookSignatureError', 'Invalid webhook signature', '');
   }
 }

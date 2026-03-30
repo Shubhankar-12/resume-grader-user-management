@@ -1,13 +1,13 @@
-import { BaseParser } from "../../../base_classes";
-import { UserResumeValidator } from "../UserResumeValidator";
+import { BaseParser } from '../../../base_classes';
+import { UserResumeValidator } from '../UserResumeValidator';
 
 export class GetAllParser extends BaseParser {
   private tailoredResumeValidator: UserResumeValidator;
 
   constructor(
-    request: any,
-    query: any,
-    tailoredResumeValidator: UserResumeValidator
+      request: any,
+      query: any,
+      tailoredResumeValidator: UserResumeValidator
   ) {
     super();
     this.tailoredResumeValidator = tailoredResumeValidator;
@@ -15,8 +15,8 @@ export class GetAllParser extends BaseParser {
   }
   parseTailoredResumeId(value: any): void {
     const result = this.tailoredResumeValidator.validateId(
-      "cover_letter_id",
-      value
+        'cover_letter_id',
+        value
     );
     this.pushIfError(result);
   }

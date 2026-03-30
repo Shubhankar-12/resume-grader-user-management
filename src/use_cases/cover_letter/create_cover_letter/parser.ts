@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BaseParser } from "../../../base_classes";
-import { UserResumeValidator } from "../../user_resume/UserResumeValidator";
+import { BaseParser } from '../../../base_classes';
+import { UserResumeValidator } from '../../user_resume/UserResumeValidator';
 
 export class CreateCoverLetterParser extends BaseParser {
   private coverLetterValidator: UserResumeValidator;
@@ -25,12 +25,12 @@ export class CreateCoverLetterParser extends BaseParser {
   // }
 
   parseEmployeeId(value: any): void {
-    const result = this.coverLetterValidator.validateId("resume_id", value);
+    const result = this.coverLetterValidator.validateId('resume_id', value);
     this.pushIfError(result);
   }
 
   parseForeignId(value: any): void {
-    const result = this.coverLetterValidator.validateId("user_id", value);
+    const result = this.coverLetterValidator.validateId('user_id', value);
     this.pushIfError(result);
   }
 }

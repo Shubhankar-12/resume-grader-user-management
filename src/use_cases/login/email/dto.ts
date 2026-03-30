@@ -1,6 +1,6 @@
-import { ILoginUserRequest } from "./request";
-import crypto from "crypto";
-import { Algorithm } from "../../../helpers/constants/constant";
+import { ILoginUserRequest } from './request';
+import crypto from 'crypto';
+import { Algorithm } from '../../../helpers/constants/constant';
 
 export interface ILoginOwnerDto {
   email: string;
@@ -13,14 +13,14 @@ export class LoginOwnerDtoConverter {
     this.output_object = { ...data };
     // creating a hmac-sha256 hex based on the secret key in environment
     if (process.env.PASSWORD_SECRET_KEY === undefined) {
-      throw new Error("PASSWORD_SECRET_KEY is missing from process env");
+      throw new Error('PASSWORD_SECRET_KEY is missing from process env');
     }
     const hmac = crypto.createHmac(
-      Algorithm.SHA256,
-      process.env.PASSWORD_SECRET_KEY
+        Algorithm.SHA256,
+        process.env.PASSWORD_SECRET_KEY
     );
     hmac.update(this.output_object.password);
-    this.output_object.password = hmac.digest("hex");
+    this.output_object.password = hmac.digest('hex');
     console.log(this.output_object.password);
   }
   public getDtoObject(): ILoginOwnerDto {

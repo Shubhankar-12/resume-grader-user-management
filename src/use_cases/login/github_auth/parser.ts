@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BaseParser } from "../../../base_classes/BaseParser";
-import { employeeValidator } from "../../EmployeeValidator";
+import { BaseParser } from '../../../base_classes/BaseParser';
+import { employeeValidator } from '../../EmployeeValidator';
 
 export class GitHubAuthParser extends BaseParser {
   constructor(data: any) {
@@ -12,7 +12,7 @@ export class GitHubAuthParser extends BaseParser {
   }
 
   parseString(value: any): void {
-    const result = employeeValidator.validateString(value, "code");
+    const result = employeeValidator.validateString(value, 'code');
 
     this.pushIfError(result);
   }

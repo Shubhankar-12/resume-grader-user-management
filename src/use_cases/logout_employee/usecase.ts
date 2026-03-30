@@ -1,4 +1,4 @@
-import jsonwebtoken from "jsonwebtoken";
+import jsonwebtoken from 'jsonwebtoken';
 import {
   UseCase,
   Either,
@@ -6,10 +6,10 @@ import {
   successClass,
   ResponseLocalAuth,
   Token,
-} from "../../interfaces";
-import { loginQueries } from "../../db";
-import { logUnexpectedUsecaseError } from "../../logger";
-import { AuthenticationError } from "../../helpers/GeneralErrors";
+} from '../../interfaces';
+import { loginQueries } from '../../db';
+import { logUnexpectedUsecaseError } from '../../logger';
+import { AuthenticationError } from '../../helpers/GeneralErrors';
 
 type Response = Either<AuthenticationError, { token: string }>;
 
@@ -22,14 +22,14 @@ export class LogoutUserUseCase implements UseCase<ResponseLocalAuth, Response> {
     if (!loginObj.is_login) {
       // if token is not logged in
       // send back auth error
-      return errClass(new AuthenticationError("Authorization"));
+      return errClass(new AuthenticationError('Authorization'));
     } else {
       // if logged in
       await loginQueries.expireToken(auth.token);
       // getting the guest token
       // const token = await loginQueries.getGuestToken(loginObj.user);
       // send back same guest token
-      return successClass({ token: "" });
+      return successClass({ token: '' });
     }
   }
 }

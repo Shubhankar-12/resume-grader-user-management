@@ -1,5 +1,5 @@
-import { BaseParser } from "../../../base_classes";
-import { UserValidator } from "../UserValidator";
+import { BaseParser } from '../../../base_classes';
+import { UserValidator } from '../UserValidator';
 
 export class GetAllParser extends BaseParser {
   private userValidator: UserValidator;
@@ -10,7 +10,7 @@ export class GetAllParser extends BaseParser {
     this.parseUserId(query.user_id);
   }
   parseUserId(value: any): void {
-    const result = this.userValidator.validateId("user_id", value);
+    const result = this.userValidator.validateId('user_id', value);
     this.pushIfError(result);
   }
 }

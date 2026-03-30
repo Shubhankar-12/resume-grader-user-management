@@ -2,35 +2,34 @@ import {
   extractedResumeQueries,
   userQueries,
   userResumeQueries,
-} from "../../../db";
-import { IUserResumeDocument } from "../../../db/user_resume";
+} from '../../../db';
+import { IUserResumeDocument } from '../../../db/user_resume';
 import {
   getResumeScoreAndSuggestions,
   getResumeExtractedFields,
-} from "../../../helpers/resumeAnalyzerAI";
-import { extractTextFromPdf } from "../../../helpers/utils";
+} from '../../../helpers/resumeAnalyzerAI';
+import { extractTextFromPdf } from '../../../helpers/utils';
 import {
   UseCase,
   Either,
   errClass,
   successClass,
   UseCaseError,
-} from "../../../interfaces";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { IDisableUserResumeDto } from "./dto";
+} from '../../../interfaces';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import { IDisableUserResumeDto } from './dto';
 import {
   AIAnalysisFailedError,
   ExtractedResumeNotFoundError,
   InternalServerError,
   ResumeExtractionFailedError,
   UserNotFoundError,
-} from "./errors";
+} from './errors';
 
 type Response = Either<UseCaseError, any>;
 
 export class DisableUserResumeUseCase
-  implements UseCase<IDisableUserResumeDto, Response>
-{
+implements UseCase<IDisableUserResumeDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: IDisableUserResumeDto): Promise<Response> {
     try {
@@ -46,7 +45,7 @@ export class DisableUserResumeUseCase
         updated_on: disabledResume.updated_on,
       });
     } catch (error) {
-      console.error("Unexpected error in usecase:", error);
+      console.error('Unexpected error in usecase:', error);
       return errClass(new InternalServerError());
     }
   }

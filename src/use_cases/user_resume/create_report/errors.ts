@@ -1,8 +1,8 @@
-import { UseCaseError } from "../../../interfaces";
+import { UseCaseError } from '../../../interfaces';
 
 export class UserNotFoundError extends UseCaseError {
   constructor(id: string, field: string) {
-    super("UserNotFoundError", `The user with id ${id} does not exist`, field);
+    super('UserNotFoundError', `The user with id ${id} does not exist`, field);
   }
 }
 
@@ -10,9 +10,9 @@ export class UserNotFoundError extends UseCaseError {
 export class ReportAlreadyExistsError extends UseCaseError {
   constructor(id: string, field: string) {
     super(
-      "ReportAlreadyExistsError",
-      `The report with resume id ${id} already exists`,
-      field
+        'ReportAlreadyExistsError',
+        `The report with resume id ${id} already exists`,
+        field
     );
   }
 }
@@ -21,9 +21,9 @@ export class ReportAlreadyExistsError extends UseCaseError {
 export class ExtractedResumeNotFoundError extends UseCaseError {
   constructor(id: string, field: string) {
     super(
-      "ExtractedResumeNotFoundError",
-      `The extracted resume with id ${id} does not exist`,
-      field
+        'ExtractedResumeNotFoundError',
+        `The extracted resume with id ${id} does not exist`,
+        field
     );
   }
 }
@@ -32,9 +32,9 @@ export class ExtractedResumeNotFoundError extends UseCaseError {
 export class ResumeExtractionFailedError extends UseCaseError {
   constructor(id: string, field: string) {
     super(
-      "ResumeExtractionFailedError",
-      `The resume with id ${id} failed to extract`,
-      field
+        'ResumeExtractionFailedError',
+        `The resume with id ${id} failed to extract`,
+        field
     );
   }
 }

@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface IUser {
   name: string;
@@ -36,4 +38,6 @@ interface IUserDocument extends IUser, Document {}
 
 type IUserModel = Model<IUserDocument>;
 
-export { IUser, IUserDocument, IUserModel };
+export {
+  IUser, IUserDocument, IUserModel,
+};

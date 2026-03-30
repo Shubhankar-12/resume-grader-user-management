@@ -1,15 +1,19 @@
 // src/middlewares/PlanLimitChecker.ts
 
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { userQueries, paymentSubscriptionQueries } from "../db/queries";
-import { planLimits } from "../helpers/constants/constant";
+import {
+  Request, Response, NextFunction,
+} from 'express';
+import jwt from 'jsonwebtoken';
+import {
+  userQueries, paymentSubscriptionQueries,
+} from '../db/queries';
+import { planLimits } from '../helpers/constants/constant';
 
 type UsageType =
-  | "resumeUploads"
-  | "tailoredResumes"
-  | "coverLetters"
-  | "githubAnalyses";
+  | 'resumeUploads'
+  | 'tailoredResumes'
+  | 'coverLetters'
+  | 'githubAnalyses';
 
 type MiddleWareFunctionType = (
   req: Request,
@@ -22,15 +26,15 @@ export class PlanLimitChecker {
 
   public check(): MiddleWareFunctionType {
     return async (
-      req: Request,
-      res: Response,
-      next: NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ): Promise<void> => {
       try {
         await this.executeImpl(req, res, next);
       } catch (err) {
-        console.error("[PlanLimitChecker]: Unexpected error", err);
-        res.status(500).json({ message: "An unexpected error occurred" });
+        console.error('[PlanLimitChecker]: Unexpected error', err);
+        res.status(500).json({ message: 'An unexpected error occurred' });
       }
     };
   }
@@ -38,12 +42,12 @@ export class PlanLimitChecker {
   private async executeImpl(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      res.status(401).json({ message: "No token provided" });
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ message: 'No token provided' });
       return;
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.split(' ')[1];
 
     let decoded: any;
     try {
@@ -52,14 +56,14 @@ export class PlanLimitChecker {
       return res.status(401).json({
         success: false,
         error: {
-          code: "INVALID_TOKEN",
-          message: "Authentication failed",
+          code: 'INVALID_TOKEN',
+          message: 'Authentication failed',
         },
       });
     }
 
     if (!decoded || !decoded.user || !decoded.user.id) {
-      res.status(401).json({ message: "Invalid token" });
+      res.status(401).json({ message: 'Invalid token' });
       return;
     }
 
@@ -68,12 +72,12 @@ export class PlanLimitChecker {
     const activeSubscription =
       await paymentSubscriptionQueries.getUserCurrentSubscription(userId);
 
-    const plan = activeSubscription?.plan || "FREE";
+    const plan = activeSubscription?.plan || 'FREE';
 
     const user = await userQueries.getUserById(userId);
 
     if (user && user.length === 0) {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: 'User not found' });
       return;
     }
 
@@ -86,7 +90,7 @@ export class PlanLimitChecker {
     if (currentUsage !== Infinity && currentUsage >= limit) {
       res.status(403).json({
         statusCode: 403,
-        type: "LIMIT_EXCEEDED",
+        type: 'LIMIT_EXCEEDED',
         usageType: this.usageType,
         limit: limit,
         currentUsage: currentUsage,

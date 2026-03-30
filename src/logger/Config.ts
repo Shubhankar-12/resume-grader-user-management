@@ -4,9 +4,9 @@ import {
   Logger,
   LoggerOptions,
   transports,
-} from "winston";
+} from 'winston';
 
-import { DataBaseLogger } from "./DatabaseLogger";
+import { DataBaseLogger } from './DatabaseLogger';
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
@@ -30,7 +30,7 @@ function makeLogger(options: IMakeLoggerOptions): Logger {
   // adding configuration for logging into file
   if (options.logFile) {
     if (options.FILE_PATH === undefined) {
-      throw new Error("Please provide a FILE_PATH");
+      throw new Error('Please provide a FILE_PATH');
     }
     const ob = new transports.File({
       filename: options.FILE_PATH,

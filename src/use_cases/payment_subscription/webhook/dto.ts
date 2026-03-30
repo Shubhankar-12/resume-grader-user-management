@@ -1,4 +1,4 @@
-import { IWebhookPaymentSubscriptionRequest } from "./request";
+import { IWebhookPaymentSubscriptionRequest } from './request';
 
 export interface IWebhookPaymentSubscriptionDto {
   event: string;

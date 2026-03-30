@@ -1,15 +1,17 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { CreatePaymentSubscriptionUseCase } from "./usecase";
-import { CreatePaymentSubscriptionDtoConverter } from "./dto";
-import { ICreatePaymentSubscriptionRequest } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { CreatePaymentSubscriptionUseCase } from './usecase';
+import { CreatePaymentSubscriptionDtoConverter } from './dto';
+import { ICreatePaymentSubscriptionRequest } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class CreatePaymentSubscriptionController extends BaseController {
   private createPaymentSubscriptionUseCase: CreatePaymentSubscriptionUseCase;
 
   constructor(
-    createPaymentSubscriptionUseCase: CreatePaymentSubscriptionUseCase
+      createPaymentSubscriptionUseCase: CreatePaymentSubscriptionUseCase
   ) {
     super();
     this.createPaymentSubscriptionUseCase = createPaymentSubscriptionUseCase;
@@ -23,10 +25,10 @@ class CreatePaymentSubscriptionController extends BaseController {
       auth: res.locals.auth,
     });
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

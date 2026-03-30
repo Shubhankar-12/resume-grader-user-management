@@ -1,10 +1,10 @@
-import { BaseMiddleware } from "../../../base_classes/BaseMiddleware";
-import { MiddleWareFunctionType } from "../../../helpers";
-import { loginUserValidator } from "./validator";
+import { BaseMiddleware } from '../../../base_classes/BaseMiddleware';
+import { MiddleWareFunctionType } from '../../../helpers';
+import { loginUserValidator } from './validator';
 
 export class GithubAuthMiddleware extends BaseMiddleware {
   ensureAuthorization(): MiddleWareFunctionType {
-    throw new Error("function not implemented yet");
+    throw new Error('function not implemented yet');
   }
 
   ensureValidation(): MiddleWareFunctionType {

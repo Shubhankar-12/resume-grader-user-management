@@ -1,4 +1,4 @@
-import { ICreateCoverLetterRequest } from "./request";
+import { ICreateCoverLetterRequest } from './request';
 
 export interface ICreateCoverLetterDto {
   user_id: string;

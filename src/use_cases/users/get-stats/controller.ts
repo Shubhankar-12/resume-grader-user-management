@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes/BaseController";
-import { Request, Response } from "express";
-import { GetDashboardStatsByIdUseCase } from "./usecase";
-import { GetDashboardStatsDtoConverter } from "./dto";
-import { IGetDashboardStatsQuery } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes/BaseController';
+import {
+  Request, Response,
+} from 'express';
+import { GetDashboardStatsByIdUseCase } from './usecase';
+import { GetDashboardStatsDtoConverter } from './dto';
+import { IGetDashboardStatsQuery } from './request';
+import { logUseCaseError } from '../../../logger';
 
 export class GetDashboardStatsByIdController extends BaseController {
   private getDashboardStatsByIdUseCase: GetDashboardStatsByIdUseCase;
@@ -21,10 +23,10 @@ export class GetDashboardStatsByIdController extends BaseController {
       request: dtoObj.getDtoObject(),
     });
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

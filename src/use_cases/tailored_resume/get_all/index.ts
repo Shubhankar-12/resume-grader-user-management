@@ -1,6 +1,6 @@
-import { GetAllTailoredResumesMiddleware } from "./middleware";
-import { GetAllTailoredResumesUseCase } from "./usecase";
-import { GetAllTailoredResumesController } from "./controller";
+import { GetAllTailoredResumesMiddleware } from './middleware';
+import { GetAllTailoredResumesUseCase } from './usecase';
+import { GetAllTailoredResumesController } from './controller';
 
 const getAllTailoredResumesUseCase = new GetAllTailoredResumesUseCase();
 export const getAllTailoredResumesController =

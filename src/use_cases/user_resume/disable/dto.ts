@@ -1,4 +1,4 @@
-import { IDisableUserResumeRequest } from "./request";
+import { IDisableUserResumeRequest } from './request';
 
 export interface IDisableUserResumeDto {
   resume_id: string;
@@ -11,7 +11,7 @@ export class DisableUserResumeDtoConverter {
   constructor(data: IDisableUserResumeRequest) {
     this.output_object = {
       resume_id: data.resume_id,
-      status: data.status ? data.status : "DISABLED",
+      status: data.status ? data.status : 'DISABLED',
     };
   }
   public getDtoObject(): IDisableUserResumeDto {

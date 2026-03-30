@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongodb from "mongodb";
-import { MongoClient, Db, Collection } from "mongodb";
+import mongodb from 'mongodb';
+import {
+  MongoClient, Db, Collection,
+} from 'mongodb';
 
 const Client = MongoClient;
 
@@ -22,10 +24,10 @@ interface LogOptions {
   data: unknown;
 }
 
-const log_collection_name = "logs";
-const general_error_log_collection_name = "error-logs";
+const log_collection_name = 'logs';
+const general_error_log_collection_name = 'error-logs';
 
-const DB_URI: string = process.env.DB_URI ? process.env.DB_URI : "";
+const DB_URI: string = process.env.DB_URI ? process.env.DB_URI : '';
 
 class DataBaseLogger {
   client: MongoClient | undefined;
@@ -41,12 +43,12 @@ class DataBaseLogger {
     this.db = this.client.db();
     this.logsCollection = this.db.collection(log_collection_name);
     this.generalErrorsCollection = this.db.collection(
-      general_error_log_collection_name
+        general_error_log_collection_name
     );
   }
   async log(options: LogOptions): Promise<mongodb.InsertOneResult<any>> {
     if (this.logsCollection === undefined) {
-      throw new Error(log_collection_name + " Collection not initialized");
+      throw new Error(log_collection_name + ' Collection not initialized');
     }
     return await this.logsCollection.insertOne(options);
   }
@@ -54,7 +56,7 @@ class DataBaseLogger {
   async logError(options: LogOptions): Promise<mongodb.InsertOneResult<any>> {
     if (this.generalErrorsCollection === undefined) {
       throw new Error(
-        general_error_log_collection_name + "Collection not initialized"
+          general_error_log_collection_name + 'Collection not initialized'
       );
     }
     return await this.generalErrorsCollection.insertOne(options);

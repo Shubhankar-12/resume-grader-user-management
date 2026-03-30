@@ -1,7 +1,11 @@
-import { Request, Response, NextFunction } from "express";
-import { MiddleWareFunctionType, Responses } from "../../../helpers";
-import { GitHubAuthParser } from "./parser";
-import { logValidationError } from "../../../logger";
+import {
+  Request, Response, NextFunction,
+} from 'express';
+import {
+  MiddleWareFunctionType, Responses,
+} from '../../../helpers';
+import { GitHubAuthParser } from './parser';
+import { logValidationError } from '../../../logger';
 
 export class LoginUserRequestValidator extends Responses {
   constructor() {
@@ -16,10 +20,10 @@ export class LoginUserRequestValidator extends Responses {
       else {
         res.locals.response = this.fail({
           errors,
-          message: "Invalid Request",
+          message: 'Invalid Request',
           statusCode: 400,
         });
-        logValidationError(errors, { level: "info" }, res);
+        logValidationError(errors, { level: 'info' }, res);
         return this.sendResponse(req, res);
       }
     };

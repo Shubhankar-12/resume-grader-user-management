@@ -1,5 +1,5 @@
-import axios from "axios";
-import { logUnexpectedUsecaseError } from "../../../logger";
+import axios from 'axios';
+import { logUnexpectedUsecaseError } from '../../../logger';
 import {
   UseCase,
   Either,
@@ -7,11 +7,13 @@ import {
   successClass,
   UseCaseError,
   ResponseLocalAuth,
-} from "../../../interfaces";
-import { loginQueries, userQueries } from "../../../db";
-import { createToken } from "../../common/CreateToken";
-import { UserAlreadyConnected } from "./errors";
-import jwt from "jsonwebtoken";
+} from '../../../interfaces';
+import {
+  loginQueries, userQueries,
+} from '../../../db';
+import { createToken } from '../../common/CreateToken';
+import { UserAlreadyConnected } from './errors';
+import jwt from 'jsonwebtoken';
 
 interface IGithubUpdateDto {
   code: string;
@@ -27,33 +29,33 @@ export class GithubUpdateUseCase implements UseCase<IGithubUpdateRequest, any> {
   private clientSecret = process.env.GITHUB_CLIENT_SECRET!;
 
   @logUnexpectedUsecaseError({ level: "error" })
-  async execute({ request, auth }: IGithubUpdateRequest): Promise<any> {
+  async execute({
+    request, auth,
+  }: IGithubUpdateRequest): Promise<any> {
     const { code } = request;
     const decoded_token: any = jwt.decode(auth.token);
 
-    if (!decoded_token) return errClass("Invalid token");
+    if (!decoded_token) return errClass('Invalid token');
 
     const userId = decoded_token?.user?.id;
 
     try {
       // 1. Exchange code for access token
       const tokenResponse = await axios.post(
-        `https://github.com/login/oauth/access_token`,
-        {
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          code,
-        },
-        { headers: { Accept: "application/json" } }
+          `https://github.com/login/oauth/access_token`,
+          {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            code,
+          },
+          { headers: { Accept: 'application/json' } }
       );
 
       const accessToken = tokenResponse.data.access_token;
-      if (!accessToken) return errClass("GitHub token exchange failed");
+      if (!accessToken) return errClass('GitHub token exchange failed');
 
       // 2. Fetch GitHub profile
-      const profileRes = await axios.get("https://api.github.com/user", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const profileRes = await axios.get('https://api.github.com/user', { headers: { Authorization: `Bearer ${accessToken}` } });
 
       const github = profileRes.data;
 
@@ -62,11 +64,11 @@ export class GithubUpdateUseCase implements UseCase<IGithubUpdateRequest, any> {
         username: github.login,
         // email: github.email ?? undefined, // fallback
         avatar: {
-          name: "avatar",
+          name: 'avatar',
           url: github.avatar_url,
-          mimetype: "image/jpeg",
+          mimetype: 'image/jpeg',
         },
-        provider: "github",
+        provider: 'github',
         providerId: String(github.id),
         githubProfile: {
           githubId: github.id,
@@ -74,13 +76,13 @@ export class GithubUpdateUseCase implements UseCase<IGithubUpdateRequest, any> {
           profileUrl: github.html_url,
           reposUrl: github.repos_url,
         },
-        status: "ENABLED",
+        status: 'ENABLED',
       };
 
       let newUser: any;
 
       const existingUser = await userQueries.getUserByGithubLogin(
-        userData.username
+          userData.username
       );
 
       if (existingUser.length > 0) {
@@ -108,7 +110,7 @@ export class GithubUpdateUseCase implements UseCase<IGithubUpdateRequest, any> {
       const loginData = await loginQueries.createLogin({
         ...login,
         token: newToken,
-        status: "ENABLED",
+        status: 'ENABLED',
       });
       if (loginData) {
         return successClass({
@@ -116,11 +118,11 @@ export class GithubUpdateUseCase implements UseCase<IGithubUpdateRequest, any> {
           decoded_token: loginData,
         });
       } else {
-        return errClass("Login failed");
+        return errClass('Login failed');
       }
     } catch (err) {
-      console.error("GitHub OAuth Error", err);
-      return errClass("GitHub login failed");
+      console.error('GitHub OAuth Error', err);
+      return errClass('GitHub login failed');
     }
   }
 }

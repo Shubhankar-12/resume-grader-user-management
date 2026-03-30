@@ -1,2 +1,2 @@
 // export * from "./login";
-export * from "./logout_employee";
+export * from './logout_employee';

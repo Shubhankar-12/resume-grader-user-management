@@ -1,4 +1,4 @@
-import { IGithubAuthRequest } from "./request";
+import { IGithubAuthRequest } from './request';
 
 export interface IGithubAuthDto {
   code: string;

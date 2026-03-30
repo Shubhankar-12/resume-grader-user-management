@@ -1,36 +1,37 @@
-import { extractedResumeQueries, reportQueries } from "../../../db";
-import { generateResumeReportFromExtractedText } from "../../../helpers/resumeAnalyzerAI";
+import {
+  extractedResumeQueries, reportQueries,
+} from '../../../db';
+import { generateResumeReportFromExtractedText } from '../../../helpers/resumeAnalyzerAI';
 import {
   UseCase,
   Either,
   errClass,
   successClass,
   UseCaseError,
-} from "../../../interfaces";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { InternalServerError } from "../create/errors";
-import { ICreateReportDto } from "./dto";
+} from '../../../interfaces';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import { InternalServerError } from '../create/errors';
+import { ICreateReportDto } from './dto';
 import {
   ReportAlreadyExistsError,
   ExtractedResumeNotFoundError,
   ResumeExtractionFailedError,
-} from "./errors";
+} from './errors';
 
 type Response = Either<UseCaseError, any>;
 
 export class CreateReportUseCase
-  implements UseCase<ICreateReportDto, Response>
-{
+implements UseCase<ICreateReportDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ICreateReportDto): Promise<Response> {
     try {
       const existingReport = await reportQueries.getReportByResumeId(
-        request.resume_id
+          request.resume_id
       );
 
       if (existingReport.length > 0) {
         return errClass(
-          new ReportAlreadyExistsError(request.resume_id, "resume_id")
+            new ReportAlreadyExistsError(request.resume_id, 'resume_id')
         );
       }
 
@@ -38,17 +39,17 @@ export class CreateReportUseCase
         await extractedResumeQueries.getExtractedResumebyResumeId(request);
       if (extractedResume.length === 0) {
         return errClass(
-          new ExtractedResumeNotFoundError(request.resume_id, "resume_id")
+            new ExtractedResumeNotFoundError(request.resume_id, 'resume_id')
         );
       }
 
       const extractedResumeData = extractedResume[0];
       const createReportData = await generateResumeReportFromExtractedText(
-        extractedResumeData
+          extractedResumeData
       );
       if (!createReportData) {
         return errClass(
-          new ResumeExtractionFailedError(request.resume_id, "resume_id")
+            new ResumeExtractionFailedError(request.resume_id, 'resume_id')
         );
       }
 
@@ -77,7 +78,7 @@ export class CreateReportUseCase
         updated_on: createdReport.updated_on,
       });
     } catch (error) {
-      console.error("Unexpected error in CreateReportUseCase:", error);
+      console.error('Unexpected error in CreateReportUseCase:', error);
       return errClass(new InternalServerError());
     }
   }

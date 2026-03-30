@@ -1,95 +1,95 @@
-import express from "express";
-import { baseRouterHandler } from "../base_classes";
-import { POLICIES } from "../common_middleware/policies";
+import express from 'express';
+import { baseRouterHandler } from '../base_classes';
+import { POLICIES } from '../common_middleware/policies';
 // For file uploads
-import multer from "multer";
+import multer from 'multer';
 import {
   createUserResumeController,
   createUserResumeMiddleware,
-} from "../use_cases/user_resume/create";
+} from '../use_cases/user_resume/create';
 import {
   getAllUserResumesController,
   getAllUserResumesMiddleware,
-} from "../use_cases/user_resume/get_all";
+} from '../use_cases/user_resume/get_all';
 import {
   disableUserResumeController,
   disableUserResumeMiddleware,
-} from "../use_cases/user_resume/disable";
+} from '../use_cases/user_resume/disable';
 import {
   createReportController,
   createReportMiddleware,
-} from "../use_cases/user_resume/create_report";
+} from '../use_cases/user_resume/create_report';
 import {
   getReportByResumeIdController,
   getReportByResumeIdMiddleware,
-} from "../use_cases/user_resume/get_by_id";
+} from '../use_cases/user_resume/get_by_id';
 import {
   createCoverLetterController,
   createCoverLetterMiddleware,
-} from "../use_cases/cover_letter/create_cover_letter";
-import { PlanLimitChecker } from "../common_middleware/planMiddleware";
-import { createAIRateLimiter } from "../common_middleware/rateLimiter";
+} from '../use_cases/cover_letter/create_cover_letter';
+import { PlanLimitChecker } from '../common_middleware/planMiddleware';
+import { createAIRateLimiter } from '../common_middleware/rateLimiter';
 export const resumeRouter = express.Router();
 const aiLimiter = createAIRateLimiter();
-const resumeLimiter = new PlanLimitChecker("resumeUploads").check();
-const coverLetterLimiter = new PlanLimitChecker("coverLetters").check();
+const resumeLimiter = new PlanLimitChecker('resumeUploads').check();
+const coverLetterLimiter = new PlanLimitChecker('coverLetters').check();
 baseRouterHandler.handleWithHooks(
-  resumeRouter,
-  "post",
-  "/create",
-  createUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  createUserResumeMiddleware.ensureLoggedIn(),
-  createUserResumeMiddleware.ensureValidation(),
-  aiLimiter,
-  resumeLimiter,
-  createUserResumeController.execute()
+    resumeRouter,
+    'post',
+    '/create',
+    createUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createUserResumeMiddleware.ensureLoggedIn(),
+    createUserResumeMiddleware.ensureValidation(),
+    aiLimiter,
+    resumeLimiter,
+    createUserResumeController.execute()
 );
 
 baseRouterHandler.handleWithHooks(
-  resumeRouter,
-  "get",
-  "/list",
-  getAllUserResumesMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  getAllUserResumesMiddleware.ensureLoggedIn(),
-  getAllUserResumesMiddleware.ensureValidation(),
-  getAllUserResumesController.execute()
+    resumeRouter,
+    'get',
+    '/list',
+    getAllUserResumesMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    getAllUserResumesMiddleware.ensureLoggedIn(),
+    getAllUserResumesMiddleware.ensureValidation(),
+    getAllUserResumesController.execute()
 );
 baseRouterHandler.handleWithHooks(
-  resumeRouter,
-  "patch",
-  "/disable",
-  disableUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  disableUserResumeMiddleware.ensureLoggedIn(),
-  disableUserResumeMiddleware.ensureValidation(),
-  disableUserResumeController.execute()
+    resumeRouter,
+    'patch',
+    '/disable',
+    disableUserResumeMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    disableUserResumeMiddleware.ensureLoggedIn(),
+    disableUserResumeMiddleware.ensureValidation(),
+    disableUserResumeController.execute()
 );
 
 baseRouterHandler.handleWithHooks(
-  resumeRouter,
-  "post",
-  "/report/create",
-  createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  createReportMiddleware.ensureLoggedIn(),
-  createReportMiddleware.ensureValidation(),
-  aiLimiter,
-  createReportController.execute()
+    resumeRouter,
+    'post',
+    '/report/create',
+    createReportMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createReportMiddleware.ensureLoggedIn(),
+    createReportMiddleware.ensureValidation(),
+    aiLimiter,
+    createReportController.execute()
 );
 baseRouterHandler.handleWithHooks(
-  resumeRouter,
-  "get",
-  "/report",
-  getReportByResumeIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  getReportByResumeIdMiddleware.ensureLoggedIn(),
-  getReportByResumeIdMiddleware.ensureValidation(),
-  getReportByResumeIdController.execute()
+    resumeRouter,
+    'get',
+    '/report',
+    getReportByResumeIdMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    getReportByResumeIdMiddleware.ensureLoggedIn(),
+    getReportByResumeIdMiddleware.ensureValidation(),
+    getReportByResumeIdController.execute()
 );
 baseRouterHandler.handleWithHooks(
-  resumeRouter,
-  "post",
-  "/cover-letter/create",
-  createCoverLetterMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
-  createCoverLetterMiddleware.ensureLoggedIn(),
-  createCoverLetterMiddleware.ensureValidation(),
-  coverLetterLimiter,
-  createCoverLetterController.execute()
+    resumeRouter,
+    'post',
+    '/cover-letter/create',
+    createCoverLetterMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createCoverLetterMiddleware.ensureLoggedIn(),
+    createCoverLetterMiddleware.ensureValidation(),
+    coverLetterLimiter,
+    createCoverLetterController.execute()
 );

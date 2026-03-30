@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { DisableUserResumeUseCase } from "./usecase";
-import { DisableUserResumeDtoConverter } from "./dto";
-import { IDisableUserResumeRequest } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { DisableUserResumeUseCase } from './usecase';
+import { DisableUserResumeDtoConverter } from './dto';
+import { IDisableUserResumeRequest } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class DisableUserResumeController extends BaseController {
   private disableUserResumeUseCase: DisableUserResumeUseCase;
@@ -17,13 +19,13 @@ class DisableUserResumeController extends BaseController {
     const data: IDisableUserResumeRequest = req.body;
     const dtoObj = new DisableUserResumeDtoConverter(data);
     const result = await this.disableUserResumeUseCase.execute(
-      dtoObj.getDtoObject()
+        dtoObj.getDtoObject()
     );
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

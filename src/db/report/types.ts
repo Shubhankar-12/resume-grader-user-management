@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface IScoreBreakdown {
   atsCompatibility: number;
@@ -61,7 +63,7 @@ interface IReport {
   projectAnalysis: ProjectAnalysis;
   certificationAnalysis: CertificationAnalysis;
   interestAnalysis: InterestAnalysis;
-  status: "ENABLED" | "DISABLED";
+  status: 'ENABLED' | 'DISABLED';
 
   created_on?: Date;
   updated_on?: Date;
@@ -71,4 +73,6 @@ interface IReportDocument extends IReport, Document {}
 
 type IReportModel = Model<IReportDocument>;
 
-export { IReport, IReportDocument, IReportModel };
+export {
+  IReport, IReportDocument, IReportModel,
+};

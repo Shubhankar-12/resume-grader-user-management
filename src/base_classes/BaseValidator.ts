@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import validator from "validator";
-import { ObjectId } from "mongodb";
+import validator from 'validator';
+import { ObjectId } from 'mongodb';
 import {
   NotFound,
   InvalidDataType,
@@ -18,10 +18,12 @@ import {
   ValueLessThan,
   GeneralErrors,
   InvalidFileFormatError,
-} from "../helpers";
-import { Either, errClass, GeneralError, successClass } from "../interfaces";
-import { logUnexpectedValidatorError } from "../logger";
-const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
+} from '../helpers';
+import {
+  Either, errClass, GeneralError, successClass,
+} from '../interfaces';
+import { logUnexpectedValidatorError } from '../logger';
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png'];
 
 type Response = Either<GeneralError, boolean>;
 
@@ -30,8 +32,8 @@ export class BaseValidator {
   stringCheck(field: any, fieldName: string): Response {
     if (field == undefined) {
       return errClass(new NotFound(fieldName));
-    } else if (typeof field !== "string") {
-      return errClass(new InvalidDataType(fieldName, "string"));
+    } else if (typeof field !== 'string') {
+      return errClass(new InvalidDataType(fieldName, 'string'));
     } else if (field.trim().length === 0) {
       return errClass(new EmptyString(fieldName));
     } else {
@@ -40,10 +42,10 @@ export class BaseValidator {
   }
   @logUnexpectedValidatorError({ level: "error" })
   numberCheck(
-    field: any,
-    fieldName: string,
-    min?: number,
-    max?: number
+      field: any,
+      fieldName: string,
+      min?: number,
+      max?: number
   ): Response {
     if (field == undefined) {
       return errClass(new NotFound(fieldName));
@@ -61,8 +63,8 @@ export class BaseValidator {
   booleanCheck(field: any, fieldName: string): Response {
     if (field == undefined) {
       return errClass(new NotFound(fieldName));
-    } else if (typeof field !== "boolean") {
-      return errClass(new InvalidDataType("boolean", fieldName));
+    } else if (typeof field !== 'boolean') {
+      return errClass(new InvalidDataType('boolean', fieldName));
     } else {
       return successClass(true);
     }
@@ -79,14 +81,14 @@ export class BaseValidator {
   }
   @logUnexpectedValidatorError({ level: "error" })
   validateStringEnum(
-    data: any,
-    enums: Array<string>,
-    fieldName: string
+      data: any,
+      enums: Array<string>,
+      fieldName: string
   ): Response {
     if (data == undefined || data == null) {
       return errClass(new NullOrUndefined(fieldName));
-    } else if (typeof data !== "string") {
-      return errClass(new InvalidDataType(fieldName, "string"));
+    } else if (typeof data !== 'string') {
+      return errClass(new InvalidDataType(fieldName, 'string'));
     } else if (data.trim().length == 0) {
       return errClass(new EmptyString(fieldName));
     } else if (enums.indexOf(data) == -1) {
@@ -96,11 +98,11 @@ export class BaseValidator {
   }
   @logUnexpectedValidatorError({ level: "error" })
   validateMultipleStringEnum(
-    data: any,
-    enums: Array<string>,
-    fieldName: string
+      data: any,
+      enums: Array<string>,
+      fieldName: string
   ): Response {
-    console.log("BaseValidators -> data", data);
+    console.log('BaseValidators -> data', data);
     if (data == undefined || data == null) {
       return errClass(new NullOrUndefined(fieldName));
     } else if (data.length == 0) {
@@ -114,7 +116,7 @@ export class BaseValidator {
       }
       return successClass(true);
     });
-    console.log("BaseValidators -> invalidIndex", invalidIndex);
+    console.log('BaseValidators -> invalidIndex', invalidIndex);
     if (invalidIndex.length) {
       return errClass(new InvalidArray(invalidIndex, fieldName));
     }
@@ -122,10 +124,10 @@ export class BaseValidator {
   }
   @logUnexpectedValidatorError({ level: "error" })
   shouldBeLessThan(
-    data1: any,
-    fieldName1: string,
-    data2: any,
-    fieldName2: string
+      data1: any,
+      fieldName1: string,
+      data2: any,
+      fieldName2: string
   ): Response {
     if (data1 > data2) {
       return errClass(new ValueLessThan(fieldName1, fieldName2));
@@ -134,10 +136,10 @@ export class BaseValidator {
   }
   @logUnexpectedValidatorError({ level: "error" })
   shouldBeGreaterThen(
-    data1: any,
-    fieldName1: string,
-    data2: any,
-    fieldName2: string
+      data1: any,
+      fieldName1: string,
+      data2: any,
+      fieldName2: string
   ): Response {
     if (data1 < data2) {
       return errClass(new ValueLessThan(fieldName1, fieldName2));
@@ -146,11 +148,11 @@ export class BaseValidator {
   }
   @logUnexpectedValidatorError({ level: "error" })
   validateOtp(value: any): Response {
-    const field = "otp";
+    const field = 'otp';
     if (value == undefined) {
       return errClass(new NotFound(field));
-    } else if (typeof value != "string") {
-      return errClass(new InvalidDataType(field, "string"));
+    } else if (typeof value != 'string') {
+      return errClass(new InvalidDataType(field, 'string'));
     } else if (value.length == 0) {
       return errClass(new NullOrUndefined(field));
     } else if (value.length != 4) {
@@ -171,11 +173,11 @@ export class BaseValidator {
     if (value == undefined) {
       return errClass(new NotFound(field_name));
     } else if (!(value instanceof Array)) {
-      return errClass(new InvalidDataType(field_name, "Array"));
+      return errClass(new InvalidDataType(field_name, 'Array'));
     } else {
       let result: Response | null = null;
       for (let i = 0; i < value.length; i++) {
-        result = this.stringCheck(value[i], field_name + " at " + i);
+        result = this.stringCheck(value[i], field_name + ' at ' + i);
         if (result.isErrClass()) {
           i = value.length;
         }
@@ -191,8 +193,8 @@ export class BaseValidator {
   validateId(field, value): Response {
     if (value == undefined) {
       return errClass(new NotFound(field));
-    } else if (typeof value !== "string") {
-      return errClass(new InvalidDataType(field, "string"));
+    } else if (typeof value !== 'string') {
+      return errClass(new InvalidDataType(field, 'string'));
     } else if (value.length === 0) {
       return errClass(new NullOrUndefined(field));
     } else if (!ObjectId.isValid(value)) {
@@ -206,9 +208,9 @@ export class BaseValidator {
   validateIds(ids: Array<any>, field: string): Array<Response> {
     const errors: Array<any> = [];
     for (const id of ids) {
-      if (typeof id != "string") {
+      if (typeof id != 'string') {
         errors.push(
-          errClass(new GeneralErrors.InvalidDataType(field, "string"))
+            errClass(new GeneralErrors.InvalidDataType(field, 'string'))
         );
       }
       if (!ObjectId.isValid(id)) {
@@ -226,8 +228,8 @@ export class BaseValidator {
   imageFileTypeCheck(field_name: string, value: any): Response {
     if (value == undefined) {
       return errClass(new NotFound(field_name));
-    } else if (typeof value !== "string") {
-      return errClass(new InvalidDataType(field_name, "string"));
+    } else if (typeof value !== 'string') {
+      return errClass(new InvalidDataType(field_name, 'string'));
     } else if (value.length === 0) {
       return errClass(new NullOrUndefined(field_name));
     } else if (!ALLOWED_MIME_TYPES.includes(value)) {
@@ -240,12 +242,12 @@ export class BaseValidator {
   dateCheck(field: any, fieldName: string): Response {
     if (field == undefined) {
       return errClass(new NotFound(fieldName));
-    } else if (typeof field !== "string") {
-      return errClass(new InvalidDataType(fieldName, "string"));
+    } else if (typeof field !== 'string') {
+      return errClass(new InvalidDataType(fieldName, 'string'));
     } else if (field.trim().length === 0) {
       return errClass(new EmptyString(fieldName));
     } else if (!validator.isISO8601(field)) {
-      return errClass(new InvalidDataType(fieldName, "date"));
+      return errClass(new InvalidDataType(fieldName, 'date'));
     } else {
       return successClass(true);
     }

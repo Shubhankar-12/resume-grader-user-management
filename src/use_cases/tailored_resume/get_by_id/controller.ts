@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes/BaseController";
-import { Request, Response } from "express";
-import { GetTailoredResumeByIdUseCase } from "./usecase";
-import { GetTailoredResumeDtoConverter } from "./dto";
-import { IGetTailoredResumeQuery } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes/BaseController';
+import {
+  Request, Response,
+} from 'express';
+import { GetTailoredResumeByIdUseCase } from './usecase';
+import { GetTailoredResumeDtoConverter } from './dto';
+import { IGetTailoredResumeQuery } from './request';
+import { logUseCaseError } from '../../../logger';
 
 export class GetTailoredResumeByIdController extends BaseController {
   private getTailoredResumeByIdUseCase: GetTailoredResumeByIdUseCase;
@@ -21,10 +23,10 @@ export class GetTailoredResumeByIdController extends BaseController {
       request: dtoObj.getDtoObject(),
     });
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

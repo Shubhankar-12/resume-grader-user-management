@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { UpdateCoverLetterUseCase } from "./usecase";
-import { UpdateCoverLetterDtoConverter } from "./dto";
-import { IUpdateCoverLetterRequest } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { UpdateCoverLetterUseCase } from './usecase';
+import { UpdateCoverLetterDtoConverter } from './dto';
+import { IUpdateCoverLetterRequest } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class UpdateCoverLetterController extends BaseController {
   private updateCoverLetterUseCase: UpdateCoverLetterUseCase;
@@ -17,13 +19,13 @@ class UpdateCoverLetterController extends BaseController {
     const data: IUpdateCoverLetterRequest = req.body;
     const dtoObj = new UpdateCoverLetterDtoConverter(data);
     const result = await this.updateCoverLetterUseCase.execute(
-      dtoObj.getDtoObject()
+        dtoObj.getDtoObject()
     );
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

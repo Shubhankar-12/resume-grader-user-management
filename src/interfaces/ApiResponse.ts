@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IError } from "./index";
+import { IError } from './index';
 
 export interface IApiMetaResponse {
   total_documents: number;

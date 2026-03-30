@@ -1,14 +1,16 @@
-import axios from "axios";
-import { logUnexpectedUsecaseError } from "../../../logger";
+import axios from 'axios';
+import { logUnexpectedUsecaseError } from '../../../logger';
 import {
   UseCase,
   Either,
   errClass,
   successClass,
   UseCaseError,
-} from "../../../interfaces";
-import { loginQueries, userQueries } from "../../../db";
-import { createToken } from "../../common/CreateToken";
+} from '../../../interfaces';
+import {
+  loginQueries, userQueries,
+} from '../../../db';
+import { createToken } from '../../common/CreateToken';
 
 interface IGithubAuthDto {
   code: string;
@@ -25,22 +27,20 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
     try {
       // 1. Exchange code for access token
       const tokenResponse = await axios.post(
-        `https://github.com/login/oauth/access_token`,
-        {
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          code,
-        },
-        { headers: { Accept: "application/json" } }
+          `https://github.com/login/oauth/access_token`,
+          {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            code,
+          },
+          { headers: { Accept: 'application/json' } }
       );
 
       const accessToken = tokenResponse.data.access_token;
-      if (!accessToken) return errClass("GitHub token exchange failed");
+      if (!accessToken) return errClass('GitHub token exchange failed');
 
       // 2. Fetch GitHub profile
-      const profileRes = await axios.get("https://api.github.com/user", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const profileRes = await axios.get('https://api.github.com/user', { headers: { Authorization: `Bearer ${accessToken}` } });
 
       const github = profileRes.data;
 
@@ -49,11 +49,11 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
         username: github.login,
         email: github.email ?? undefined, // fallback
         avatar: {
-          name: "avatar",
+          name: 'avatar',
           url: github.avatar_url,
-          mimetype: "image/jpeg",
+          mimetype: 'image/jpeg',
         },
-        provider: "github",
+        provider: 'github',
         providerId: String(github.id),
         githubProfile: {
           id: String(github.id),
@@ -61,13 +61,13 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
           profileUrl: github.html_url,
           reposUrl: github.repos_url,
         },
-        status: "ENABLED",
+        status: 'ENABLED',
       };
 
       const existingUser = await userQueries.getUserByGithubLogin(
-        userData.username
+          userData.username
       );
-      let userId: string = "";
+      let userId = '';
 
       if (existingUser.length > 0) {
         userId = existingUser[0]._id.toString();
@@ -94,7 +94,7 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
         const loginData = await loginQueries.createLogin({
           ...login,
           token: newToken,
-          status: "ENABLED",
+          status: 'ENABLED',
         });
         if (loginData) {
           return successClass({
@@ -102,12 +102,12 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
             decoded_token: loginData,
           });
         } else {
-          return errClass("Login failed");
+          return errClass('Login failed');
         }
       }
     } catch (err) {
-      console.error("GitHub OAuth Error", err);
-      return errClass("GitHub login failed");
+      console.error('GitHub OAuth Error', err);
+      return errClass('GitHub login failed');
     }
   }
 }

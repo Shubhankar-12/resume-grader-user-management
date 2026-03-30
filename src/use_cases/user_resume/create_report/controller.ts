@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { CreateReportUseCase } from "./usecase";
-import { CreateReportDtoConverter } from "./dto";
-import { ICreateReportRequest } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { CreateReportUseCase } from './usecase';
+import { CreateReportDtoConverter } from './dto';
+import { ICreateReportRequest } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class CreateReportController extends BaseController {
   private createReportUseCase: CreateReportUseCase;
@@ -17,13 +19,13 @@ class CreateReportController extends BaseController {
     const data: ICreateReportRequest = req.body;
     const dtoObj = new CreateReportDtoConverter(data);
     const result = await this.createReportUseCase.execute(
-      dtoObj.getDtoObject()
+        dtoObj.getDtoObject()
     );
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

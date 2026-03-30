@@ -1,8 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { MiddleWareFunctionType, Responses } from "../../../helpers";
-import { GetAllParser } from "./parser";
-import { userResumeValidator } from "../UserResumeValidator";
-import { logValidationError } from "../../../logger";
+import {
+  Request, Response, NextFunction,
+} from 'express';
+import {
+  MiddleWareFunctionType, Responses,
+} from '../../../helpers';
+import { GetAllParser } from './parser';
+import { userResumeValidator } from '../UserResumeValidator';
+import { logValidationError } from '../../../logger';
 
 export class GetAllValidator extends Responses {
   constructor() {
@@ -17,10 +21,10 @@ export class GetAllValidator extends Responses {
       else {
         res.locals.response = this.fail({
           errors,
-          message: "Invalid Request",
+          message: 'Invalid Request',
           statusCode: 400,
         });
-        logValidationError(errors, { level: "info" }, res);
+        logValidationError(errors, { level: 'info' }, res);
         return this.sendResponse(req, res);
       }
     };

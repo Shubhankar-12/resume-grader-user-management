@@ -1,17 +1,19 @@
-import { Document, Model, Types } from "mongoose";
+import {
+  Document, Model, Types,
+} from 'mongoose';
 
 export const JOB_TYPES = [
-  "resume-grade",
-  "cover-letter",
-  "tailored-resume",
+  'resume-grade',
+  'cover-letter',
+  'tailored-resume',
 ] as const;
 export type JobType = (typeof JOB_TYPES)[number];
 
 export const JOB_STATUSES = [
-  "pending",
-  "processing",
-  "completed",
-  "failed",
+  'pending',
+  'processing',
+  'completed',
+  'failed',
 ] as const;
 export type JobStatus = (typeof JOB_STATUSES)[number];
 

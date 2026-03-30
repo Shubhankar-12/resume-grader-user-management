@@ -1,6 +1,6 @@
-import { GetTailoredResumeByIdMiddleware } from "./middleware";
-import { GetTailoredResumeByIdUseCase } from "./usecase";
-import { GetTailoredResumeByIdController } from "./controller";
+import { GetTailoredResumeByIdMiddleware } from './middleware';
+import { GetTailoredResumeByIdUseCase } from './usecase';
+import { GetTailoredResumeByIdController } from './controller';
 
 const getTailoredResumeByIdUseCase = new GetTailoredResumeByIdUseCase();
 export const getTailoredResumeByIdController =

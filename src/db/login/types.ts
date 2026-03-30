@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface ILogin {
   token: string;
@@ -17,4 +19,6 @@ interface ILoginDocument extends ILogin, Document {}
 
 type ILoginModel = Model<ILoginDocument>;
 
-export { ILogin, ILoginDocument, ILoginModel };
+export {
+  ILogin, ILoginDocument, ILoginModel,
+};

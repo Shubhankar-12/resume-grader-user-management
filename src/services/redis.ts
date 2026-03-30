@@ -1,5 +1,5 @@
-import Redis from "ioredis";
-import { makeLogger } from "../logger/Config";
+import Redis from 'ioredis';
+import { makeLogger } from '../logger/Config';
 
 const logger = makeLogger({});
 
@@ -17,13 +17,13 @@ class RedisClient {
   }
 
   async connect(): Promise<void> {
-    const url = process.env.REDIS_URL || "redis://localhost:6379";
+    const url = process.env.REDIS_URL || 'redis://localhost:6379';
     try {
       this.client = new Redis(url);
-      this.client.on("connect", () => logger.info("Redis connected"));
-      this.client.on("error", (err) => logger.error("Redis error", err));
+      this.client.on('connect', () => logger.info('Redis connected'));
+      this.client.on('error', (err) => logger.error('Redis error', err));
     } catch (err) {
-      logger.warn("Redis connection failed — app will run without cache", err);
+      logger.warn('Redis connection failed — app will run without cache', err);
     }
   }
 
@@ -35,7 +35,7 @@ class RedisClient {
   async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
     if (!this.client) return;
     if (ttlSeconds) {
-      await this.client.set(key, value, "EX", ttlSeconds);
+      await this.client.set(key, value, 'EX', ttlSeconds);
     } else {
       await this.client.set(key, value);
     }
@@ -47,9 +47,9 @@ class RedisClient {
   }
 
   async getOrSet<T>(
-    key: string,
-    ttlSeconds: number,
-    factory: () => Promise<T>
+      key: string,
+      ttlSeconds: number,
+      factory: () => Promise<T>
   ): Promise<T> {
     const cached = await this.get(key);
     if (cached) return JSON.parse(cached) as T;

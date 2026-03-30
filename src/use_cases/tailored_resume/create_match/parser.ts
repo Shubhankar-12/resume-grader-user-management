@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BaseParser } from "../../../base_classes";
-import { TailoredResumeValidator } from "../TailoredResumeValidator";
+import { BaseParser } from '../../../base_classes';
+import { TailoredResumeValidator } from '../TailoredResumeValidator';
 
 export class CreateMatchReportParser extends BaseParser {
   private tailoredResumeValidator: TailoredResumeValidator;
@@ -24,12 +24,12 @@ export class CreateMatchReportParser extends BaseParser {
   // }
 
   parseEmployeeId(value: any): void {
-    const result = this.tailoredResumeValidator.validateId("resume_id", value);
+    const result = this.tailoredResumeValidator.validateId('resume_id', value);
     this.pushIfError(result);
   }
 
   parseForeignId(value: any): void {
-    const result = this.tailoredResumeValidator.validateId("foreign_id", value);
+    const result = this.tailoredResumeValidator.validateId('foreign_id', value);
     this.pushIfError(result);
   }
 }

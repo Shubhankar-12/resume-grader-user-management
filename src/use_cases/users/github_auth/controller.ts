@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes/BaseController";
-import { Request, Response } from "express";
-import { GithubUpdateUseCase } from "./usecase";
-import { GithubUpdateDtoConverter } from "./dto";
-import { IGithubUpdateRequest } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes/BaseController';
+import {
+  Request, Response,
+} from 'express';
+import { GithubUpdateUseCase } from './usecase';
+import { GithubUpdateDtoConverter } from './dto';
+import { IGithubUpdateRequest } from './request';
+import { logUseCaseError } from '../../../logger';
 
 export class GithubUpdateController extends BaseController {
   private GithubUpdateUseCase: GithubUpdateUseCase;
@@ -25,10 +27,10 @@ export class GithubUpdateController extends BaseController {
     if (result.isSuccessClass()) {
       res.locals.response = this.created(result.value);
     } else {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     }

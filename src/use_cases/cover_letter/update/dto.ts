@@ -1,4 +1,4 @@
-import { IUpdateCoverLetterRequest } from "./request";
+import { IUpdateCoverLetterRequest } from './request';
 
 export interface IUpdateCoverLetterDto {
   cover_letter_id: string;
@@ -14,9 +14,9 @@ export class UpdateCoverLetterDtoConverter {
       cover_letter_id: data.cover_letter_id,
 
       cover_letter: data.cover_letter ? data.cover_letter : undefined,
-      cover_letter_summary: data.cover_letter_summary
-        ? data.cover_letter_summary
-        : undefined,
+      cover_letter_summary: data.cover_letter_summary ?
+        data.cover_letter_summary :
+        undefined,
       status: data.status ? data.status : undefined,
     };
   }

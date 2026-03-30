@@ -1,9 +1,9 @@
-import { CreateMatchReportMiddleware } from "./middleware";
-import { CreateMatchReportUseCase } from "./usecase";
-import { CreateMatchReportController } from "./controller";
+import { CreateMatchReportMiddleware } from './middleware';
+import { CreateMatchReportUseCase } from './usecase';
+import { CreateMatchReportController } from './controller';
 
 const createMatchReportUseCase = new CreateMatchReportUseCase();
 export const createMatchReportController = new CreateMatchReportController(
-  createMatchReportUseCase
+    createMatchReportUseCase
 );
 export const createMatchReportMiddleware = new CreateMatchReportMiddleware();

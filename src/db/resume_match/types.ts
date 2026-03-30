@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface IResumeMatch {
   resume_id: string;
@@ -40,4 +42,6 @@ interface IResumeMatchDocument extends IResumeMatch, Document {}
 
 type IResumeMatchModel = Model<IResumeMatchDocument>;
 
-export { IResumeMatch, IResumeMatchDocument, IResumeMatchModel };
+export {
+  IResumeMatch, IResumeMatchDocument, IResumeMatchModel,
+};

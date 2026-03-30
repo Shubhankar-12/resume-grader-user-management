@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { GetAllTailoredResumesUseCase } from "./usecase";
-import { GetAllTailoredResumesDtoConverter } from "./dto";
-import { IGetAllTailoredResumesQueryParam } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { GetAllTailoredResumesUseCase } from './usecase';
+import { GetAllTailoredResumesDtoConverter } from './dto';
+import { IGetAllTailoredResumesQueryParam } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class GetAllTailoredResumesController extends BaseController {
   private getAllTailoredResumesUseCase: GetAllTailoredResumesUseCase;
@@ -18,18 +20,18 @@ class GetAllTailoredResumesController extends BaseController {
       req.query as unknown as IGetAllTailoredResumesQueryParam;
     const dtoObj = new GetAllTailoredResumesDtoConverter(queryParams);
     const result = await this.getAllTailoredResumesUseCase.execute(
-      dtoObj.getDtoObject()
+        dtoObj.getDtoObject()
     );
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: [result.value],
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {
       res.locals.response = this.success(result.value.paginatedResults, {
-        message: "",
+        message: '',
         total_documents: result.value.totalCount[0].count,
       });
     }

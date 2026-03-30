@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 import {
   ITailoredResume,
   ITailoredResumeDocument,
   ITailoredResumeModel,
-} from "../tailored_resume/types";
+} from '../tailored_resume/types';
 
 export class TailoredResumeQueries {
   private tailoredResumeModel: ITailoredResumeModel;
@@ -19,35 +19,25 @@ export class TailoredResumeQueries {
   }
 
   async getTailoredResumebyResumeId(data: any): Promise<any[]> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
 
     aggregateQuery.push({
       $match: {
         resume_id: new ObjectId(data.resume_id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 
     if (data.job_description) {
-      aggregateQuery.push({
-        $match: {
-          job_description: data.job_description,
-        },
-      });
+      aggregateQuery.push({ $match: { job_description: data.job_description } });
     }
 
-    aggregateQuery.push({
-      $sort: {
-        created_on: -1,
-      },
-    });
+    aggregateQuery.push({ $sort: { created_on: -1 } });
 
     aggregateQuery.push({
       $project: {
         _id: 0,
-        tailored_resume_id: "$_id",
+        tailored_resume_id: '$_id',
         resume_id: 1,
         atsScore: 1,
         category: 1,
@@ -73,22 +63,16 @@ export class TailoredResumeQueries {
     return result;
   }
   async getTailoredResumebyId(data: any): Promise<any[]> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
 
     aggregateQuery.push({
       $match: {
         _id: new ObjectId(data.tailored_resume_id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 
-    aggregateQuery.push({
-      $sort: {
-        created_on: -1,
-      },
-    });
+    aggregateQuery.push({ $sort: { created_on: -1 } });
 
     aggregateQuery.push({
       $project: {
@@ -119,49 +103,43 @@ export class TailoredResumeQueries {
   }
 
   async getResmesByUserId(data: any): Promise<any[]> {
-    let aggregateQuery: any[] = [];
+    const aggregateQuery: any[] = [];
 
     aggregateQuery.push({
       $match: {
         user_id: new ObjectId(data.user_id),
-        status: {
-          $ne: "DISABLED",
-        },
+        status: { $ne: 'DISABLED' },
       },
     });
 
     if (data.search) {
-      const dataSearch = data.search
-        ? data.search.replace(/[()]/g, "\\$&")
-        : "";
+      const dataSearch = data.search ?
+        data.search.replace(/[()]/g, '\\$&') :
+        '';
       aggregateQuery.push({
         $match: {
-          "resume.name": {
+          'resume.name': {
             $regex: dataSearch,
-            $options: "i",
+            $options: 'i',
           },
         },
       });
     }
 
-    aggregateQuery.push({
-      $sort: {
-        created_on: -1,
-      },
-    });
+    aggregateQuery.push({ $sort: { created_on: -1 } });
 
     aggregateQuery.push({
       $lookup: {
-        from: "extracted_resumes",
-        localField: "_id",
-        foreignField: "resume_id",
-        as: "extracted_resume",
+        from: 'extracted_resumes',
+        localField: '_id',
+        foreignField: 'resume_id',
+        as: 'extracted_resume',
       },
     });
 
     aggregateQuery.push({
       $unwind: {
-        path: "$extracted_resume",
+        path: '$extracted_resume',
         preserveNullAndEmptyArrays: true,
       },
     });
@@ -169,7 +147,7 @@ export class TailoredResumeQueries {
     aggregateQuery.push({
       $project: {
         _id: 0,
-        tailored_resume_id: "$_id",
+        tailored_resume_id: '$_id',
         atsScore: 1,
         user_id: 1,
         category: 1,
@@ -193,7 +171,7 @@ export class TailoredResumeQueries {
 
     const $facet: any = {
       paginatedResults: [],
-      totalCount: [{ $count: "count" }],
+      totalCount: [{ $count: 'count' }],
     };
 
     if (data.skip != undefined) {
@@ -213,8 +191,6 @@ export class TailoredResumeQueries {
 
   async updateResume(data: any): Promise<any> {
     const filter = { _id: data.resume_id };
-    return await this.tailoredResumeModel.updateOne(filter, {
-      $set: data,
-    });
+    return await this.tailoredResumeModel.updateOne(filter, { $set: data });
   }
 }

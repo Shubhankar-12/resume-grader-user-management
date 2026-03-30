@@ -1,15 +1,17 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { WebhookPaymentSubscriptionUseCase } from "./usecase";
-import { WebhookPaymentSubscriptionDtoConverter } from "./dto";
-import { IWebhookPaymentSubscriptionRequest } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { WebhookPaymentSubscriptionUseCase } from './usecase';
+import { WebhookPaymentSubscriptionDtoConverter } from './dto';
+import { IWebhookPaymentSubscriptionRequest } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class WebhookPaymentSubscriptionController extends BaseController {
   private webhookPaymentSubscriptionUseCase: WebhookPaymentSubscriptionUseCase;
 
   constructor(
-    webhookPaymentSubscriptionUseCase: WebhookPaymentSubscriptionUseCase
+      webhookPaymentSubscriptionUseCase: WebhookPaymentSubscriptionUseCase
   ) {
     super();
     this.webhookPaymentSubscriptionUseCase = webhookPaymentSubscriptionUseCase;
@@ -23,10 +25,10 @@ class WebhookPaymentSubscriptionController extends BaseController {
       headers: req.headers,
     });
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: result.value,
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {

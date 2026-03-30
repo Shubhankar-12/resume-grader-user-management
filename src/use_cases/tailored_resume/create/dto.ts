@@ -1,4 +1,4 @@
-import { ICreateTailoredResumeRequest } from "./request";
+import { ICreateTailoredResumeRequest } from './request';
 
 export interface ICreateTailoredResumeDto {
   resume_id: string;

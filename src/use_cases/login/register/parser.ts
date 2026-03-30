@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BaseParser } from "../../../base_classes/BaseParser";
-import { employeeValidator } from "../../EmployeeValidator";
+import { BaseParser } from '../../../base_classes/BaseParser';
+import { employeeValidator } from '../../EmployeeValidator';
 
 export class RegisterOwnerWithEmailParser extends BaseParser {
   constructor(data: any) {

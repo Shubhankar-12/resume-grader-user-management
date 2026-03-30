@@ -2,41 +2,40 @@ import {
   extractedResumeQueries,
   userQueries,
   userResumeQueries,
-} from "../../../db";
-import { IUserResumeDocument } from "../../../db/user_resume";
+} from '../../../db';
+import { IUserResumeDocument } from '../../../db/user_resume';
 import {
   getResumeScoreAndSuggestions,
   getResumeExtractedFields,
-} from "../../../helpers/resumeAnalyzerAI";
-import { extractTextFromPdf } from "../../../helpers/utils";
+} from '../../../helpers/resumeAnalyzerAI';
+import { extractTextFromPdf } from '../../../helpers/utils';
 import {
   UseCase,
   Either,
   errClass,
   successClass,
   UseCaseError,
-} from "../../../interfaces";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { ICreateUserResumeDto } from "./dto";
+} from '../../../interfaces';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import { ICreateUserResumeDto } from './dto';
 import {
   AIAnalysisFailedError,
   ExtractedResumeNotFoundError,
   InternalServerError,
   ResumeExtractionFailedError,
   UserNotFoundError,
-} from "./errors";
+} from './errors';
 
 type Response = Either<UseCaseError, any>;
 
 export class CreateUserResumeUseCase
-  implements UseCase<ICreateUserResumeDto, Response>
-{
+implements UseCase<ICreateUserResumeDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ICreateUserResumeDto): Promise<Response> {
     try {
       const user = await userQueries.getUserById(request.user_id);
       if (!user) {
-        return errClass(new UserNotFoundError(request.user_id, "user_id"));
+        return errClass(new UserNotFoundError(request.user_id, 'user_id'));
       }
 
       const extractedText = await extractTextFromPdf(request.resume.url);
@@ -77,7 +76,7 @@ export class CreateUserResumeUseCase
       const extractedResume = await extractedResumeQueries.create({
         resume_id: createdResume._id,
         ...extractedFieldsResult,
-        status: "ENABLED",
+        status: 'ENABLED',
       });
 
       if (!extractedResume) {
@@ -96,7 +95,7 @@ export class CreateUserResumeUseCase
         updated_on: createdResume.updated_on,
       });
     } catch (error) {
-      console.error("Unexpected error in CreateUserResumeUseCase:", error);
+      console.error('Unexpected error in CreateUserResumeUseCase:', error);
       return errClass(new InternalServerError());
     }
   }

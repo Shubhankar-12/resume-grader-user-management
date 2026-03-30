@@ -1,4 +1,4 @@
-import { IGetDashboardStatsQuery } from "./request";
+import { IGetDashboardStatsQuery } from './request';
 
 export interface IGetDashboardStatsDto {}
 

@@ -1,4 +1,4 @@
-import { IGetAllTailoredResumesQueryParam } from "./request";
+import { IGetAllTailoredResumesQueryParam } from './request';
 
 export interface IGetAllTailoredResumesQueryDto {
   user_id: string;
@@ -16,7 +16,7 @@ export class GetAllTailoredResumesDtoConverter {
       user_id: data.user_id,
       skip: data.skip != undefined ? parseInt(data.skip) : undefined,
       limit: data.limit != undefined ? parseInt(data.limit) : undefined,
-      search: data.search ? data.search : "",
+      search: data.search ? data.search : '',
     };
   }
   public getDtoObject(): IGetAllTailoredResumesQueryDto {

@@ -1,25 +1,45 @@
-import rateLimit from "express-rate-limit";
-import { RedisStore } from "rate-limit-redis";
-import { redisClient } from "../services/redis";
-import { Request, Response, NextFunction } from "express";
-import { MiddleWareFunctionType } from "../helpers";
+import rateLimit from 'express-rate-limit';
+import { RedisStore } from 'rate-limit-redis';
+import { redisClient } from '../services/redis';
+import {
+  Request, Response, NextFunction,
+} from 'express';
+import { MiddleWareFunctionType } from '../helpers';
 
 const PLAN_LIMITS = {
   ai: {
-    FREE: { windowMs: 60 * 60 * 1000, max: 5 },
-    BASIC: { windowMs: 60 * 60 * 1000, max: 20 },
-    PRO: { windowMs: 60 * 60 * 1000, max: 100 },
+    FREE: {
+      windowMs: 60 * 60 * 1000,
+      max: 5,
+    },
+    BASIC: {
+      windowMs: 60 * 60 * 1000,
+      max: 20,
+    },
+    PRO: {
+      windowMs: 60 * 60 * 1000,
+      max: 100,
+    },
   },
   general: {
-    FREE: { windowMs: 60 * 1000, max: 20 },
-    BASIC: { windowMs: 60 * 1000, max: 60 },
-    PRO: { windowMs: 60 * 1000, max: 120 },
+    FREE: {
+      windowMs: 60 * 1000,
+      max: 20,
+    },
+    BASIC: {
+      windowMs: 60 * 1000,
+      max: 60,
+    },
+    PRO: {
+      windowMs: 60 * 1000,
+      max: 120,
+    },
   },
 };
 
-function getPlanFromRequest(req: Request): "FREE" | "BASIC" | "PRO" {
+function getPlanFromRequest(req: Request): 'FREE' | 'BASIC' | 'PRO' {
   const auth = (req as any).res?.locals?.auth;
-  return auth?.plan || "FREE";
+  return auth?.plan || 'FREE';
 }
 
 function createRedisStore(prefix: string): RedisStore | undefined {
@@ -43,13 +63,13 @@ export function createAIRateLimiter(): MiddleWareFunctionType {
     },
     standardHeaders: true,
     legacyHeaders: false,
-    store: createRedisStore("rl:ai:"),
+    store: createRedisStore('rl:ai:'),
     handler: (_req: Request, res: Response) => {
       res.status(429).json({
         success: false,
         error: {
-          code: "RATE_LIMIT_EXCEEDED",
-          message: "Too many AI requests. Please try again later.",
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: 'Too many AI requests. Please try again later.',
           retryAfter: 3600,
         },
       });
@@ -75,13 +95,13 @@ export function createGeneralRateLimiter() {
     max: 60,
     standardHeaders: true,
     legacyHeaders: false,
-    store: createRedisStore("rl:general:"),
+    store: createRedisStore('rl:general:'),
     handler: (_req: Request, res: Response) => {
       res.status(429).json({
         success: false,
         error: {
-          code: "RATE_LIMIT_EXCEEDED",
-          message: "Too many requests. Please try again later.",
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: 'Too many requests. Please try again later.',
           retryAfter: 60,
         },
       });

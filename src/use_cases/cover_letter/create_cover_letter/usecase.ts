@@ -1,26 +1,27 @@
-import { extractedResumeQueries, coverLetterQueries } from "../../../db";
-import { generateResumeCoverLetterFromExtractedText } from "../../../helpers/resumeAnalyzerAI";
+import {
+  extractedResumeQueries, coverLetterQueries,
+} from '../../../db';
+import { generateResumeCoverLetterFromExtractedText } from '../../../helpers/resumeAnalyzerAI';
 import {
   UseCase,
   Either,
   errClass,
   successClass,
   UseCaseError,
-} from "../../../interfaces";
-import { logUnexpectedUsecaseError } from "../../../logger";
-import { InternalServerError } from "../../user_resume/create/errors";
-import { ICreateCoverLetterDto } from "./dto";
+} from '../../../interfaces';
+import { logUnexpectedUsecaseError } from '../../../logger';
+import { InternalServerError } from '../../user_resume/create/errors';
+import { ICreateCoverLetterDto } from './dto';
 import {
   CoverLetterAlreadyExistsError,
   ExtractedResumeNotFoundError,
   ResumeExtractionFailedError,
-} from "./errors";
+} from './errors';
 
 type Response = Either<UseCaseError, any>;
 
 export class CreateCoverLetterUseCase
-  implements UseCase<ICreateCoverLetterDto, Response>
-{
+implements UseCase<ICreateCoverLetterDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ICreateCoverLetterDto): Promise<Response> {
     try {
@@ -38,7 +39,7 @@ export class CreateCoverLetterUseCase
         await extractedResumeQueries.getExtractedResumebyResumeId(request);
       if (extractedResume.length === 0) {
         return errClass(
-          new ExtractedResumeNotFoundError(request.resume_id, "resume_id")
+            new ExtractedResumeNotFoundError(request.resume_id, 'resume_id')
         );
       }
 
@@ -46,14 +47,14 @@ export class CreateCoverLetterUseCase
 
       const createCoverLetterData =
         await generateResumeCoverLetterFromExtractedText(
-          extractedResumeData,
-          request.job_description,
-          request.role,
-          request.company
+            extractedResumeData,
+            request.job_description,
+            request.role,
+            request.company
         );
       if (!createCoverLetterData) {
         return errClass(
-          new ResumeExtractionFailedError(request.resume_id, "resume_id")
+            new ResumeExtractionFailedError(request.resume_id, 'resume_id')
         );
       }
 
@@ -82,7 +83,7 @@ export class CreateCoverLetterUseCase
         updated_on: createdCoverLetter.updated_on,
       });
     } catch (error) {
-      console.error("Unexpected error in CreateCoverLetterUseCase:", error);
+      console.error('Unexpected error in CreateCoverLetterUseCase:', error);
       return errClass(new InternalServerError());
     }
   }

@@ -1,9 +1,11 @@
-import { BaseController } from "../../../base_classes";
-import { Request, Response } from "express";
-import { GetAllUserResumesUseCase } from "./usecase";
-import { GetAllUserResumesDtoConverter } from "./dto";
-import { IGetAllUserResumesQueryParam } from "./request";
-import { logUseCaseError } from "../../../logger";
+import { BaseController } from '../../../base_classes';
+import {
+  Request, Response,
+} from 'express';
+import { GetAllUserResumesUseCase } from './usecase';
+import { GetAllUserResumesDtoConverter } from './dto';
+import { IGetAllUserResumesQueryParam } from './request';
+import { logUseCaseError } from '../../../logger';
 
 class GetAllUserResumesController extends BaseController {
   private getAllUserResumesUseCase: GetAllUserResumesUseCase;
@@ -18,18 +20,18 @@ class GetAllUserResumesController extends BaseController {
       req.query as unknown as IGetAllUserResumesQueryParam;
     const dtoObj = new GetAllUserResumesDtoConverter(queryParams);
     const result = await this.getAllUserResumesUseCase.execute(
-      dtoObj.getDtoObject()
+        dtoObj.getDtoObject()
     );
     if (result.isErrClass()) {
-      logUseCaseError([result.value], { level: "error" }, res);
+      logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({
         errors: [result.value],
-        message: "Invalid Request",
+        message: 'Invalid Request',
         statusCode: 400,
       });
     } else {
       res.locals.response = this.success(result.value.paginatedResults, {
-        message: "",
+        message: '',
         total_documents: result.value.totalCount[0].count,
       });
     }

@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ILogin, ILoginDocument, ILoginModel } from "../login/types";
-import { Types } from "mongoose";
-import { ModificationResponse, TokenDevice } from "../../interfaces";
-import { TokenStatus } from "../../helpers";
-import { ObjectId } from "mongodb";
+import {
+  ILogin, ILoginDocument, ILoginModel,
+} from '../login/types';
+import { Types } from 'mongoose';
+import {
+  ModificationResponse, TokenDevice,
+} from '../../interfaces';
+import { TokenStatus } from '../../helpers';
+import { ObjectId } from 'mongodb';
 
 export class LoginQueries {
   private loginModel: ILoginModel;
@@ -32,11 +36,14 @@ export class LoginQueries {
   // }
 
   async findLoginByUserId(
-    employee_id: string | Types.ObjectId
+      employee_id: string | Types.ObjectId
   ): Promise<ILoginDocument[]> {
     return await this.loginModel
-      .find({ "user.id": employee_id, status: "ENABLED" })
-      .sort({ updated_on: -1 });
+        .find({
+          'user.id': employee_id,
+          'status': 'ENABLED',
+        })
+        .sort({ updated_on: -1 });
   }
   async getGuestToken(device: TokenDevice): Promise<string | null> {
     const result = await this.loginModel.find({
@@ -52,8 +59,8 @@ export class LoginQueries {
 
   async expireToken(token: string): Promise<any> {
     const result = await this.loginModel.updateOne(
-      { token },
-      { status: TokenStatus.EXPIRED }
+        { token },
+        { status: TokenStatus.EXPIRED }
     );
     return result;
   }

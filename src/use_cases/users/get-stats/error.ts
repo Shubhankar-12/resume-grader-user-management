@@ -1,7 +1,7 @@
-import { UseCaseError } from "../../../interfaces";
+import { UseCaseError } from '../../../interfaces';
 
 export class UserNotFoundError extends UseCaseError {
   constructor(field: string) {
-    super("UserNotFoundError", "The User not found", field);
+    super('UserNotFoundError', 'The User not found', field);
   }
 }

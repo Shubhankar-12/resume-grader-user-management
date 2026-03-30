@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  describe, it, expect, vi, beforeEach,
+} from 'vitest';
 
 // Mock OpenAI before importing
 const { mockCreate } = vi.hoisted(() => {
@@ -6,24 +8,18 @@ const { mockCreate } = vi.hoisted(() => {
   return { mockCreate };
 });
 
-vi.mock("openai", () => {
+vi.mock('openai', () => {
   class MockOpenAI {
-    chat = {
-      completions: {
-        create: mockCreate,
-      },
-    };
+    chat = { completions: { create: mockCreate } };
   }
   return { default: MockOpenAI };
 });
 
 // Mock aiCostLogger
-vi.mock("../aiCostLogger", () => ({
-  logAICost: vi.fn(),
-}));
+vi.mock('../aiCostLogger', () => ({ logAICost: vi.fn() }));
 
 // Mock logger
-vi.mock("../../logger/Config", () => ({
+vi.mock('../../logger/Config', () => ({
   makeLogger: vi.fn().mockReturnValue({
     info: vi.fn(),
     error: vi.fn(),
@@ -31,15 +27,15 @@ vi.mock("../../logger/Config", () => ({
   }),
 }));
 
-import { getResumeScoreAndSuggestions } from "../resumeAnalyzerAI";
-import { logAICost } from "../aiCostLogger";
+import { getResumeScoreAndSuggestions } from '../resumeAnalyzerAI';
+import { logAICost } from '../aiCostLogger';
 
-describe("resumeAnalyzerAI", () => {
+describe('resumeAnalyzerAI', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should use response_format json_object in API call", async () => {
+  it('should use response_format json_object in API call', async () => {
     mockCreate.mockResolvedValue({
       choices: [
         {
@@ -52,19 +48,20 @@ describe("resumeAnalyzerAI", () => {
           },
         },
       ],
-      usage: { prompt_tokens: 100, completion_tokens: 50 },
+      usage: {
+        prompt_tokens: 100,
+        completion_tokens: 50,
+      },
     });
 
-    await getResumeScoreAndSuggestions("Some resume text");
+    await getResumeScoreAndSuggestions('Some resume text');
 
     expect(mockCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        response_format: { type: "json_object" },
-      })
+        expect.objectContaining({ response_format: { type: 'json_object' } })
     );
   });
 
-  it("should call logAICost after each completion", async () => {
+  it('should call logAICost after each completion', async () => {
     mockCreate.mockResolvedValue({
       choices: [
         {
@@ -72,41 +69,46 @@ describe("resumeAnalyzerAI", () => {
             content: JSON.stringify({
               gradingScore: 85,
               atsScore: 90,
-              suggestions: [{ title: "Fix", description: "Something" }],
+              suggestions: [{
+                title: 'Fix',
+                description: 'Something',
+              }],
             }),
           },
         },
       ],
-      usage: { prompt_tokens: 200, completion_tokens: 100 },
+      usage: {
+        prompt_tokens: 200,
+        completion_tokens: 100,
+      },
     });
 
-    await getResumeScoreAndSuggestions("Another resume text");
+    await getResumeScoreAndSuggestions('Another resume text');
 
     expect(logAICost).toHaveBeenCalledTimes(1);
     expect(logAICost).toHaveBeenCalledWith(
-      expect.objectContaining({
-        functionName: "getResumeScoreAndSuggestions",
-        model: "gpt-4o-mini",
-        inputTokens: 200,
-        outputTokens: 100,
-      })
+        expect.objectContaining({
+          functionName: 'getResumeScoreAndSuggestions',
+          model: 'gpt-4o-mini',
+          inputTokens: 200,
+          outputTokens: 100,
+        })
     );
   });
 
-  it("should throw error when AI returns bad JSON", async () => {
+  it('should throw error when AI returns bad JSON', async () => {
     mockCreate.mockResolvedValue({
       choices: [
-        {
-          message: {
-            content: "This is not valid JSON {{{",
-          },
-        },
+        { message: { content: 'This is not valid JSON {{{' } },
       ],
-      usage: { prompt_tokens: 100, completion_tokens: 50 },
+      usage: {
+        prompt_tokens: 100,
+        completion_tokens: 50,
+      },
     });
 
     await expect(
-      getResumeScoreAndSuggestions("Resume with bad response")
-    ).rejects.toThrow("Invalid AI Grading Response Format");
+        getResumeScoreAndSuggestions('Resume with bad response')
+    ).rejects.toThrow('Invalid AI Grading Response Format');
   });
 });

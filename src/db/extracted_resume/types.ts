@@ -1,4 +1,6 @@
-import { Document, Model } from "mongoose";
+import {
+  Document, Model,
+} from 'mongoose';
 
 interface IExtractedResume {
   resume_id: string;
@@ -52,4 +54,6 @@ interface IExtractedResumeDocument extends IExtractedResume, Document {}
 
 type IExtractedResumeModel = Model<IExtractedResumeDocument>;
 
-export { IExtractedResume, IExtractedResumeDocument, IExtractedResumeModel };
+export {
+  IExtractedResume, IExtractedResumeDocument, IExtractedResumeModel,
+};
