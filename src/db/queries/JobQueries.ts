@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import {
   IJobDocument, IJobModel, JobStatus, JobType,
 } from '../job/types';
+import { jobModel } from '../job';
 
 export class JobQueries {
   private model: IJobModel;
@@ -55,3 +56,5 @@ export class JobQueries {
     await this.model.findByIdAndUpdate(jobId, { $inc: { attempts: 1 } });
   }
 }
+
+export const jobQueries = new JobQueries(jobModel);
