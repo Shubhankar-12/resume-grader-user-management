@@ -37,6 +37,7 @@ import swaggerOptions from './swagger';
 // opening a db connection
 import { DataBase } from './db/connection';
 import { resetUsageCron } from './helpers/crons/resetUsage';
+import { startWorkers } from './jobs';
 
 async function startServer() {
   try {
@@ -80,6 +81,10 @@ async function startServer() {
           timezone: 'Asia/Kolkata',
         }
     );
+
+    // Start BullMQ workers
+    startWorkers();
+    global.logger.info("BullMQ workers started");
 
     Sentry.setupExpressErrorHandler(app);
 
