@@ -1,5 +1,6 @@
 import { coverLetterModel } from "../cover_letter";
 import { extractedResumeModel } from "../extracted_resume";
+import { jobModel } from "../job";
 import { loginModel } from "../login";
 import { paymentSubscriptionModel } from "../payment_subscription";
 import { projectAnalysisModel } from "../project_analysis";
@@ -10,6 +11,7 @@ import { userModel } from "../user";
 import { userResumeModel } from "../user_resume";
 import { CoverLetterQueries } from "./CoverLetterQueries";
 import { ExtractedResumeQueries } from "./ExtractedResumeQueries";
+import { JobQueries } from "./JobQueries";
 import { LoginQueries } from "./LoginQueries";
 import { PaymentSubscriptionQueries } from "./PaymentSubscriptionQueries";
 import { ProjectAnalysisQueries } from "./ProjectAnalysisQueries";
@@ -36,3 +38,4 @@ export const projectAnalysisQueries = new ProjectAnalysisQueries(
 export const paymentSubscriptionQueries = new PaymentSubscriptionQueries(
   paymentSubscriptionModel
 );
+export const jobQueries = new JobQueries(jobModel);
