@@ -1,7 +1,6 @@
 import {
   extractedResumeQueries, reportQueries,
 } from '../../../db';
-import { generateResumeReportFromExtractedText } from '../../../helpers/resumeAnalyzerAI';
 import {
   UseCase,
   Either,
@@ -13,10 +12,11 @@ import { logUnexpectedUsecaseError } from '../../../logger';
 import { InternalServerError } from '../create/errors';
 import { ICreateReportDto } from './dto';
 import {
-  ReportAlreadyExistsError,
   ExtractedResumeNotFoundError,
-  ResumeExtractionFailedError,
 } from './errors';
+import { jobQueries } from '../../../db/queries/JobQueries';
+import { enqueueJob } from '../../../jobs/queue';
+import mongoose from 'mongoose';
 
 type Response = Either<UseCaseError, any>;
 
@@ -30,9 +30,7 @@ implements UseCase<ICreateReportDto, Response> {
       );
 
       if (existingReport.length > 0) {
-        return errClass(
-            new ReportAlreadyExistsError(request.resume_id, 'resume_id')
-        );
+        return successClass(existingReport[0]);
       }
 
       const extractedResume =
@@ -43,40 +41,19 @@ implements UseCase<ICreateReportDto, Response> {
         );
       }
 
-      const extractedResumeData = extractedResume[0];
-      const createReportData = await generateResumeReportFromExtractedText(
-          extractedResumeData
-      );
-      if (!createReportData) {
-        return errClass(
-            new ResumeExtractionFailedError(request.resume_id, 'resume_id')
-        );
-      }
+      const job = await jobQueries.create({
+        user_id: mongoose.Types.ObjectId(request.user_id),
+        type: "resume-grade",
+        input: { resume_id: request.resume_id },
+      });
 
-      const createdReport = await reportQueries.create({
-        ...createReportData,
+      await enqueueJob("resume-grade", {
+        jobId: job._id.toString(),
         resume_id: request.resume_id,
+        user_id: request.user_id,
       });
-      if (!createdReport) {
-        return errClass(new InternalServerError());
-      }
-      return successClass({
-        report_id: createdReport._id,
-        resume_id: createdReport.resume_id,
-        overallGrade: createdReport.overallGrade,
-        scoreOutOf100: createdReport.scoreOutOf100,
-        scoreBreakdown: createdReport.scoreBreakdown,
-        strengths: createdReport.strengths,
-        areasForImprovement: createdReport.areasForImprovement,
-        keywordAnalysis: createdReport.keywordAnalysis,
-        actionableSuggestions: createdReport.actionableSuggestions,
-        projectAnalysis: createdReport.projectAnalysis,
-        certificationAnalysis: createdReport.certificationAnalysis,
-        interestAnalysis: createdReport.interestAnalysis,
-        status: createdReport.status,
-        created_on: createdReport.created_on,
-        updated_on: createdReport.updated_on,
-      });
+
+      return successClass({ job_id: job._id });
     } catch (error) {
       console.error('Unexpected error in CreateReportUseCase:', error);
       return errClass(new InternalServerError());

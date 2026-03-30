@@ -1,7 +1,6 @@
 import {
   extractedResumeQueries, coverLetterQueries,
 } from '../../../db';
-import { generateResumeCoverLetterFromExtractedText } from '../../../helpers/resumeAnalyzerAI';
 import {
   UseCase,
   Either,
@@ -13,10 +12,11 @@ import { logUnexpectedUsecaseError } from '../../../logger';
 import { InternalServerError } from '../../user_resume/create/errors';
 import { ICreateCoverLetterDto } from './dto';
 import {
-  CoverLetterAlreadyExistsError,
   ExtractedResumeNotFoundError,
-  ResumeExtractionFailedError,
 } from './errors';
+import { jobQueries } from '../../../db/queries/JobQueries';
+import { enqueueJob } from '../../../jobs/queue';
+import mongoose from 'mongoose';
 
 type Response = Either<UseCaseError, any>;
 
@@ -43,45 +43,27 @@ implements UseCase<ICreateCoverLetterDto, Response> {
         );
       }
 
-      const extractedResumeData = extractedResume[0];
+      const job = await jobQueries.create({
+        user_id: mongoose.Types.ObjectId(request.user_id),
+        type: "cover-letter",
+        input: {
+          resume_id: request.resume_id,
+          job_description: request.job_description,
+          role: request.role,
+          company: request.company,
+        },
+      });
 
-      const createCoverLetterData =
-        await generateResumeCoverLetterFromExtractedText(
-            extractedResumeData,
-            request.job_description,
-            request.role,
-            request.company
-        );
-      if (!createCoverLetterData) {
-        return errClass(
-            new ResumeExtractionFailedError(request.resume_id, 'resume_id')
-        );
-      }
-
-      const createdCoverLetter = await coverLetterQueries.create({
-        ...createCoverLetterData,
+      await enqueueJob("cover-letter", {
+        jobId: job._id.toString(),
         resume_id: request.resume_id,
         user_id: request.user_id,
+        job_description: request.job_description,
         role: request.role,
         company: request.company,
-        job_description: request.job_description.trim().toLowerCase(),
       });
-      if (!createdCoverLetter) {
-        return errClass(new InternalServerError());
-      }
-      return successClass({
-        cover_letter_id: createdCoverLetter._id,
-        resume_id: createdCoverLetter.resume_id,
-        user_id: createdCoverLetter.user_id,
-        role: createdCoverLetter.role,
-        company: createdCoverLetter.company,
-        job_description: createdCoverLetter.job_description,
-        cover_letter: createdCoverLetter.cover_letter,
-        cover_letter_summary: createdCoverLetter.cover_letter_summary,
-        status: createdCoverLetter.status,
-        created_on: createdCoverLetter.created_on,
-        updated_on: createdCoverLetter.updated_on,
-      });
+
+      return successClass({ job_id: job._id });
     } catch (error) {
       console.error('Unexpected error in CreateCoverLetterUseCase:', error);
       return errClass(new InternalServerError());

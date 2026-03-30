@@ -17,7 +17,8 @@ class CreateReportController extends BaseController {
 
   async executeImpl(req: Request, res: Response): Promise<void> {
     const data: ICreateReportRequest = req.body;
-    const dtoObj = new CreateReportDtoConverter(data);
+    const userId = res.locals.auth.decoded_token.user?.id;
+    const dtoObj = new CreateReportDtoConverter(data, userId as string);
     const result = await this.createReportUseCase.execute(
         dtoObj.getDtoObject()
     );
@@ -28,6 +29,18 @@ class CreateReportController extends BaseController {
         message: 'Invalid Request',
         statusCode: 400,
       });
+    } else if (result.value.job_id) {
+      res.locals.response = {
+        body: result.value,
+        statusCode: 202,
+        meta: {
+          total_documents: 1,
+          message: 'Job enqueued',
+          data_type: 'application/json',
+        },
+        isSuccess: true,
+        errors: null,
+      };
     } else {
       res.locals.response = this.created(result.value);
     }

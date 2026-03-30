@@ -28,6 +28,18 @@ class CreateCoverLetterController extends BaseController {
         message: 'Invalid Request',
         statusCode: 400,
       });
+    } else if (result.value.job_id) {
+      res.locals.response = {
+        body: result.value,
+        statusCode: 202,
+        meta: {
+          total_documents: 1,
+          message: 'Job enqueued',
+          data_type: 'application/json',
+        },
+        isSuccess: true,
+        errors: null,
+      };
     } else {
       res.locals.response = this.created(result.value);
     }

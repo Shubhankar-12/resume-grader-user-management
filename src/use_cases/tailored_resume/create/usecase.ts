@@ -1,7 +1,6 @@
 import {
   extractedResumeQueries, tailoredResumeQueries,
 } from '../../../db';
-import { generateTailoredResume } from '../../../helpers/resumeAnalyzerAI';
 import {
   UseCase,
   Either,
@@ -10,14 +9,12 @@ import {
   UseCaseError,
 } from '../../../interfaces';
 import { logUnexpectedUsecaseError } from '../../../logger';
-import { ResumeNotFoundError } from './errors';
 import { ICreateTailoredResumeDto } from './dto';
-import {
-  TailoredResumeAlreadyExistsError,
-  ExtractedResumeNotFoundError,
-  ResumeExtractionFailedError,
-} from './errors';
+import { ResumeNotFoundError } from './errors';
 import { InternalServerError } from '../../user_resume/create/errors';
+import { jobQueries } from '../../../db/queries/JobQueries';
+import { enqueueJob } from '../../../jobs/queue';
+import mongoose from 'mongoose';
 
 type Response = Either<UseCaseError, any>;
 
@@ -34,6 +31,7 @@ implements UseCase<ICreateTailoredResumeDto, Response> {
             new ResumeNotFoundError(request.resume_id, 'resume_id')
         );
       }
+
       const existingTailoredResume =
         await tailoredResumeQueries.getTailoredResumebyResumeId({
           resume_id: request.resume_id,
@@ -44,41 +42,23 @@ implements UseCase<ICreateTailoredResumeDto, Response> {
         return successClass(existingTailoredResume[0]);
       }
 
-      const createTailoredResumeData = await generateTailoredResume(
-          existingResume[0],
-          request.resume_id
-      );
-      const createdTailoredResume = await tailoredResumeQueries.create({
-        ...createTailoredResumeData,
+      const job = await jobQueries.create({
+        user_id: mongoose.Types.ObjectId(request.user_id),
+        type: "tailored-resume",
+        input: {
+          resume_id: request.resume_id,
+          job_description: request.job_description,
+        },
+      });
+
+      await enqueueJob("tailored-resume", {
+        jobId: job._id.toString(),
+        resume_id: request.resume_id,
         user_id: request.user_id,
-        resume_id: request.resume_id,
-        job_description: request.job_description.trim().toLowerCase(),
+        job_description: request.job_description,
       });
-      if (!createdTailoredResume) {
-        return errClass(new InternalServerError());
-      }
-      return successClass({
-        resume_id: request.resume_id,
-        tailored_resume_id: createdTailoredResume._id,
-        job_description: createdTailoredResume.job_description,
-        category: createdTailoredResume.category,
-        name: createdTailoredResume.name,
-        summary: createdTailoredResume.summary,
-        email: createdTailoredResume.email,
-        phone: createdTailoredResume.phone,
-        location: createdTailoredResume.location,
-        skills: createdTailoredResume.skills,
-        experience: createdTailoredResume.experience,
-        education: createdTailoredResume.education,
-        projects: createdTailoredResume.projects,
-        achievments: createdTailoredResume.achievments,
-        certifications: createdTailoredResume.certifications,
-        languages: createdTailoredResume.languages,
-        intrests: createdTailoredResume.intrests,
-        status: createdTailoredResume.status,
-        created_on: createdTailoredResume.created_on,
-        updated_on: createdTailoredResume.updated_on,
-      });
+
+      return successClass({ job_id: job._id });
     } catch (error) {
       console.error('Unexpected error in CreateTailoredResumeUseCase:', error);
       return errClass(new InternalServerError());
