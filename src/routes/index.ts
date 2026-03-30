@@ -6,6 +6,7 @@ import { userRouter } from './UserRouter';
 import { tailoredResumeRouter } from './TailoredResumeRouter';
 import { coverLetterRouter } from './CoverLetterRouter';
 import { paymentSubscriptionRouter } from './PaymentSubscriptionRouter';
+import { jobRouter } from './JobRouter';
 const v1Router = express.Router();
 
 v1Router.use('/media', mediaRouter);
@@ -15,4 +16,5 @@ v1Router.use('/tailored-resume', tailoredResumeRouter);
 v1Router.use('/user', userRouter);
 v1Router.use('/cover-letter', coverLetterRouter);
 v1Router.use('/payment-subscription', paymentSubscriptionRouter);
+v1Router.use('/jobs', jobRouter);
 export { v1Router };
