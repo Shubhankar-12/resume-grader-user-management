@@ -1,0 +1,7 @@
+{
+  "description": "Fresh CS graduate with generic objective, basic skill set, two trivial projects, no internship experience, and no quantification",
+  "resumeText": "David Kim\ndavid.kim123@gmail.com | Boston, MA\n\nOBJECTIVE\nI am seeking a software engineering position to utilize my computer science degree and improve my programming skills in a professional environment.\n\nEDUCATION\nBachelor of Science, Computer Science — Boston University\nGraduated May 2024\nRelevant Courses: Introduction to Programming, Data Structures, Computer Organization, Discrete Mathematics, Software Engineering Principles\n\nSKILLS\nProgramming Languages: Java, Python, C++\nTools: Eclipse, PyCharm, Microsoft Word, Microsoft Excel, PowerPoint\nOperating Systems: Windows, Linux (basic)\n\nPROJECTS\n\nCalculator App\n- Made a basic calculator using Java\n- Has addition, subtraction, multiplication, and division\n- Used Swing for the graphical interface\n- This was for my software engineering class\n\nTo-Do List CLI Tool\n- Created a command-line to-do list program in Python\n- Users can add and remove tasks from a text file\n- Learned how to read and write files in Python\n\nEDUCATION ACTIVITIES\n- Attended lecture and lab sessions regularly\n- Completed all course assignments\n- Studied for and passed all exams\n\nHOBBIES\n- Playing video games\n- Watching YouTube\n- Learning to cook",
+  "expectedGradingScore": { "min": 15, "max": 30 },
+  "expectedAtsScore": { "min": 15, "max": 30 },
+  "expectedSuggestionsMin": 4
+}
