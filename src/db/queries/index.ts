@@ -9,6 +9,7 @@ import { resumeMatchModel } from '../resume_match';
 import { tailoredResumeModel } from '../tailored_resume';
 import { userModel } from '../user';
 import { userResumeModel } from '../user_resume';
+import { AICostLogQueries } from './AICostLogQueries';
 import { CoverLetterQueries } from './CoverLetterQueries';
 import { ExtractedResumeQueries } from './ExtractedResumeQueries';
 import { JobQueries } from './JobQueries';
@@ -39,3 +40,4 @@ export const paymentSubscriptionQueries = new PaymentSubscriptionQueries(
     paymentSubscriptionModel
 );
 export const jobQueries = new JobQueries(jobModel);
+export const aiCostLogQueries = new AICostLogQueries();
