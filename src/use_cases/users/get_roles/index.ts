@@ -1,0 +1,1 @@
+export { getRolesController } from './controller';

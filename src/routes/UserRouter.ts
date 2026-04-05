@@ -19,6 +19,11 @@ import {
   getDashboardStatsByIdController,
   getDashboardStatsByIdMiddleware,
 } from '../use_cases/users/get-stats';
+import {
+  updateProfileController,
+  updateProfileMiddleware,
+} from '../use_cases/users/update_profile';
+import { getRolesController } from '../use_cases/users/get_roles';
 import { createAIRateLimiter } from '../common_middleware/rateLimiter';
 export const userRouter = express.Router();
 const aiLimiter = createAIRateLimiter();
@@ -60,3 +65,15 @@ baseRouterHandler.handleWithHooks(
     githubUpdateMiddleware.ensureValidation(),
     githubUpdateController.execute()
 );
+baseRouterHandler.handleWithHooks(
+    userRouter,
+    'patch',
+    '/profile',
+    updateProfileMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    updateProfileMiddleware.ensureLoggedIn(),
+    updateProfileMiddleware.ensureValidation(),
+    updateProfileController.execute()
+);
+
+// Roles list (public — no auth needed)
+userRouter.get('/roles', (req, res) => getRolesController.execute(req, res));
