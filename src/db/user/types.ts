@@ -31,6 +31,9 @@ interface IUser {
     coverLetters: number;
     githubAnalyses: number;
   };
+  career_goal?: 'NEW_JOB' | 'CAREER_CHANGE' | 'FIRST_JOB' | 'FREELANCING' | null;
+  target_role?: string | null;
+  onboarding_completed?: boolean;
   status: string;
 }
 

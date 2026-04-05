@@ -57,6 +57,20 @@ const UserSchema = new Schema(
         },
       },
 
+      career_goal: {
+        type: String,
+        enum: ['NEW_JOB', 'CAREER_CHANGE', 'FIRST_JOB', 'FREELANCING'],
+        default: null,
+      },
+      target_role: {
+        type: String,
+        default: null,
+      },
+      onboarding_completed: {
+        type: Boolean,
+        default: false,
+      },
+
       status: {
         type: String,
         enum: ['ENABLED', 'DISABLED'],

@@ -184,6 +184,18 @@ export class UserQueries {
     return user;
   }
 
+  async updateProfile(userId: string, data: any): Promise<any> {
+    const filter = { _id: new ObjectId(userId), status: { $ne: 'DISABLED' } };
+    const allowedFields = ['career_goal', 'target_role', 'onboarding_completed', 'name', 'username'];
+    const updateData: any = {};
+    for (const field of allowedFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field];
+      }
+    }
+    return await this.userModel.updateOne(filter, { $set: updateData });
+  }
+
   updateUserUsage = async (
       userId: string,
       usageType: UsageType
