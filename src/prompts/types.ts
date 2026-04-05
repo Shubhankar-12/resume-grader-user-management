@@ -23,8 +23,15 @@ export interface AIResponse {
   latencyMs: number;
 }
 
+export interface AIStreamEvent {
+  type: 'token' | 'done' | 'error';
+  content: string;
+  usage?: { inputTokens: number; outputTokens: number };
+}
+
 export interface AIProvider {
   complete(params: AIProviderParams): Promise<AIResponse>;
+  completeStream?(params: AIProviderParams): AsyncGenerator<AIStreamEvent>;
 }
 
 // --- Prompt template types ---
