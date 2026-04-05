@@ -1,3 +1,4 @@
+import { applicationModel } from '../application';
 import { coverLetterModel } from '../cover_letter';
 import { extractedResumeModel } from '../extracted_resume';
 import { jobModel } from '../job';
@@ -10,6 +11,7 @@ import { tailoredResumeModel } from '../tailored_resume';
 import { userModel } from '../user';
 import { userResumeModel } from '../user_resume';
 import { AICostLogQueries } from './AICostLogQueries';
+import { ApplicationQueries } from './ApplicationQueries';
 import { CoverLetterQueries } from './CoverLetterQueries';
 import { ExtractedResumeQueries } from './ExtractedResumeQueries';
 import { JobQueries } from './JobQueries';
@@ -41,3 +43,4 @@ export const paymentSubscriptionQueries = new PaymentSubscriptionQueries(
 );
 export const jobQueries = new JobQueries(jobModel);
 export const aiCostLogQueries = new AICostLogQueries();
+export const applicationQueries = new ApplicationQueries(applicationModel);
