@@ -129,6 +129,29 @@ export async function generateResumeCoverLetterFromExtractedText(
   return result.data;
 }
 
+export async function generateCoverLetterStreaming(
+  extractedResumeData: any,
+  jobDescription: string,
+  role: string,
+  company: string,
+  jobId: string
+) {
+  const result = await executor.executeStream({
+    task: 'coverLetter',
+    input: {
+      extractedFields: JSON.stringify(extractedResumeData),
+      jobDescription,
+      role,
+      company,
+    },
+    template: coverLetterV1,
+    schema: CoverLetterResult,
+    cacheKey: JSON.stringify(extractedResumeData) + jobDescription + role + company,
+    jobId,
+  });
+  return result.data;
+}
+
 export async function generateResumeProjectAnalysis(
   role: string,
   projects: {

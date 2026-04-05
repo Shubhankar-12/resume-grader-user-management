@@ -3,7 +3,7 @@ import {
   extractedResumeQueries,
   coverLetterQueries,
 } from '../../db/queries';
-import { generateResumeCoverLetterFromExtractedText } from '../../prompts';
+import { generateCoverLetterStreaming } from '../../prompts';
 
 interface CoverLetterJobData {
   jobId: string;
@@ -36,13 +36,13 @@ export async function processCoverLetterJob(
     }
 
     // Generate cover letter via AI
-    const coverLetterData =
-      await generateResumeCoverLetterFromExtractedText(
-          extractedResume[0],
-          job_description,
-          role,
-          company
-      );
+    const coverLetterData = await generateCoverLetterStreaming(
+        extractedResume[0],
+        job_description,
+        role,
+        company,
+        jobId
+    );
     if (!coverLetterData) {
       await jobQueries.updateStatus(jobId, 'failed', {
         error: 'AI cover letter generation returned empty result',

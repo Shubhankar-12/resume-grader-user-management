@@ -29,7 +29,7 @@ vi.mock("../../../db/queries", () => ({
 }));
 
 vi.mock("../../../prompts", () => ({
-  generateResumeCoverLetterFromExtractedText: mockGenerateCoverLetter,
+  generateCoverLetterStreaming: mockGenerateCoverLetter,
 }));
 
 import { processCoverLetterJob } from "../coverLetterWorker";
@@ -73,7 +73,8 @@ describe("Cover Letter Worker", () => {
       { extractedText: "John Doe..." },
       "We need a senior dev...",
       "Software Engineer",
-      "Acme Corp"
+      "Acme Corp",
+      "job-123"
     );
     expect(mockCreateCoverLetter).toHaveBeenCalled();
     expect(mockUpdateStatus).toHaveBeenCalledWith("job-123", "completed", {
