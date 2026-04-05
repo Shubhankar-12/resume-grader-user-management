@@ -4,8 +4,9 @@ import { getProvider } from './providers';
 import { AICache } from './cache';
 import { getTaskConfig, calculateCost, CACHE_TTL_SECONDS, COT_FORMAT_MODEL } from './config';
 import { logAICost } from '../helpers/aiCostLogger';
-import type { PromptTemplate, ExecuteResult, ExecuteMeta, AIMessage } from './types';
+import type { PromptTemplate, ExecuteResult, ExecuteMeta, AIMessage, AIStreamEvent } from './types';
 import { AIValidationError } from './types';
+import { StreamBridge } from './stream';
 
 function buildCacheKey(task: string, promptVersion: string, input: string): string {
   const hash = createHash('sha256').update(input).digest('hex');
@@ -29,6 +30,16 @@ interface CoTExecuteParams<T> {
   reasoningTemplate: PromptTemplate;
   formatTemplate: PromptTemplate;
   schema: z.ZodType<T>;
+  cacheKey?: string;
+  userId?: string;
+}
+
+interface StreamExecuteParams<T> {
+  task: string;
+  input: Record<string, unknown>;
+  template: PromptTemplate;
+  schema: z.ZodType<T>;
+  jobId: string;
   cacheKey?: string;
   userId?: string;
 }
@@ -86,6 +97,55 @@ function parseAndValidate<T>(content: string, schema: z.ZodType<T>): T {
     }
   }
   return schema.parse(parsed);
+}
+
+// --- CoverLetterTokenFilter ---
+
+class CoverLetterTokenFilter {
+  private state: 'WAITING' | 'FOUND_KEY' | 'STREAMING' | 'DONE' = 'WAITING';
+  private buffer = '';
+
+  process(token: string): string | null {
+    this.buffer += token;
+    if (this.state === 'DONE') return null;
+
+    if (this.state === 'STREAMING') {
+      let i = 0;
+      while (i < token.length) {
+        if (token[i] === '\\') { i += 2; continue; }
+        if (token[i] === '"') {
+          this.state = 'DONE';
+          return i > 0 ? token.substring(0, i) : null;
+        }
+        i++;
+      }
+      return token;
+    }
+
+    if (this.state === 'WAITING' && this.buffer.includes('"cover_letter"')) {
+      this.state = 'FOUND_KEY';
+    }
+
+    if (this.state === 'FOUND_KEY') {
+      const keyEnd = this.buffer.indexOf('"cover_letter"');
+      const afterKey = this.buffer.substring(keyEnd + '"cover_letter"'.length);
+      const valueStart = afterKey.indexOf('"');
+      if (valueStart !== -1) {
+        this.state = 'STREAMING';
+        const afterQuote = afterKey.substring(valueStart + 1);
+        if (afterQuote.length > 0) {
+          const closeIdx = afterQuote.indexOf('"');
+          if (closeIdx !== -1 && (closeIdx === 0 || afterQuote[closeIdx - 1] !== '\\')) {
+            this.state = 'DONE';
+            return closeIdx > 0 ? afterQuote.substring(0, closeIdx) : null;
+          }
+          return afterQuote;
+        }
+      }
+    }
+
+    return null;
+  }
 }
 
 // --- PromptExecutor ---
@@ -273,6 +333,76 @@ export class PromptExecutor {
       latencyMs: formatResponse.latencyMs,
       userId,
     });
+
+    return result;
+  }
+
+  async executeStream<T>(params: StreamExecuteParams<T>): Promise<ExecuteResult<T>> {
+    const { task, input, template, schema, jobId, userId } = params;
+    const bridge = new StreamBridge();
+    const config = getTaskConfig(task);
+    const { model, temperature, promptVersion } = config;
+
+    const inputStr = JSON.stringify(input) + template.userTemplate;
+    const cacheKey = params.cacheKey ?? buildCacheKey(task, promptVersion, inputStr);
+
+    // Cache check — stream cached result as chunked tokens
+    const cached = await this.cache.get<ExecuteResult<T>>(cacheKey);
+    if (cached) {
+      const cachedData = cached.data as Record<string, unknown>;
+      if (cachedData?.cover_letter) {
+        const text = cachedData.cover_letter as string;
+        const chunkSize = 20;
+        for (let i = 0; i < text.length; i += chunkSize) {
+          await bridge.publish(jobId, { type: 'token', content: text.substring(i, i + chunkSize) });
+        }
+      }
+      await bridge.publish(jobId, { type: 'done', content: '' });
+      return cached;
+    }
+
+    // Check provider supports streaming
+    const provider = getProvider(model);
+    if (!provider.completeStream) {
+      const result = await this.execute({ task, input, template, schema, cacheKey: params.cacheKey, userId });
+      await bridge.publish(jobId, { type: 'done', content: '' });
+      return result;
+    }
+
+    const messages = buildMessages(template, input);
+    const filter = new CoverLetterTokenFilter();
+    let fullContent = '';
+    let usage = { inputTokens: 0, outputTokens: 0 };
+
+    for await (const event of provider.completeStream({
+      model, messages, temperature, jsonMode: true, maxTokens: config.maxTokens,
+    })) {
+      if (event.type === 'token') {
+        const filtered = filter.process(event.content);
+        if (filtered) {
+          await bridge.publish(jobId, { type: 'token', content: filtered });
+        }
+      } else if (event.type === 'done') {
+        fullContent = event.content;
+        usage = event.usage || usage;
+      } else if (event.type === 'error') {
+        await bridge.publish(jobId, { type: 'error', content: event.content });
+        throw new Error(`Stream error: ${event.content}`);
+      }
+    }
+
+    const data = parseAndValidate(fullContent, schema);
+    const cost = calculateCost(model, usage.inputTokens, usage.outputTokens);
+
+    const meta: ExecuteMeta = {
+      model, provider: 'openai', cached: false, latencyMs: 0, cost, promptVersion,
+    };
+
+    const result: ExecuteResult<T> = { data, meta };
+    await this.cache.set(cacheKey, result, CACHE_TTL_SECONDS);
+    await bridge.publish(jobId, { type: 'done', content: '' });
+
+    logAICost({ functionName: task, model, inputTokens: usage.inputTokens, outputTokens: usage.outputTokens, latencyMs: 0, userId });
 
     return result;
   }
