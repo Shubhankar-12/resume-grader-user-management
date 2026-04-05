@@ -28,7 +28,7 @@ vi.mock("../../../db/queries", () => ({
   tailoredResumeQueries: { create: mockCreateTailoredResume },
 }));
 
-vi.mock("../../../helpers/resumeAnalyzerAI", () => ({
+vi.mock("../../../prompts", () => ({
   generateTailoredResume: mockGenerateTailoredResume,
 }));
 

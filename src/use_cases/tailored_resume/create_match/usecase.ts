@@ -3,7 +3,7 @@ import {
   resumeMatchQueries,
   tailoredResumeQueries,
 } from '../../../db';
-import { generateResumeJobMatchReport } from '../../../helpers/resumeAnalyzerAI';
+import { generateResumeJobMatchReport } from '../../../prompts';
 import {
   UseCase,
   Either,

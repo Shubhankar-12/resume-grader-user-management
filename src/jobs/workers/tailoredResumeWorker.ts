@@ -3,7 +3,7 @@ import {
   extractedResumeQueries,
   tailoredResumeQueries,
 } from '../../db/queries';
-import { generateTailoredResume } from '../../helpers/resumeAnalyzerAI';
+import { generateTailoredResume } from '../../prompts';
 
 interface TailoredResumeJobData {
   jobId: string;

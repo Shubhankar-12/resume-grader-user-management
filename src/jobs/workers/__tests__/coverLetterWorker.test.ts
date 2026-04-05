@@ -28,7 +28,7 @@ vi.mock("../../../db/queries", () => ({
   coverLetterQueries: { create: mockCreateCoverLetter },
 }));
 
-vi.mock("../../../helpers/resumeAnalyzerAI", () => ({
+vi.mock("../../../prompts", () => ({
   generateResumeCoverLetterFromExtractedText: mockGenerateCoverLetter,
 }));
 

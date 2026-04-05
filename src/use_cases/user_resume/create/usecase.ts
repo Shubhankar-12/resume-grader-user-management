@@ -7,7 +7,7 @@ import { IUserResumeDocument } from '../../../db/user_resume';
 import {
   getResumeScoreAndSuggestions,
   getResumeExtractedFields,
-} from '../../../helpers/resumeAnalyzerAI';
+} from '../../../prompts';
 import { extractTextFromPdf } from '../../../helpers/utils';
 import {
   UseCase,

@@ -1,7 +1,7 @@
 import {
   extractedResumeQueries, coverLetterQueries,
 } from '../../../db';
-import { generateResumeCoverLetterFromExtractedText } from '../../../helpers/resumeAnalyzerAI';
+import { generateResumeCoverLetterFromExtractedText } from '../../../prompts';
 import {
   UseCase,
   Either,

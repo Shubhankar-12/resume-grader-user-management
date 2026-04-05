@@ -33,7 +33,7 @@ vi.mock("../../../db/queries", () => ({
   },
 }));
 
-vi.mock("../../../helpers/resumeAnalyzerAI", () => ({
+vi.mock("../../../prompts", () => ({
   generateResumeReportFromExtractedText: mockGenerateReport,
 }));
 

@@ -2,7 +2,7 @@ import { jobQueries } from '../../db/queries/JobQueries';
 import {
   reportQueries, extractedResumeQueries,
 } from '../../db/queries';
-import { generateResumeReportFromExtractedText } from '../../helpers/resumeAnalyzerAI';
+import { generateResumeReportFromExtractedText } from '../../prompts';
 
 interface ResumeGradeJobData {
   jobId: string;
@@ -55,6 +55,7 @@ export async function processResumeGradeJob(
     const createdReport = await reportQueries.create({
       ...reportData,
       resume_id,
+      status: 'ENABLED' as const,
     });
 
     await jobQueries.updateStatus(jobId, 'completed', {

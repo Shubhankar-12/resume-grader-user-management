@@ -1,6 +1,6 @@
 import { projectAnalysisQueries } from '../../../db';
 import { fetchReadme } from '../../../helpers/fetchReadme';
-import { generateResumeProjectAnalysis } from '../../../helpers/resumeAnalyzerAI';
+import { generateResumeProjectAnalysis } from '../../../prompts';
 import {
   UseCase,
   Either,
@@ -58,7 +58,7 @@ implements UseCase<AnalysisRequest, Response> {
 
       if (!analysisResp) return errClass(new InternalServerError());
 
-      const analysisResult = analysisResp.projects;
+      const analysisResult = Array.isArray(analysisResp) ? analysisResp : (analysisResp as any).projects;
 
       const selected_projects = request.projects
           .filter((project) =>

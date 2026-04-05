@@ -3,7 +3,7 @@ import {
   extractedResumeQueries,
   coverLetterQueries,
 } from '../../db/queries';
-import { generateResumeCoverLetterFromExtractedText } from '../../helpers/resumeAnalyzerAI';
+import { generateResumeCoverLetterFromExtractedText } from '../../prompts';
 
 interface CoverLetterJobData {
   jobId: string;
