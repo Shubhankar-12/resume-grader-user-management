@@ -16,7 +16,8 @@
     "test:jest": "jest ./dist/__tests__/index.spec.js --testTimeout=10000 --noStackTrace --verbose ",
     "dev_test": "jest ./src/__tests__/index.spec.ts --testTimeout=10000 --verbose",
     "format": "prettier --write \"src/**/*.ts\"",
-    "lint:fix": "eslint --fix src/"
+    "lint:fix": "eslint --fix src/",
+    "seed:plans": "ts-node src/db/plan_catalog/seed.ts"
   },
   "author": "",
   "license": "ISC",
