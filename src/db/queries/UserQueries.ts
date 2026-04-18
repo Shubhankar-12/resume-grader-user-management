@@ -212,4 +212,9 @@ export class UserQueries {
         { $set: { credit_balance: value } },
     );
   }
+
+  async listAllUserIds(): Promise<string[]> {
+    const users = await this.userModel.find({}, { _id: 1 }).lean();
+    return users.map((u: any) => String(u._id));
+  }
 }

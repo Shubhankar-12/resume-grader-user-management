@@ -40,6 +40,7 @@ import swaggerOptions from './swagger';
 import { DataBase } from './db/connection';
 import { startWorkers } from './jobs';
 import { sweepMonthlyExpiry } from './jobs/cron/monthly_expiry_sweeper';
+import { reconcileLedgerDrift } from './jobs/cron/ledger_reconciliation';
 
 async function startServer() {
   try {
@@ -92,6 +93,19 @@ async function startServer() {
         }
       } catch (e) {
         console.error('[cron] monthly expiry sweep failed:', e);
+      }
+    });
+
+    // Nightly 03:00 reconciliation: detect and correct drift between the
+    // credit_balance cache and the ledger-truth balance.
+    cron.schedule('0 3 * * *', async () => {
+      try {
+        const r = await reconcileLedgerDrift();
+        console.log(
+            `[cron] nightly reconciliation: checked=${r.checked}, drift=${r.driftCount}`,
+        );
+      } catch (e) {
+        console.error('[cron] nightly reconciliation failed:', e);
       }
     });
 
