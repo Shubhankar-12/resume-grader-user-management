@@ -44,6 +44,14 @@ export async function ensureIndexes(): Promise<void> {
       plan_id: 1,
       region: 1,
     }, { unique: true, background: true });
+    await db.collection('credit_transactions').createIndex(
+      { user_id: 1, reference_id: 1 },
+      { unique: true, background: true, name: 'unique_user_reference' },
+    );
+    await db.collection('credit_transactions').createIndex(
+      { user_id: 1, expires_on: 1, created_on: 1 },
+      { background: true, name: 'balance_aggregation' },
+    );
 
     logger.info('MongoDB indexes ensured');
   } catch (err) {
