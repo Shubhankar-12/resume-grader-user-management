@@ -28,6 +28,7 @@ console.log('logger file path ' + LOG_FILE_PATH);
 
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
+import cron from 'node-cron';
 import { requestLogger } from './common_middleware/requestLogger';
 import { createGeneralRateLimiter } from './common_middleware/rateLimiter';
 import { v1Router } from './routes';
@@ -38,6 +39,7 @@ import swaggerOptions from './swagger';
 // opening a db connection
 import { DataBase } from './db/connection';
 import { startWorkers } from './jobs';
+import { sweepMonthlyExpiry } from './jobs/cron/monthly_expiry_sweeper';
 
 async function startServer() {
   try {
@@ -77,6 +79,21 @@ async function startServer() {
     // Start BullMQ workers
     startWorkers();
     global.logger.info("BullMQ workers started");
+
+    // Hourly sweep: reconcile credit_balance cache for users whose monthly
+    // subscription grants have just expired.
+    cron.schedule('0 * * * *', async () => {
+      try {
+        const r = await sweepMonthlyExpiry();
+        if (r.expiredGrantCount > 0) {
+          console.log(
+              `[cron] monthly expiry sweep: ${r.expiredGrantCount} grants, ${r.affectedUserCount} users`,
+          );
+        }
+      } catch (e) {
+        console.error('[cron] monthly expiry sweep failed:', e);
+      }
+    });
 
     Sentry.setupExpressErrorHandler(app);
 
