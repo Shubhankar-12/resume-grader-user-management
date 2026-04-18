@@ -19,7 +19,8 @@
     "lint:fix": "eslint --fix src/",
     "seed:plans": "ts-node src/db/plan_catalog/seed.ts",
     "seed:packs": "ts-node src/db/credit_pack/seed.ts",
-    "migrate:001": "ts-node src/db/migrations/001-backfill-subscription-provider.ts"
+    "migrate:001": "ts-node src/db/migrations/001-backfill-subscription-provider.ts",
+    "migrate:002": "ts-node src/db/migrations/002-backfill-credit-balance.ts"
   },
   "author": "",
   "license": "ISC",
