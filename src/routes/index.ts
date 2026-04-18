@@ -11,6 +11,7 @@ import { jobStreamRouter } from './JobStreamRouter';
 import { aiAnalyticsRouter } from './AIAnalyticsRouter';
 import { applicationTrackerRouter } from './ApplicationTrackerRouter';
 import billingRouter from './BillingRouter';
+import plansRouter from './PlansRouter';
 const v1Router = express.Router();
 
 v1Router.use('/media', mediaRouter);
@@ -25,4 +26,5 @@ v1Router.use('/jobs', jobStreamRouter);
 v1Router.use('/ai', aiAnalyticsRouter);
 v1Router.use('/application-tracker', applicationTrackerRouter);
 v1Router.use('/billing', billingRouter);
+v1Router.use('/plans', plansRouter);
 export { v1Router };
