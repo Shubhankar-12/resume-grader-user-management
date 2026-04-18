@@ -27,6 +27,7 @@ implements UseCase<AnalysisRequest, Response> {
   async execute({
     request, auth,
   }: AnalysisRequest): Promise<Response> {
+    let projectsWithReadmes;
     try {
       const req_project_ids = request.projects.map((project) => project.id);
       const existingAnalysis = await projectAnalysisQueries.getProjectAnalysis({
@@ -41,7 +42,7 @@ implements UseCase<AnalysisRequest, Response> {
       const decodedToken = jwt.decode(token) as any;
       const github_username = decodedToken.user.username;
 
-      const projectsWithReadmes = await Promise.all(
+      projectsWithReadmes = await Promise.all(
           request.projects.map(async (project) => {
             const readme = await fetchReadme(github_username, project.name);
             return {
@@ -50,12 +51,19 @@ implements UseCase<AnalysisRequest, Response> {
             };
           })
       );
+    } catch (error) {
+      console.error('Unexpected error in CreateProjectAnalysisUseCase (pre-AI):', error);
+      return errClass(new InternalServerError());
+    }
 
-      const analysisResp = await generateResumeProjectAnalysis(
-          request.role,
-          projectsWithReadmes
-      );
+    // AI call lives outside the try/catch so infra failures bubble up to the
+    // controller for credit refund.
+    const analysisResp = await generateResumeProjectAnalysis(
+        request.role,
+        projectsWithReadmes
+    );
 
+    try {
       if (!analysisResp) return errClass(new InternalServerError());
 
       const analysisResult = Array.isArray(analysisResp) ? analysisResp : (analysisResp as any).projects;
@@ -77,6 +85,7 @@ implements UseCase<AnalysisRequest, Response> {
             };
           });
 
+      const req_project_ids = request.projects.map((project) => project.id);
       const creatObj = {
         user_id: request.user_id,
         role: request.role,
@@ -91,7 +100,7 @@ implements UseCase<AnalysisRequest, Response> {
         await projectAnalysisQueries.getProjectAnalysisById(resp._id);
       return successClass(projectAnalysis[0]);
     } catch (error) {
-      console.error('Unexpected error in CreateProjectAnalysisUseCase:', error);
+      console.error('Unexpected error in CreateProjectAnalysisUseCase (post-AI):', error);
       return errClass(new InternalServerError());
     }
   }

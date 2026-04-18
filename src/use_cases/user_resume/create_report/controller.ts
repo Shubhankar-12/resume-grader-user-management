@@ -6,6 +6,7 @@ import { CreateReportUseCase } from './usecase';
 import { CreateReportDtoConverter } from './dto';
 import { ICreateReportRequest } from './request';
 import { logUseCaseError } from '../../../logger';
+import type { CreditContext } from '../../../common_middleware/creditMiddleware';
 
 class CreateReportController extends BaseController {
   private createReportUseCase: CreateReportUseCase;
@@ -19,9 +20,13 @@ class CreateReportController extends BaseController {
     const data: ICreateReportRequest = req.body;
     const userId = res.locals.auth.decoded_token.user?.id;
     const dtoObj = new CreateReportDtoConverter(data, userId as string);
-    const result = await this.createReportUseCase.execute(
-        dtoObj.getDtoObject()
-    );
+    const creditContext = (res.locals as any).creditContext as
+      | CreditContext
+      | undefined;
+    const result = await this.createReportUseCase.execute({
+      dto: dtoObj.getDtoObject(),
+      creditContext,
+    });
     if (result.isErrClass()) {
       logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({

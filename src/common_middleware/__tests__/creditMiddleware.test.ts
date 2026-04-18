@@ -5,6 +5,7 @@ import {
 const mocks = vi.hoisted(() => ({
   tryDeduct: vi.fn(),
   recordConsumption: vi.fn(),
+  recordRefund: vi.fn(),
   increment: vi.fn(),
 }));
 
@@ -13,10 +14,17 @@ vi.mock('../../db/queries', () => ({
     tryDeductCreditBalance: mocks.tryDeduct,
     incrementCreditBalance: mocks.increment,
   },
-  creditTransactionQueries: { recordConsumption: mocks.recordConsumption },
+  creditTransactionQueries: {
+    recordConsumption: mocks.recordConsumption,
+    recordRefund: mocks.recordRefund,
+  },
 }));
 
-import { requireCredits } from '../creditMiddleware';
+import {
+  requireCredits,
+  isInfraError,
+  refundCreditsOnInfraError,
+} from '../creditMiddleware';
 
 function makeReqRes(userId = 'u1') {
   return {
@@ -82,5 +90,79 @@ describe('requireCredits middleware', () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: 'CREDIT_LEDGER_ERROR' }));
     expect(next).not.toHaveBeenCalled();
+  });
+});
+
+describe('isInfraError', () => {
+  it.each([
+    ['OpenAI provider 503', true],
+    ['ECONNRESET', true],
+    ['socket hang up', true],
+    ['Request timeout', true],
+    ['Anthropic rate limit exceeded', true],
+    ['Gemini network error', true],
+    ['502 Bad Gateway', true],
+    ['Validation failed: resume_id required', false],
+    ['Extracted resume not found', false],
+    ['unsupported file format', false],
+  ])('%s => %s', (msg, expected) => {
+    expect(isInfraError(new Error(msg))).toBe(expected);
+  });
+
+  it('treats non-Error values permissively (no infra match)', () => {
+    expect(isInfraError(null)).toBe(false);
+    expect(isInfraError(undefined)).toBe(false);
+  });
+});
+
+describe('refundCreditsOnInfraError', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('refunds when infra error present and context attached', async () => {
+    mocks.recordRefund.mockResolvedValue({});
+    mocks.increment.mockResolvedValue(undefined);
+    const res = {
+      locals: {
+        creditContext: {
+          userId: 'u1', cost: 2, action: 'job_match', preJobId: 'job-123',
+        },
+      },
+    } as any;
+    await refundCreditsOnInfraError(res, new Error('OpenAI 503'));
+    expect(mocks.recordRefund).toHaveBeenCalledWith('u1', 'job-123', 2);
+    expect(mocks.increment).toHaveBeenCalledWith('u1', 2);
+  });
+
+  it('does NOT refund for user errors', async () => {
+    const res = {
+      locals: {
+        creditContext: {
+          userId: 'u1', cost: 2, action: 'job_match', preJobId: 'job-123',
+        },
+      },
+    } as any;
+    await refundCreditsOnInfraError(res, new Error('resume_id required'));
+    expect(mocks.recordRefund).not.toHaveBeenCalled();
+    expect(mocks.increment).not.toHaveBeenCalled();
+  });
+
+  it('no-ops when creditContext missing', async () => {
+    const res = { locals: {} } as any;
+    await refundCreditsOnInfraError(res, new Error('ECONNRESET'));
+    expect(mocks.recordRefund).not.toHaveBeenCalled();
+  });
+
+  it('swallows downstream refund failures', async () => {
+    mocks.recordRefund.mockRejectedValue(new Error('ledger down'));
+    const res = {
+      locals: {
+        creditContext: {
+          userId: 'u1', cost: 1, action: 'cover_letter', preJobId: 'job-xyz',
+        },
+      },
+    } as any;
+    await expect(
+        refundCreditsOnInfraError(res, new Error('Gemini timeout'))
+    ).resolves.toBeUndefined();
   });
 });

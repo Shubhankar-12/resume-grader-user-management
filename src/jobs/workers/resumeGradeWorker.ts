@@ -1,19 +1,45 @@
 import { jobQueries } from '../../db/queries/JobQueries';
 import {
   reportQueries, extractedResumeQueries,
+  creditTransactionQueries, userQueries,
 } from '../../db/queries';
 import { generateResumeReportFromExtractedText } from '../../prompts';
+import {
+  isInfraError,
+  type CreditContext,
+} from '../../common_middleware/creditMiddleware';
 
 interface ResumeGradeJobData {
   jobId: string;
   resume_id: string;
   user_id: string;
+  __credits?: CreditContext;
+}
+
+async function refundIfInfra(
+    credits: CreditContext | undefined,
+    err: unknown
+): Promise<void> {
+  if (!credits) return;
+  if (!isInfraError(err)) return;
+  try {
+    await creditTransactionQueries.recordRefund(
+        credits.userId, credits.preJobId, credits.cost
+    );
+    await userQueries.incrementCreditBalance(credits.userId, credits.cost);
+  } catch (refundErr) {
+    console.error(
+        '[resumeGradeWorker] Failed to refund credits for job',
+        credits.preJobId,
+        refundErr
+    );
+  }
 }
 
 export async function processResumeGradeJob(
     data: ResumeGradeJobData
 ): Promise<void> {
-  const { jobId, resume_id } = data;
+  const { jobId, resume_id, __credits } = data;
 
   try {
     await jobQueries.updateStatus(jobId, 'processing');
@@ -70,5 +96,7 @@ export async function processResumeGradeJob(
     const message =
       error instanceof Error ? error.message : 'Unknown worker error';
     await jobQueries.updateStatus(jobId, 'failed', { error: message });
+    // Refund credits on infra failure (provider outage, network, etc.)
+    await refundIfInfra(__credits, error);
   }
 }

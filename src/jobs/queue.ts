@@ -1,4 +1,4 @@
-import { Queue } from "bullmq";
+import { Queue, JobsOptions } from "bullmq";
 import { redisClient } from "../services/redis";
 
 const redisConnection = redisClient.getClient();
@@ -14,7 +14,8 @@ export const aiQueue = new Queue("ai-jobs", { connection });
 
 export async function enqueueJob(
   type: string,
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  options?: JobsOptions
 ): Promise<void> {
   await aiQueue.add(type, data, {
     attempts: 3,
@@ -24,5 +25,6 @@ export async function enqueueJob(
     },
     removeOnComplete: 100,
     removeOnFail: 50,
+    ...options,
   });
 }

@@ -2,8 +2,13 @@ import { jobQueries } from '../../db/queries/JobQueries';
 import {
   extractedResumeQueries,
   coverLetterQueries,
+  creditTransactionQueries, userQueries,
 } from '../../db/queries';
 import { generateCoverLetterStreaming } from '../../prompts';
+import {
+  isInfraError,
+  type CreditContext,
+} from '../../common_middleware/creditMiddleware';
 
 interface CoverLetterJobData {
   jobId: string;
@@ -12,12 +17,33 @@ interface CoverLetterJobData {
   role: string;
   company: string;
   job_description: string;
+  __credits?: CreditContext;
+}
+
+async function refundIfInfra(
+    credits: CreditContext | undefined,
+    err: unknown
+): Promise<void> {
+  if (!credits) return;
+  if (!isInfraError(err)) return;
+  try {
+    await creditTransactionQueries.recordRefund(
+        credits.userId, credits.preJobId, credits.cost
+    );
+    await userQueries.incrementCreditBalance(credits.userId, credits.cost);
+  } catch (refundErr) {
+    console.error(
+        '[coverLetterWorker] Failed to refund credits for job',
+        credits.preJobId,
+        refundErr
+    );
+  }
 }
 
 export async function processCoverLetterJob(
     data: CoverLetterJobData
 ): Promise<void> {
-  const { jobId, resume_id, user_id, role, company, job_description } = data;
+  const { jobId, resume_id, user_id, role, company, job_description, __credits } = data;
 
   try {
     await jobQueries.updateStatus(jobId, 'processing');
@@ -71,5 +97,7 @@ export async function processCoverLetterJob(
     const message =
       error instanceof Error ? error.message : 'Unknown worker error';
     await jobQueries.updateStatus(jobId, 'failed', { error: message });
+    // Refund credits on infra failure (provider outage, network, etc.)
+    await refundIfInfra(__credits, error);
   }
 }

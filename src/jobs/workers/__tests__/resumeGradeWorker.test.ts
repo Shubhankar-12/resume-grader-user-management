@@ -7,6 +7,8 @@ const {
   mockCreate,
   mockGetExtractedResume,
   mockGenerateReport,
+  mockRecordRefund,
+  mockIncrementCreditBalance,
 } = vi.hoisted(() => ({
   mockUpdateStatus: vi.fn(),
   mockIncrementAttempts: vi.fn(),
@@ -14,6 +16,8 @@ const {
   mockCreate: vi.fn(),
   mockGetExtractedResume: vi.fn(),
   mockGenerateReport: vi.fn(),
+  mockRecordRefund: vi.fn(),
+  mockIncrementCreditBalance: vi.fn(),
 }));
 
 vi.mock("../../../db/queries/JobQueries", () => ({
@@ -30,6 +34,12 @@ vi.mock("../../../db/queries", () => ({
   },
   extractedResumeQueries: {
     getExtractedResumebyResumeId: mockGetExtractedResume,
+  },
+  creditTransactionQueries: {
+    recordRefund: mockRecordRefund,
+  },
+  userQueries: {
+    incrementCreditBalance: mockIncrementCreditBalance,
   },
 }));
 
@@ -141,5 +151,51 @@ describe("Resume Grade Worker", () => {
     expect(mockUpdateStatus).toHaveBeenCalledWith("job-123", "failed", {
       error: "OpenAI API timeout",
     });
+  });
+
+  it("refunds credits when an infra error occurs and __credits present", async () => {
+    const jobData = {
+      jobId: "job-123",
+      resume_id: "resume-456",
+      user_id: "user-789",
+      __credits: {
+        userId: "user-789",
+        cost: 3,
+        action: "resume_grade" as const,
+        preJobId: "pre-abc",
+      },
+    };
+
+    mockGetReportByResumeId.mockResolvedValue([]);
+    mockGetExtractedResume.mockResolvedValue([{ extractedText: "t" }]);
+    mockGenerateReport.mockRejectedValue(new Error("OpenAI 503 Service Unavailable"));
+
+    await processResumeGradeJob(jobData);
+
+    expect(mockRecordRefund).toHaveBeenCalledWith("user-789", "pre-abc", 3);
+    expect(mockIncrementCreditBalance).toHaveBeenCalledWith("user-789", 3);
+  });
+
+  it("does NOT refund credits for user-error failures", async () => {
+    const jobData = {
+      jobId: "job-123",
+      resume_id: "resume-456",
+      user_id: "user-789",
+      __credits: {
+        userId: "user-789",
+        cost: 3,
+        action: "resume_grade" as const,
+        preJobId: "pre-abc",
+      },
+    };
+
+    mockGetReportByResumeId.mockResolvedValue([]);
+    mockGetExtractedResume.mockResolvedValue([{ extractedText: "t" }]);
+    mockGenerateReport.mockRejectedValue(new Error("resume content invalid"));
+
+    await processResumeGradeJob(jobData);
+
+    expect(mockRecordRefund).not.toHaveBeenCalled();
+    expect(mockIncrementCreditBalance).not.toHaveBeenCalled();
   });
 });

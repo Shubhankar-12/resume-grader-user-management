@@ -2,20 +2,46 @@ import { jobQueries } from '../../db/queries/JobQueries';
 import {
   extractedResumeQueries,
   tailoredResumeQueries,
+  creditTransactionQueries, userQueries,
 } from '../../db/queries';
 import { generateTailoredResume } from '../../prompts';
+import {
+  isInfraError,
+  type CreditContext,
+} from '../../common_middleware/creditMiddleware';
 
 interface TailoredResumeJobData {
   jobId: string;
   resume_id: string;
   user_id: string;
   job_description: string;
+  __credits?: CreditContext;
+}
+
+async function refundIfInfra(
+    credits: CreditContext | undefined,
+    err: unknown
+): Promise<void> {
+  if (!credits) return;
+  if (!isInfraError(err)) return;
+  try {
+    await creditTransactionQueries.recordRefund(
+        credits.userId, credits.preJobId, credits.cost
+    );
+    await userQueries.incrementCreditBalance(credits.userId, credits.cost);
+  } catch (refundErr) {
+    console.error(
+        '[tailoredResumeWorker] Failed to refund credits for job',
+        credits.preJobId,
+        refundErr
+    );
+  }
 }
 
 export async function processTailoredResumeJob(
     data: TailoredResumeJobData
 ): Promise<void> {
-  const { jobId, resume_id, user_id, job_description } = data;
+  const { jobId, resume_id, user_id, job_description, __credits } = data;
 
   try {
     await jobQueries.updateStatus(jobId, 'processing');
@@ -63,5 +89,7 @@ export async function processTailoredResumeJob(
     const message =
       error instanceof Error ? error.message : 'Unknown worker error';
     await jobQueries.updateStatus(jobId, 'failed', { error: message });
+    // Refund credits on infra failure (provider outage, network, etc.)
+    await refundIfInfra(__credits, error);
   }
 }

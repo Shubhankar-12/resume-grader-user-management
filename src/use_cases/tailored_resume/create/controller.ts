@@ -6,6 +6,7 @@ import { CreateTailoredResumeUseCase } from './usecase';
 import { CreateTailoredResumeDtoConverter } from './dto';
 import { ICreateTailoredResumeRequest } from './request';
 import { logUseCaseError } from '../../../logger';
+import type { CreditContext } from '../../../common_middleware/creditMiddleware';
 
 class CreateTailoredResumeController extends BaseController {
   private createTailoredResumeUseCase: CreateTailoredResumeUseCase;
@@ -18,9 +19,13 @@ class CreateTailoredResumeController extends BaseController {
   async executeImpl(req: Request, res: Response): Promise<void> {
     const data: ICreateTailoredResumeRequest = req.body;
     const dtoObj = new CreateTailoredResumeDtoConverter(data);
-    const result = await this.createTailoredResumeUseCase.execute(
-        dtoObj.getDtoObject()
-    );
+    const creditContext = (res.locals as any).creditContext as
+      | CreditContext
+      | undefined;
+    const result = await this.createTailoredResumeUseCase.execute({
+      dto: dtoObj.getDtoObject(),
+      creditContext,
+    });
     if (result.isErrClass()) {
       logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({

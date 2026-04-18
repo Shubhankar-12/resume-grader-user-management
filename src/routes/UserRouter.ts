@@ -25,6 +25,7 @@ import {
 } from '../use_cases/users/update_profile';
 import { getRolesController } from '../use_cases/users/get_roles';
 import { createAIRateLimiter } from '../common_middleware/rateLimiter';
+import { requireCredits } from '../common_middleware/creditMiddleware';
 export const userRouter = express.Router();
 const aiLimiter = createAIRateLimiter();
 
@@ -36,6 +37,7 @@ baseRouterHandler.handleWithHooks(
     createProjectAnalysisMiddleware.ensureLoggedIn(),
     createProjectAnalysisMiddleware.ensureValidation(),
     aiLimiter,
+    requireCredits('project_analysis'),
     createProjectAnalysisController.execute()
 );
 baseRouterHandler.handleWithHooks(

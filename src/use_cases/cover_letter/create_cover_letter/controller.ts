@@ -6,6 +6,7 @@ import { CreateCoverLetterUseCase } from './usecase';
 import { CreateCoverLetterDtoConverter } from './dto';
 import { ICreateCoverLetterRequest } from './request';
 import { logUseCaseError } from '../../../logger';
+import type { CreditContext } from '../../../common_middleware/creditMiddleware';
 
 class CreateCoverLetterController extends BaseController {
   private createCoverLetterUseCase: CreateCoverLetterUseCase;
@@ -18,9 +19,13 @@ class CreateCoverLetterController extends BaseController {
   async executeImpl(req: Request, res: Response): Promise<void> {
     const data: ICreateCoverLetterRequest = req.body;
     const dtoObj = new CreateCoverLetterDtoConverter(data);
-    const result = await this.createCoverLetterUseCase.execute(
-        dtoObj.getDtoObject()
-    );
+    const creditContext = (res.locals as any).creditContext as
+      | CreditContext
+      | undefined;
+    const result = await this.createCoverLetterUseCase.execute({
+      dto: dtoObj.getDtoObject(),
+      creditContext,
+    });
     if (result.isErrClass()) {
       logUseCaseError([result.value], { level: 'error' }, res);
       res.locals.response = this.fail({

@@ -16,14 +16,20 @@ import {
 } from './errors';
 import { jobQueries } from '../../../db/queries/JobQueries';
 import { enqueueJob } from '../../../jobs/queue';
+import type { CreditContext } from '../../../common_middleware/creditMiddleware';
 import mongoose from 'mongoose';
 
 type Response = Either<UseCaseError, any>;
 
+interface CreateCoverLetterArgs {
+  dto: ICreateCoverLetterDto;
+  creditContext?: CreditContext;
+}
+
 export class CreateCoverLetterUseCase
-implements UseCase<ICreateCoverLetterDto, Response> {
+implements UseCase<CreateCoverLetterArgs, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
-  async execute(request: ICreateCoverLetterDto): Promise<Response> {
+  async execute({ dto: request, creditContext }: CreateCoverLetterArgs): Promise<Response> {
     try {
       const existingCoverLetter =
         await coverLetterQueries.getCoverLetterbyResumeId({
@@ -54,14 +60,23 @@ implements UseCase<ICreateCoverLetterDto, Response> {
         },
       });
 
-      await enqueueJob("cover-letter", {
-        jobId: job._id.toString(),
-        resume_id: request.resume_id,
-        user_id: request.user_id,
-        job_description: request.job_description,
-        role: request.role,
-        company: request.company,
-      });
+      // Use the credit-middleware's preJobId as the BullMQ job id so the ledger
+      // consumption entry and any later refund share the same reference id.
+      const bullJobId = creditContext?.preJobId;
+
+      await enqueueJob(
+          "cover-letter",
+          {
+            jobId: job._id.toString(),
+            resume_id: request.resume_id,
+            user_id: request.user_id,
+            job_description: request.job_description,
+            role: request.role,
+            company: request.company,
+            ...(creditContext ? { __credits: creditContext } : {}),
+          },
+          bullJobId ? { jobId: bullJobId } : undefined
+      );
 
       return successClass({ job_id: job._id });
     } catch (error) {

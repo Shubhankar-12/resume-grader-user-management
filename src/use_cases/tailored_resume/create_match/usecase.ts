@@ -27,8 +27,9 @@ export class CreateMatchReportUseCase
 implements UseCase<ICreateMatchReportDto, Response> {
   @logUnexpectedUsecaseError({ level: "error" })
   async execute(request: ICreateMatchReportDto): Promise<Response> {
+    let existingResume;
     try {
-      const existingResume =
+      existingResume =
         await extractedResumeQueries.getExtractedResumebyResumeId(request);
 
       if (existingResume.length == 0) {
@@ -45,12 +46,19 @@ implements UseCase<ICreateMatchReportDto, Response> {
       if (existingMatch.length > 0) {
         return successClass(existingMatch[0]);
       }
+    } catch (error) {
+      console.error('Unexpected error in CreateMatchReportUseCase (pre-AI):', error);
+      return errClass(new InternalServerError());
+    }
 
-      const createMatchReportData = await generateResumeJobMatchReport(
-          existingResume[0],
-          request.resume_id
-      );
+    // AI call + its persistence live outside the try/catch so that infra
+    // failures bubble up to the controller, which refunds credits.
+    const createMatchReportData = await generateResumeJobMatchReport(
+        existingResume[0],
+        request.resume_id
+    );
 
+    try {
       await resumeMatchQueries.create({
         ...createMatchReportData,
         resume_id: request.resume_id,
@@ -64,7 +72,7 @@ implements UseCase<ICreateMatchReportDto, Response> {
         resumeMatchAnalysis: createMatchReportData.resumeMatchAnalysis,
       });
     } catch (error) {
-      console.error('Unexpected error in CreateMatchReportUseCase:', error);
+      console.error('Unexpected error in CreateMatchReportUseCase (post-AI):', error);
       return errClass(new InternalServerError());
     }
   }
