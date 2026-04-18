@@ -1,0 +1,8 @@
+import { Router, raw } from 'express';
+import { stripeWebhookController } from '../../use_cases/billing/handle_stripe_webhook/controller';
+
+const router = Router();
+
+router.post('/stripe', raw({ type: 'application/json' }), stripeWebhookController);
+
+export default router;
