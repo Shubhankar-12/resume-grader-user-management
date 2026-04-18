@@ -46,3 +46,4 @@ export const aiCostLogQueries = new AICostLogQueries();
 export const applicationQueries = new ApplicationQueries(applicationModel);
 export { planCatalogQueries } from './PlanCatalogQueries';
 export { webhookEventQueries } from './WebhookEventQueries';
+export { creditTransactionQueries } from './CreditTransactionQueries';
