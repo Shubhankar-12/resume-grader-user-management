@@ -5,12 +5,6 @@ import {
   IUser, IUserDocument, IUserModel,
 } from '../user/types';
 
-type UsageType =
-  | 'resumeUploads'
-  | 'tailoredResumes'
-  | 'coverLetters'
-  | 'githubAnalyses';
-
 export class UserQueries {
   private userModel: IUserModel;
 
@@ -195,18 +189,6 @@ export class UserQueries {
     }
     return await this.userModel.updateOne(filter, { $set: updateData });
   }
-
-  updateUserUsage = async (
-      userId: string,
-      usageType: UsageType
-  ): Promise<IUserDocument | null> => {
-    const filter = { _id: new ObjectId(userId) };
-    const update = { $inc: { [`usage.${usageType}`]: 1 } };
-
-    const updatedUser = await this.userModel.findOneAndUpdate(filter, update, { new: true });
-
-    return updatedUser;
-  };
 
   async incrementCreditBalance(userId: string, delta: number): Promise<void> {
     await this.userModel.updateOne(

@@ -19,24 +19,3 @@ export enum OtpStatus {
 }
 
 export const BUCKET_URL_HTTPS = 'https://advait-demo.s3.ap-southeast-2.amazonaws.com';
-
-export const planLimits = {
-  FREE: {
-    resumeUploads: 3,
-    tailoredResumes: 1,
-    coverLetters: 1,
-    githubAnalyses: 0,
-  },
-  BASIC: {
-    resumeUploads: 3,
-    tailoredResumes: 3,
-    coverLetters: 3,
-    githubAnalyses: 3,
-  },
-  PRO: {
-    resumeUploads: Infinity,
-    tailoredResumes: Infinity,
-    coverLetters: Infinity,
-    githubAnalyses: Infinity,
-  },
-};

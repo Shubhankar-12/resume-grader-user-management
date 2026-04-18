@@ -20,7 +20,6 @@ import path from 'path';
 import { config } from './config';
 import { DataBaseLogger } from './logger/DatabaseLogger';
 import cors from 'cors';
-import cron from 'node-cron';
 // import { graphqlUploadExpress } from "graphql-upload";
 
 const FILE_NAME = 'logs';
@@ -37,7 +36,6 @@ import StripeWebhookRouter from './routes/webhooks/StripeWebhookRouter';
 import swaggerOptions from './swagger';
 // opening a db connection
 import { DataBase } from './db/connection';
-import { resetUsageCron } from './helpers/crons/resetUsage';
 import { startWorkers } from './jobs';
 
 async function startServer() {
@@ -73,18 +71,6 @@ async function startServer() {
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.use('/api/v1', v1Router);
-
-    cron.schedule(
-        '0 0 1 * *',
-        async () => {
-          console.log('Running reset usage cron job');
-          await resetUsageCron();
-        },
-        {
-          scheduled: true,
-          timezone: 'Asia/Kolkata',
-        }
-    );
 
     // Start BullMQ workers
     startWorkers();

@@ -18,12 +18,10 @@ import {
   getCoverLetterByIdController,
   getCoverLetterByIdMiddleware,
 } from '../use_cases/cover_letter/get_by_id';
-import { PlanLimitChecker } from '../common_middleware/planMiddleware';
 import { createAIRateLimiter } from '../common_middleware/rateLimiter';
 import { requireCredits } from '../common_middleware/creditMiddleware';
 export const coverLetterRouter = express.Router();
 const aiLimiter = createAIRateLimiter();
-const coverLetterLimiter = new PlanLimitChecker('coverLetters').check();
 
 baseRouterHandler.handleWithHooks(
     coverLetterRouter,
@@ -33,7 +31,6 @@ baseRouterHandler.handleWithHooks(
     createCoverLetterMiddleware.ensureLoggedIn(),
     createCoverLetterMiddleware.ensureValidation(),
     aiLimiter,
-    coverLetterLimiter,
     requireCredits('cover_letter'),
     createCoverLetterController.execute()
 );
@@ -63,6 +60,5 @@ baseRouterHandler.handleWithHooks(
     updateCoverLetterMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
     updateCoverLetterMiddleware.ensureLoggedIn(),
     updateCoverLetterMiddleware.ensureValidation(),
-    coverLetterLimiter,
     updateCoverLetterController.execute()
 );
