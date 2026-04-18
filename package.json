@@ -17,7 +17,8 @@
     "dev_test": "jest ./src/__tests__/index.spec.ts --testTimeout=10000 --verbose",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint:fix": "eslint --fix src/",
-    "seed:plans": "ts-node src/db/plan_catalog/seed.ts"
+    "seed:plans": "ts-node src/db/plan_catalog/seed.ts",
+    "migrate:001": "ts-node src/db/migrations/001-backfill-subscription-provider.ts"
   },
   "author": "",
   "license": "ISC",
