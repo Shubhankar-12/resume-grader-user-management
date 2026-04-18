@@ -43,28 +43,52 @@ export class RazorpayProvider implements PaymentProvider {
     let eventType: NormalizedWebhookEvent['eventType'] = 'unknown';
     const payloadSub = event.payload?.subscription?.entity;
     const payloadPayment = event.payload?.payment?.entity;
+    const payloadOrder = event.payload?.order?.entity;
+    let customerId: string | undefined = payloadSub?.customer_id;
+    let invoiceId: string | undefined = payloadPayment?.id;
 
     switch (event.event) {
       case 'subscription.activated':
       case 'subscription.authenticated':
-        eventType = 'subscription.created'; break;
+        eventType = 'subscription.created';
+        break;
       case 'subscription.charged':
-        eventType = 'subscription.renewed'; break;
+        eventType = 'subscription.renewed';
+        break;
       case 'subscription.cancelled':
       case 'subscription.completed':
-        eventType = 'subscription.cancelled'; break;
+        eventType = 'subscription.cancelled';
+        break;
       case 'payment.failed':
-        eventType = 'payment.failed'; break;
+        eventType = 'payment.failed';
+        break;
+      case 'order.paid': {
+        // Razorpay one-time payment webhook for pack purchases.
+        // Event structure: payload.order.entity (notes carry userId/packId) and payload.payment.entity.
+        eventType = 'pack.purchased';
+        customerId = payloadPayment?.customer_id ?? customerId;
+        break;
+      }
+      case 'refund.created':
+      case 'refund.processed':
+      case 'payment.refunded': {
+        eventType = 'refund.issued';
+        // Razorpay payment id is the original grant's reference_id.
+        invoiceId = payloadPayment?.id ?? invoiceId;
+        customerId = payloadPayment?.customer_id ?? customerId;
+        break;
+      }
     }
 
     return {
       eventType,
-      providerEventId: event.id ?? `${event.event}:${payloadSub?.id ?? payloadPayment?.id}`,
+      providerEventId:
+        event.id ?? `${event.event}:${payloadSub?.id ?? payloadPayment?.id ?? payloadOrder?.id}`,
       provider: 'razorpay',
       subscriptionId: payloadSub?.id,
-      customerId: payloadSub?.customer_id,
-      invoiceId: payloadPayment?.id,
-      metadata: payloadSub?.notes ?? {},
+      customerId,
+      invoiceId,
+      metadata: payloadSub?.notes ?? payloadOrder?.notes ?? {},
       raw: event,
     };
   }

@@ -32,6 +32,7 @@ import { requestLogger } from './common_middleware/requestLogger';
 import { createGeneralRateLimiter } from './common_middleware/rateLimiter';
 import { v1Router } from './routes';
 import StripeWebhookRouter from './routes/webhooks/StripeWebhookRouter';
+import RazorpayWebhookRouter from './routes/webhooks/RazorpayWebhookRouter';
 
 import swaggerOptions from './swagger';
 // opening a db connection
@@ -58,9 +59,10 @@ async function startServer() {
       origin: process.env.FRONTEND_URL || 'http://localhost:3000',
       credentials: true,
     }));
-    // Stripe webhook MUST be mounted before body parsers — signature verification
+    // Stripe + Razorpay webhooks MUST be mounted before body parsers — signature verification
     // needs the exact raw request bytes.
     app.use('/api/v1/webhooks', StripeWebhookRouter);
+    app.use('/api/v1/webhooks', RazorpayWebhookRouter);
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(helmet());

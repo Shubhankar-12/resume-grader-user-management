@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import crypto from 'crypto';
 import { RazorpayProvider } from '../razorpay';
 
 vi.mock('razorpay', () => ({
@@ -8,6 +9,12 @@ vi.mock('razorpay', () => ({
     };
   }),
 }));
+
+function signedBody(event: any, secret: string): { rawBody: Buffer; sig: string } {
+  const rawBody = Buffer.from(JSON.stringify(event));
+  const sig = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+  return { rawBody, sig };
+}
 
 describe('RazorpayProvider', () => {
   it('createCheckoutSession returns short_url as checkoutUrl', async () => {
@@ -20,5 +27,68 @@ describe('RazorpayProvider', () => {
     expect(result.provider).toBe('razorpay');
     expect(result.checkoutUrl).toContain('rzp.io');
     expect(result.sessionId).toBe('sub_abc');
+  });
+
+  it('verifyWebhook normalizes order.paid (pack purchase)', () => {
+    const event = {
+      event: 'order.paid',
+      payload: {
+        order: { entity: { id: 'order_1', notes: { userId: 'u1', packId: 'PACK_25' } } },
+        payment: { entity: { id: 'pay_1', customer_id: 'cust_1' } },
+      },
+    };
+    const { rawBody, sig } = signedBody(event, 'webhook_secret');
+    const provider = new RazorpayProvider('key_id', 'key_secret', 'webhook_secret');
+    const normalized = provider.verifyWebhook(rawBody, sig);
+    expect(normalized.eventType).toBe('pack.purchased');
+    expect(normalized.metadata.userId).toBe('u1');
+    expect(normalized.metadata.packId).toBe('PACK_25');
+    expect(normalized.customerId).toBe('cust_1');
+  });
+
+  it('verifyWebhook normalizes payment.refunded', () => {
+    const event = {
+      event: 'payment.refunded',
+      payload: {
+        refund: { entity: { id: 'rfnd_1' } },
+        payment: { entity: { id: 'pay_1', customer_id: 'cust_1' } },
+      },
+    };
+    const { rawBody, sig } = signedBody(event, 'webhook_secret');
+    const provider = new RazorpayProvider('key_id', 'key_secret', 'webhook_secret');
+    const normalized = provider.verifyWebhook(rawBody, sig);
+    expect(normalized.eventType).toBe('refund.issued');
+    expect(normalized.invoiceId).toBe('pay_1');
+  });
+
+  it('verifyWebhook throws on signature mismatch', () => {
+    const event = { event: 'order.paid', payload: { order: { entity: { id: 'order_1', notes: {} } }, payment: { entity: {} } } };
+    const rawBody = Buffer.from(JSON.stringify(event));
+    const provider = new RazorpayProvider('key_id', 'key_secret', 'webhook_secret');
+    expect(() => provider.verifyWebhook(rawBody, 'bad_signature')).toThrow(/signature mismatch/i);
+  });
+
+  it('verifyWebhook normalizes subscription.charged as subscription.renewed', () => {
+    const event = {
+      event: 'subscription.charged',
+      payload: {
+        subscription: {
+          entity: {
+            id: 'sub_1',
+            customer_id: 'cust_1',
+            notes: { userId: 'u1', planId: 'PRO_IN' },
+            current_end: 1800000000,
+          },
+        },
+        payment: { entity: { id: 'pay_1' } },
+      },
+    };
+    const { rawBody, sig } = signedBody(event, 'webhook_secret');
+    const provider = new RazorpayProvider('key_id', 'key_secret', 'webhook_secret');
+    const normalized = provider.verifyWebhook(rawBody, sig);
+    expect(normalized.eventType).toBe('subscription.renewed');
+    expect(normalized.subscriptionId).toBe('sub_1');
+    expect(normalized.invoiceId).toBe('pay_1');
+    expect(normalized.metadata.userId).toBe('u1');
   });
 });
