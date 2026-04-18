@@ -207,4 +207,27 @@ export class UserQueries {
 
     return updatedUser;
   };
+
+  async incrementCreditBalance(userId: string, delta: number): Promise<void> {
+    await this.userModel.updateOne(
+        { _id: userId },
+        { $inc: { credit_balance: delta } },
+    );
+  }
+
+  async tryDeductCreditBalance(userId: string, cost: number): Promise<boolean> {
+    const result = await this.userModel.findOneAndUpdate(
+        { _id: userId, credit_balance: { $gte: cost } },
+        { $inc: { credit_balance: -cost } },
+        { new: true },
+    );
+    return result != null;
+  }
+
+  async setCreditBalance(userId: string, value: number): Promise<void> {
+    await this.userModel.updateOne(
+        { _id: userId },
+        { $set: { credit_balance: value } },
+    );
+  }
 }

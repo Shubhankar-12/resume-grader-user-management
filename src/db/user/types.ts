@@ -11,6 +11,7 @@ interface IUser {
   region?: 'IN' | 'GLOBAL' | null;
   currency?: 'INR' | 'USD' | null;
   stripe_customer_id?: string | null;
+  credit_balance?: number;
   avatar?: {
     name?: string;
     url?: string;
