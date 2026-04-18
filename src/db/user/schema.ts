@@ -18,6 +18,9 @@ const UserSchema = new Schema(
         required: true,
       },
       razorpay_customer_id: { type: String },
+      region: { type: String, enum: ['IN', 'GLOBAL'], default: null },
+      currency: { type: String, enum: ['INR', 'USD'], default: null },
+      stripe_customer_id: { type: String, default: null },
       avatar: {
         name: { type: String },
         url: { type: String },

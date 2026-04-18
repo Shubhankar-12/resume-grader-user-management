@@ -15,15 +15,37 @@ const PaymentSubscriptionSchema = new Schema(
       plan: {
         type: String,
         required: true,
-        enum: ['FREE', 'BASIC', 'PRO'],
+        enum: ['FREE', 'STARTER', 'BASIC', 'PRO', 'CAREER_PLUS'],
       },
       start_date: { type: Date },
       end_date: { type: Date },
       status: {
         type: String,
-        enum: ['ACTIVE', 'CANCELLED', 'INACTIVE'],
+        enum: ['ACTIVE', 'PAST_DUE', 'CANCELLED', 'INACTIVE'],
         required: true,
       },
+      provider: {
+        type: String,
+        enum: ['razorpay', 'stripe'],
+        required: true,
+        default: 'razorpay',
+      },
+      region: {
+        type: String,
+        enum: ['IN', 'GLOBAL'],
+        required: true,
+        default: 'IN',
+      },
+      currency: {
+        type: String,
+        enum: ['INR', 'USD'],
+        required: true,
+        default: 'INR',
+      },
+      provider_subscription_id: { type: String, default: null },
+      stripe_customer_id: { type: String, default: null },
+      last_renewed_on: { type: Date, default: null },
+      cancelled_on: { type: Date, default: null },
     },
     {
       timestamps: {

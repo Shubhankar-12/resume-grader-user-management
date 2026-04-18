@@ -8,6 +8,9 @@ interface IUser {
   password?: string;
   email: string;
   razorpay_customer_id?: string;
+  region?: 'IN' | 'GLOBAL' | null;
+  currency?: 'INR' | 'USD' | null;
+  stripe_customer_id?: string | null;
   avatar?: {
     name?: string;
     url?: string;
