@@ -45,3 +45,4 @@ export const jobQueries = new JobQueries(jobModel);
 export const aiCostLogQueries = new AICostLogQueries();
 export const applicationQueries = new ApplicationQueries(applicationModel);
 export { planCatalogQueries } from './PlanCatalogQueries';
+export { webhookEventQueries } from './WebhookEventQueries';
