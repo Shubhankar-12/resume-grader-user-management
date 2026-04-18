@@ -52,4 +52,27 @@ describe('StripeProvider', () => {
     const provider = new StripeProvider('sk_test_xxx', 'whsec_xxx');
     expect(() => provider.verifyWebhook(Buffer.from('{}'), 'bad')).toThrow('Invalid signature');
   });
+
+  it('verifyWebhook normalizes pack purchase (checkout.session.completed mode=payment)', () => {
+    mockConstructEvent.mockReturnValue({
+      id: 'evt_pack_1', type: 'checkout.session.completed',
+      data: { object: { id: 'cs_pack_1', mode: 'payment', customer: 'cus_1', metadata: { packId: 'PACK_25', userId: 'u1' } } },
+    });
+    const provider = new StripeProvider('sk_test_xxx', 'whsec_xxx');
+    const event = provider.verifyWebhook(Buffer.from('{}'), 'sig');
+    expect(event.eventType).toBe('pack.purchased');
+    expect(event.metadata.packId).toBe('PACK_25');
+    expect(event.metadata.userId).toBe('u1');
+  });
+
+  it('verifyWebhook normalizes charge.refunded', () => {
+    mockConstructEvent.mockReturnValue({
+      id: 'evt_ref_1', type: 'charge.refunded',
+      data: { object: { id: 'ch_1', invoice: 'in_1', customer: 'cus_1' } },
+    });
+    const provider = new StripeProvider('sk_test_xxx', 'whsec_xxx');
+    const event = provider.verifyWebhook(Buffer.from('{}'), 'sig');
+    expect(event.eventType).toBe('refund.issued');
+    expect(event.invoiceId).toBe('in_1');
+  });
 });

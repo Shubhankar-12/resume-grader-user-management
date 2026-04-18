@@ -48,8 +48,12 @@ export class StripeProvider implements PaymentProvider {
 
     switch (event.type) {
       case 'checkout.session.completed': {
-        eventType = 'subscription.created';
         const obj = event.data.object as Stripe.Checkout.Session;
+        if (obj.mode === 'payment') {
+          eventType = 'pack.purchased';
+        } else {
+          eventType = 'subscription.created';
+        }
         subscriptionId = typeof obj.subscription === 'string' ? obj.subscription : obj.subscription?.id;
         customerId = typeof obj.customer === 'string' ? obj.customer : obj.customer?.id ?? undefined;
         break;
@@ -75,6 +79,13 @@ export class StripeProvider implements PaymentProvider {
         const obj = event.data.object as Stripe.Subscription;
         subscriptionId = obj.id;
         customerId = typeof obj.customer === 'string' ? obj.customer : obj.customer.id;
+        break;
+      }
+      case 'charge.refunded': {
+        eventType = 'refund.issued';
+        const obj = event.data.object as Stripe.Charge;
+        invoiceId = (obj as unknown as { invoice?: string }).invoice ?? obj.id;
+        customerId = typeof obj.customer === 'string' ? obj.customer : obj.customer?.id;
         break;
       }
     }

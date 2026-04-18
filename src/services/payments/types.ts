@@ -19,7 +19,14 @@ export interface CheckoutSessionResult {
 }
 
 export interface NormalizedWebhookEvent {
-  eventType: 'subscription.created' | 'subscription.renewed' | 'subscription.cancelled' | 'payment.failed' | 'unknown';
+  eventType:
+    | 'subscription.created'
+    | 'subscription.renewed'
+    | 'subscription.cancelled'
+    | 'payment.failed'
+    | 'pack.purchased'
+    | 'refund.issued'
+    | 'unknown';
   providerEventId: string;
   provider: ProviderName;
   subscriptionId?: string;
