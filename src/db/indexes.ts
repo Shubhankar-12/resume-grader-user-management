@@ -40,6 +40,10 @@ export async function ensureIndexes(): Promise<void> {
       type: 1,
       status: 1,
     }, { background: true });
+    await db.collection('plan_catalog').createIndex({
+      plan_id: 1,
+      region: 1,
+    }, { unique: true, background: true });
 
     logger.info('MongoDB indexes ensured');
   } catch (err) {
