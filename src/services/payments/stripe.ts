@@ -14,15 +14,22 @@ export class StripeProvider implements PaymentProvider {
   }
 
   async createCheckoutSession(params: CheckoutSessionParams): Promise<CheckoutSessionResult> {
+    if (!params.providerPriceId) {
+      throw new Error('Stripe checkout requires providerPriceId');
+    }
     const session = await this.client.checkout.sessions.create({
-      mode: 'subscription',
+      mode: params.mode ?? 'subscription',
       line_items: [{ price: params.providerPriceId, quantity: 1 }],
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
       customer_email: params.existingCustomerId ? undefined : params.customerEmail,
       customer: params.existingCustomerId,
       client_reference_id: params.userId,
-      metadata: { userId: params.userId, planId: params.planId },
+      metadata: {
+        userId: params.userId,
+        planId: params.planId,
+        ...(params.metadata ?? {}),
+      },
     });
     return {
       checkoutUrl: session.url!,

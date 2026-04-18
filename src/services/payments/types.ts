@@ -5,11 +5,15 @@ export type Currency = 'INR' | 'USD';
 export interface CheckoutSessionParams {
   userId: string;
   planId: string;
-  providerPriceId: string;
+  providerPriceId: string | null;
+  mode?: 'subscription' | 'payment';
+  amount?: number;
+  currency?: Currency;
   successUrl: string;
   cancelUrl: string;
   customerEmail: string;
   existingCustomerId?: string;
+  metadata?: Record<string, string>;
 }
 
 export interface CheckoutSessionResult {

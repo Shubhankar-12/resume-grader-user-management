@@ -15,11 +15,41 @@ export class RazorpayProvider implements PaymentProvider {
   }
 
   async createCheckoutSession(params: CheckoutSessionParams): Promise<CheckoutSessionResult> {
+    if (params.mode === 'payment') {
+      // Pack purchase (one-time payment). Razorpay Orders are the primitive;
+      // the frontend must complete checkout via Razorpay Checkout JS SDK using the
+      // returned order id. `checkoutUrl` here is a placeholder that the frontend can
+      // parse — we do not rely on Razorpay's hosted payment page in Phase 2.
+      if (params.amount == null) {
+        throw new Error('Razorpay order mode requires amount (paise)');
+      }
+      const order = await (this.client as any).orders.create({
+        amount: params.amount,
+        currency: params.currency ?? 'INR',
+        notes: {
+          userId: params.userId,
+          packId: params.planId,
+          ...(params.metadata ?? {}),
+        },
+      });
+      return {
+        checkoutUrl: `https://api.razorpay.com/v1/checkout/embedded?order_id=${order.id}`,
+        sessionId: order.id,
+        provider: 'razorpay',
+      };
+    }
+    if (!params.providerPriceId) {
+      throw new Error('Razorpay subscription checkout requires providerPriceId');
+    }
     const sub = await this.client.subscriptions.create({
       plan_id: params.providerPriceId,
       customer_notify: 1,
       total_count: 12,
-      notes: { userId: params.userId, planId: params.planId },
+      notes: {
+        userId: params.userId,
+        planId: params.planId,
+        ...(params.metadata ?? {}),
+      },
     });
     return {
       checkoutUrl: (sub as any).short_url,
