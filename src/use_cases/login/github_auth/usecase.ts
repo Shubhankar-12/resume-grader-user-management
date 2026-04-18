@@ -8,7 +8,7 @@ import {
   UseCaseError,
 } from '../../../interfaces';
 import {
-  loginQueries, userQueries,
+  creditTransactionQueries, loginQueries, userQueries,
 } from '../../../db';
 import { createToken } from '../../common/CreateToken';
 
@@ -74,6 +74,17 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
       } else {
         const newUser = await userQueries.create(userData);
         userId = newUser._id.toString();
+
+        // Grant 10 signup credits on new user creation.
+        await creditTransactionQueries.recordGrant({
+          userId,
+          delta: 10,
+          reason: 'signup_grant',
+          source: 'system',
+          referenceId: `signup:${userId}`,
+          expiresOn: null,
+        });
+        await userQueries.incrementCreditBalance(userId, 10);
       }
       const loginData = await loginQueries.findLoginByUserId(userId);
 

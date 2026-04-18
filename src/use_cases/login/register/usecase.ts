@@ -8,7 +8,7 @@ import {
   UseCaseError,
 } from '../../../interfaces';
 import {
-  loginQueries, userQueries,
+  creditTransactionQueries, loginQueries, userQueries,
 } from '../../../db';
 import {
   UserAlreadyExists, RoleDosentExists,
@@ -38,6 +38,17 @@ implements UseCase<IRegisterOwnerDto, Response> {
       status: 'ENABLED',
     });
     // console.log("userResult", userResult);
+
+    // Grant 10 signup credits on new user creation.
+    await creditTransactionQueries.recordGrant({
+      userId: String(userResult._id),
+      delta: 10,
+      reason: 'signup_grant',
+      source: 'system',
+      referenceId: `signup:${userResult._id}`,
+      expiresOn: null,
+    });
+    await userQueries.incrementCreditBalance(String(userResult._id), 10);
 
     const loginObj = await loginQueries.findLoginByUserId(userResult._id);
 
