@@ -79,4 +79,16 @@ describe('createCheckoutSessionUseCase', () => {
       updateUserRegion: vi.fn(),
     })).rejects.toThrow(/No plan found/i);
   });
+
+  it('handles getUserById returning an array', async () => {
+    mockGetUserById.mockResolvedValue([{ _id: 'u1', email: 'a@b.com', region: 'GLOBAL', currency: 'USD' }]);
+    mockFindByPlanAndRegion.mockResolvedValue({ plan_id: 'PRO', region: 'GLOBAL', provider: 'stripe', provider_price_id: 'price_pro' });
+    mockProviderCheckout.mockResolvedValue({ checkoutUrl: 'https://x', sessionId: 'cs_1', provider: 'stripe' });
+
+    const result = await createCheckoutSessionUseCase({
+      userId: 'u1', planId: 'PRO', requestedCurrency: 'USD', detectedRegion: 'GLOBAL',
+      updateUserRegion: vi.fn(),
+    });
+    expect(result.checkoutUrl).toBe('https://x');
+  });
 });

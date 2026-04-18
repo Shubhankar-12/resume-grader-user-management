@@ -13,7 +13,8 @@ interface Input {
 
 export async function createCheckoutSessionUseCase(input: Input) {
   const userQ = new UserQueries(userModel);
-  const user = await userQ.getUserById(input.userId);
+  const users = await userQ.getUserById(input.userId);
+  const user = Array.isArray(users) ? users[0] : users;
   if (!user) throw new Error('User not found');
 
   // Currency lock enforcement
