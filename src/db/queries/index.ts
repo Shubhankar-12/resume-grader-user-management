@@ -47,3 +47,4 @@ export const applicationQueries = new ApplicationQueries(applicationModel);
 export { planCatalogQueries } from './PlanCatalogQueries';
 export { webhookEventQueries } from './WebhookEventQueries';
 export { creditTransactionQueries } from './CreditTransactionQueries';
+export { creditPackQueries } from './CreditPackQueries';
