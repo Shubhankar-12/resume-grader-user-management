@@ -17,9 +17,14 @@ export interface CheckoutSessionParams {
 }
 
 export interface CheckoutSessionResult {
-  checkoutUrl: string;
-  sessionId: string;
+  checkoutUrl?: string;            // Stripe returns a hosted URL; Razorpay payment mode omits it
+  sessionId: string;               // Stripe session id OR Razorpay order id / subscription id
   provider: ProviderName;
+  // Populated only when provider === 'razorpay' AND mode === 'payment':
+  razorpayOrderId?: string;
+  razorpayKeyId?: string;
+  amount?: number;                 // paise
+  currency?: Currency;
 }
 
 export interface NormalizedWebhookEvent {
