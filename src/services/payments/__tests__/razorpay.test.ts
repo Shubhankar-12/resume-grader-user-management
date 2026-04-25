@@ -6,6 +6,7 @@ vi.mock('razorpay', () => ({
   default: vi.fn().mockImplementation(function () {
     return {
       subscriptions: { create: vi.fn().mockResolvedValue({ id: 'sub_abc', short_url: 'https://rzp.io/i/abc' }) },
+      orders: { create: vi.fn().mockResolvedValue({ id: 'order_abc' }) },
     };
   }),
 }));
@@ -90,5 +91,28 @@ describe('RazorpayProvider', () => {
     expect(normalized.subscriptionId).toBe('sub_1');
     expect(normalized.invoiceId).toBe('pay_1');
     expect(normalized.metadata.userId).toBe('u1');
+  });
+
+  it('createCheckoutSession payment mode returns razorpay order id + key + amount', async () => {
+    const provider = new RazorpayProvider('key_id_123', 'key_secret', 'webhook_secret');
+    const result = await provider.createCheckoutSession({
+      userId: 'u1',
+      planId: 'PACK_10',
+      providerPriceId: null,
+      mode: 'payment',
+      amount: 9900,
+      currency: 'INR',
+      successUrl: 'https://x/success',
+      cancelUrl: 'https://x/cancel',
+      customerEmail: 'a@b.com',
+      metadata: { packId: 'PACK_10', userId: 'u1' },
+    });
+    expect(result.provider).toBe('razorpay');
+    expect(result.sessionId).toBe('order_abc');
+    expect(result.razorpayOrderId).toBe('order_abc');
+    expect(result.razorpayKeyId).toBe('key_id_123');
+    expect(result.amount).toBe(9900);
+    expect(result.currency).toBe('INR');
+    expect(result.checkoutUrl).toBeUndefined();
   });
 });

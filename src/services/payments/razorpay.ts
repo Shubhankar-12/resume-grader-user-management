@@ -7,19 +7,21 @@ import type {
 export class RazorpayProvider implements PaymentProvider {
   readonly name = 'razorpay' as const;
   private client: Razorpay;
+  private keyId: string;
   private webhookSecret: string;
 
   constructor(keyId: string, keySecret: string, webhookSecret: string) {
+    this.keyId = keyId;
     this.client = new Razorpay({ key_id: keyId, key_secret: keySecret });
     this.webhookSecret = webhookSecret;
   }
 
   async createCheckoutSession(params: CheckoutSessionParams): Promise<CheckoutSessionResult> {
     if (params.mode === 'payment') {
-      // Pack purchase (one-time payment). Razorpay Orders are the primitive;
-      // the frontend must complete checkout via Razorpay Checkout JS SDK using the
-      // returned order id. `checkoutUrl` here is a placeholder that the frontend can
-      // parse — we do not rely on Razorpay's hosted payment page in Phase 2.
+      // Pack purchase (one-time payment). Razorpay Orders are the primitive — the
+      // frontend opens Razorpay Checkout JS with the returned order id. We do NOT
+      // return a checkoutUrl; the frontend branches on `provider` and opens the
+      // modal directly.
       if (params.amount == null) {
         throw new Error('Razorpay order mode requires amount (paise)');
       }
@@ -33,9 +35,12 @@ export class RazorpayProvider implements PaymentProvider {
         },
       });
       return {
-        checkoutUrl: `https://api.razorpay.com/v1/checkout/embedded?order_id=${order.id}`,
         sessionId: order.id,
         provider: 'razorpay',
+        razorpayOrderId: order.id,
+        razorpayKeyId: this.keyId,
+        amount: params.amount,
+        currency: params.currency ?? 'INR',
       };
     }
     if (!params.providerPriceId) {
