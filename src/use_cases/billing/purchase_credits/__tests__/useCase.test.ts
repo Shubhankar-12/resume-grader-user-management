@@ -4,12 +4,10 @@ const {
   mockGetUserById,
   mockFindByPackAndRegion,
   mockProviderCheckout,
-  mockSubFindOne,
 } = vi.hoisted(() => ({
   mockGetUserById: vi.fn(),
   mockFindByPackAndRegion: vi.fn(),
   mockProviderCheckout: vi.fn(),
-  mockSubFindOne: vi.fn(),
 }));
 
 vi.mock('../../../../db/queries/UserQueries', () => ({
@@ -20,11 +18,6 @@ vi.mock('../../../../db/queries/UserQueries', () => ({
 vi.mock('../../../../db/queries/CreditPackQueries', () => ({
   creditPackQueries: { findByPackAndRegion: mockFindByPackAndRegion },
 }));
-vi.mock('../../../../db/payment_subscription', () => ({
-  paymentSubscriptionModel: {
-    findOne: (...args: unknown[]) => mockSubFindOne(...args),
-  },
-}));
 vi.mock('../../../../db/user', () => ({
   userModel: {},
 }));
@@ -34,20 +27,12 @@ vi.mock('../../../../services/payments', () => ({
 
 import { purchaseCreditsUseCase } from '../index';
 
-function mockActiveSub() {
-  mockSubFindOne.mockReturnValue({ lean: () => Promise.resolve({ _id: 's1', status: 'ACTIVE' }) });
-}
-function mockNoActiveSub() {
-  mockSubFindOne.mockReturnValue({ lean: () => Promise.resolve(null) });
-}
-
 describe('purchaseCreditsUseCase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('returns checkout URL for active subscriber with matching currency', async () => {
-    mockActiveSub();
+  it('returns checkout URL for a user with matching currency', async () => {
     mockGetUserById.mockResolvedValue({
       _id: 'u1', email: 'a@b.com', region: 'GLOBAL', currency: 'USD', stripe_customer_id: 'cus_1',
     });
@@ -81,22 +66,33 @@ describe('purchaseCreditsUseCase', () => {
     expect(result.checkoutUrl).toBe('https://checkout.example/x');
   });
 
-  it('throws SUBSCRIPTION_REQUIRED when no active subscription', async () => {
-    mockNoActiveSub();
+  it('FREE user with no active subscription can purchase a pack', async () => {
+    mockGetUserById.mockResolvedValue({
+      _id: 'u1', email: 'a@b.com', region: 'IN', currency: 'INR',
+    });
+    mockFindByPackAndRegion.mockResolvedValue({
+      pack_id: 'PACK_10', region: 'IN', provider: 'razorpay',
+      provider_price_id: null, amount: 9900, currency: 'INR',
+    });
+    mockProviderCheckout.mockResolvedValue({
+      sessionId: 'order_abc', provider: 'razorpay',
+      razorpayOrderId: 'order_abc', razorpayKeyId: 'key_id_123',
+      amount: 9900, currency: 'INR',
+    });
 
-    await expect(purchaseCreditsUseCase({
+    const result = await purchaseCreditsUseCase({
       userId: 'u1',
-      packId: 'PACK_25',
-      requestedCurrency: 'USD',
-      detectedRegion: 'GLOBAL',
-    })).rejects.toThrow('SUBSCRIPTION_REQUIRED');
+      packId: 'PACK_10',
+      requestedCurrency: 'INR',
+      detectedRegion: 'IN',
+    });
 
-    expect(mockGetUserById).not.toHaveBeenCalled();
-    expect(mockProviderCheckout).not.toHaveBeenCalled();
+    expect(result.provider).toBe('razorpay');
+    expect(result.razorpayOrderId).toBe('order_abc');
+    expect(mockProviderCheckout).toHaveBeenCalled();
   });
 
   it('throws currency lock error when user currency differs from request', async () => {
-    mockActiveSub();
     mockGetUserById.mockResolvedValue({
       _id: 'u1', email: 'a@b.com', region: 'IN', currency: 'INR',
     });
@@ -110,7 +106,6 @@ describe('purchaseCreditsUseCase', () => {
   });
 
   it('throws when pack not found for region', async () => {
-    mockActiveSub();
     mockGetUserById.mockResolvedValue({
       _id: 'u1', email: 'a@b.com', region: 'GLOBAL', currency: 'USD',
     });
@@ -125,17 +120,17 @@ describe('purchaseCreditsUseCase', () => {
   });
 
   it('handles getUserById returning an array (aggregate-style)', async () => {
-    mockActiveSub();
     mockGetUserById.mockResolvedValue([{
       _id: 'u1', email: 'a@b.com', region: 'IN', currency: 'INR', razorpay_customer_id: 'cust_rzp',
     }]);
     mockFindByPackAndRegion.mockResolvedValue({
       pack_id: 'PACK_10', region: 'IN', provider: 'razorpay',
-      provider_price_id: null, amount: 19900, currency: 'INR',
+      provider_price_id: null, amount: 9900, currency: 'INR',
     });
     mockProviderCheckout.mockResolvedValue({
-      checkoutUrl: 'https://api.razorpay.com/v1/checkout/embedded?order_id=ord_1',
       sessionId: 'ord_1', provider: 'razorpay',
+      razorpayOrderId: 'ord_1', razorpayKeyId: 'key_id_123',
+      amount: 9900, currency: 'INR',
     });
 
     const result = await purchaseCreditsUseCase({
@@ -149,7 +144,7 @@ describe('purchaseCreditsUseCase', () => {
     expect(mockProviderCheckout).toHaveBeenCalledWith(expect.objectContaining({
       existingCustomerId: 'cust_rzp',
       providerPriceId: null,
-      amount: 19900,
+      amount: 9900,
       currency: 'INR',
       mode: 'payment',
     }));

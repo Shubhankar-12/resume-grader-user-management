@@ -1,7 +1,6 @@
 import { UserQueries } from '../../../db/queries/UserQueries';
 import { userModel } from '../../../db/user';
 import { creditPackQueries } from '../../../db/queries/CreditPackQueries';
-import { paymentSubscriptionModel } from '../../../db/payment_subscription';
 import { getPaymentProvider, type Region, type Currency } from '../../../services/payments';
 
 interface Input {
@@ -12,16 +11,6 @@ interface Input {
 }
 
 export async function purchaseCreditsUseCase(input: Input) {
-  // Phase 2: credit packs are an add-on for active subscribers only.
-  // Phase 3 removes this gate and makes credits the primary purchase.
-  const activeSub = await paymentSubscriptionModel.findOne({
-    user_id: input.userId,
-    status: 'ACTIVE',
-  }).lean();
-  if (!activeSub) {
-    throw new Error('SUBSCRIPTION_REQUIRED');
-  }
-
   const userQ = new UserQueries(userModel);
   const users = await userQ.getUserById(input.userId);
   const user = Array.isArray(users) ? users[0] : users;
@@ -39,7 +28,7 @@ export async function purchaseCreditsUseCase(input: Input) {
   const provider = getPaymentProvider(effectiveRegion);
   return provider.createCheckoutSession({
     userId: input.userId,
-    planId: input.packId, // pack id reused in planId field for provider metadata
+    planId: input.packId,
     providerPriceId: pack.provider_price_id,
     mode: 'payment',
     amount: pack.amount,

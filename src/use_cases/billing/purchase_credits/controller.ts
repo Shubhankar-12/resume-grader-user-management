@@ -27,9 +27,6 @@ export async function purchaseCreditsController(req: Request, res: Response) {
 
     return res.status(200).json({ body: result });
   } catch (e: any) {
-    if (e.message === 'SUBSCRIPTION_REQUIRED') {
-      return res.status(403).json({ error: 'SUBSCRIPTION_REQUIRED' });
-    }
     return res.status(400).json({ error: e.message });
   }
 }
