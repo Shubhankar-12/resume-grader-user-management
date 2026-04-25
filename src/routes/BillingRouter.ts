@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createCheckoutSessionController } from '../use_cases/billing/create_checkout_session/controller';
 import { purchaseCreditsController } from '../use_cases/billing/purchase_credits/controller';
+import { verifyRazorpayPaymentController } from '../use_cases/billing/verify_razorpay_payment/controller';
 import { getCreditBalanceController } from '../use_cases/billing/get_credit_balance/controller';
 import { listCreditPacksController } from '../use_cases/billing/list_credit_packs/controller';
 import { requestAuthenticator } from '../common_middleware/authentication/authenticate';
@@ -18,6 +19,12 @@ router.post(
     '/purchase-credits',
     requestAuthenticator.authenticate([POLICIES.ADMIN_POLICY]),
     purchaseCreditsController
+);
+
+router.post(
+    '/razorpay/verify',
+    requestAuthenticator.authenticate([POLICIES.ADMIN_POLICY]),
+    verifyRazorpayPaymentController
 );
 
 router.get(
