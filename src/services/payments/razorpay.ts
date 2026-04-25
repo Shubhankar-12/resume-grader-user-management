@@ -29,9 +29,9 @@ export class RazorpayProvider implements PaymentProvider {
         amount: params.amount,
         currency: params.currency ?? 'INR',
         notes: {
+          ...(params.metadata ?? {}),
           userId: params.userId,
           packId: params.planId,
-          ...(params.metadata ?? {}),
         },
       });
       return {
