@@ -3,6 +3,7 @@
 import { ObjectId } from 'mongodb';
 import {
   APPLICATION_STATUSES,
+  ApplicationStatus,
   IApplicationModel,
 } from '../application/types';
 
@@ -144,7 +145,7 @@ export class ApplicationQueries {
 
     const oldStatus = card.status;
     const oldPosition = card.position;
-    const newStatus = data.new_status;
+    const newStatus = data.new_status as ApplicationStatus;
     const newPosition = data.new_position;
 
     if (oldStatus !== newStatus) {

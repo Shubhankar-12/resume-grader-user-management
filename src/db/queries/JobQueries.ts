@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Types } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import {
   IJobDocument, IJobModel, JobStatus, JobType,
 } from '../job/types';
@@ -35,7 +35,7 @@ export class JobQueries {
     return this.model.findOne({
       _id: new ObjectId(jobId),
       user_id: new ObjectId(userId),
-    });
+    } as FilterQuery<IJobDocument>);
   }
 
   async updateStatus(

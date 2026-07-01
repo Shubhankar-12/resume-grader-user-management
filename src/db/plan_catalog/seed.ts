@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { PlanCatalog } from './model';
+import { PlanCatalogDoc } from './schema';
 
 const seedData = [
   {
@@ -43,7 +44,7 @@ const seedData = [
 export async function seedPlanCatalog(): Promise<void> {
   for (const plan of seedData) {
     await PlanCatalog.updateOne(
-        { plan_id: plan.plan_id, region: plan.region },
+        { plan_id: plan.plan_id, region: plan.region } as FilterQuery<PlanCatalogDoc>,
         { $set: plan },
         { upsert: true }
     );

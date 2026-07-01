@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { creditPackModel } from './model';
+import { CreditPackDoc } from './schema';
 
 const rows = [
   {
@@ -37,7 +38,7 @@ const rows = [
 export async function seedCreditPacks(): Promise<void> {
   for (const pack of rows) {
     await creditPackModel.updateOne(
-        { pack_id: pack.pack_id, region: pack.region },
+        { pack_id: pack.pack_id, region: pack.region } as FilterQuery<CreditPackDoc>,
         { $set: pack },
         { upsert: true },
     );

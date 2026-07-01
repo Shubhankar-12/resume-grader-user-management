@@ -3,8 +3,8 @@
 // and only if they don't already have a signup_grant ledger entry.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose from 'mongoose';
-import { userModel } from '../user';
+import mongoose, { FilterQuery } from 'mongoose';
+import { userModel, IUserDocument } from '../user';
 import { creditTransactionModel } from '../credit_transaction';
 
 export async function backfillCreditBalance(): Promise<{
@@ -19,7 +19,7 @@ export async function backfillCreditBalance(): Promise<{
           { credit_balance: 0 },
           { credit_balance: { $exists: false } },
         ],
-      })
+      } as FilterQuery<IUserDocument>)
       .lean();
 
   let grantsAdded = 0;
