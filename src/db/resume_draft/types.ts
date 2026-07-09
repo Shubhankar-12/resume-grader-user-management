@@ -8,7 +8,11 @@ export const SECTION_KEYS = [
 ] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
 
-export const TEMPLATE_IDS = ['classic', 'modern', 'compact'] as const;
+export const TEMPLATE_IDS = [
+  'classic', 'modern', 'compact',
+  'coursework-classic', 'tri-header', 'faangpath', 'deedy',
+  'emoji', 'jake', 'business-pro', 'modern-tech',
+] as const;
 export type TemplateId = typeof TEMPLATE_IDS[number];
 
 export interface ILink { label: string; url: string }
