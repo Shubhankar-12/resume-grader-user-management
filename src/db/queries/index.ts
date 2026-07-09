@@ -10,6 +10,8 @@ import { resumeMatchModel } from '../resume_match';
 import { tailoredResumeModel } from '../tailored_resume';
 import { userModel } from '../user';
 import { userResumeModel } from '../user_resume';
+import { resumeDraftModel } from '../resume_draft';
+import { ResumeDraftQueries } from './ResumeDraftQueries';
 import { AICostLogQueries } from './AICostLogQueries';
 import { ApplicationQueries } from './ApplicationQueries';
 import { CoverLetterQueries } from './CoverLetterQueries';
@@ -44,6 +46,7 @@ export const paymentSubscriptionQueries = new PaymentSubscriptionQueries(
 export const jobQueries = new JobQueries(jobModel);
 export const aiCostLogQueries = new AICostLogQueries();
 export const applicationQueries = new ApplicationQueries(applicationModel);
+export const resumeDraftQueries = new ResumeDraftQueries(resumeDraftModel);
 export { planCatalogQueries } from './PlanCatalogQueries';
 export { webhookEventQueries } from './WebhookEventQueries';
 export { creditTransactionQueries } from './CreditTransactionQueries';
