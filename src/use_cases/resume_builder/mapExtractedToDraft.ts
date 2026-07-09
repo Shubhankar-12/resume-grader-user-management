@@ -4,6 +4,10 @@ import { IResumeDraft } from '../../db/resume_draft/types';
 
 const arr = (v: any): any[] => (Array.isArray(v) ? v : []);
 const str = (v: any): string => (typeof v === 'string' ? v : '');
+const escapeHtml = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const bulletsToHtml = (bullets: string[]): string =>
+  bullets.length ? `<ul>${bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : '';
 
 export function mapExtractedToDraft(extracted: any): Partial<IResumeDraft> {
   const e = extracted ?? {};
@@ -20,16 +24,20 @@ export function mapExtractedToDraft(extracted: any): Partial<IResumeDraft> {
     skills: arr(e.skills).map(str).filter(Boolean),
     languages: arr(e.languages).map(str).filter(Boolean),
     interests: arr(e.interests).map(str).filter(Boolean),
-    experience: arr(e.experience).map((x: any) => ({
-      id: randomUUID(),
-      role: str(x.role),
-      companyName: str(x.companyName),
-      location: str(x.location),
-      startDate: str(x.startDate),
-      endDate: str(x.endDate),
-      isPresent: !!x.isPresent,
-      bullets: arr(x.tasks).map(str).filter(Boolean),
-    })),
+    experience: arr(e.experience).map((x: any) => {
+      const bullets = arr(x.tasks).map(str).filter(Boolean);
+      return {
+        id: randomUUID(),
+        role: str(x.role),
+        companyName: str(x.companyName),
+        location: str(x.location),
+        startDate: str(x.startDate),
+        endDate: str(x.endDate),
+        isPresent: !!x.isPresent,
+        bullets,
+        description: bulletsToHtml(bullets) || str(x.description),
+      };
+    }),
     education: arr(e.education).map((x: any) => ({
       id: randomUUID(),
       degree: str(x.degree),

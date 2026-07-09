@@ -13,7 +13,10 @@ export interface ILink { label: string; url: string }
 
 export interface IDraftExperience {
   id: string; role: string; companyName: string; location: string;
-  startDate: string; endDate: string; isPresent: boolean; bullets: string[];
+  startDate: string; endDate: string; isPresent: boolean;
+  bullets: string[];
+  /** Rich-text (sanitized HTML) description; preferred over bullets when set. */
+  description: string;
 }
 export interface IDraftEducation {
   id: string; degree: string; subject: string; schoolName: string;

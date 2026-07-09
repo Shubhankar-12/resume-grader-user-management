@@ -16,6 +16,7 @@ const ExperienceSchema = new Schema(
       endDate: { type: String, default: '' },
       isPresent: { type: Boolean, default: false },
       bullets: { type: [String], default: [] },
+      description: { type: String, default: '' },
     },
     { _id: false }
 );
