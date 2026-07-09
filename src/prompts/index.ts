@@ -19,9 +19,52 @@ import { coverLetterV1 } from './cover-letter/v1';
 import { CoverLetterResult } from './cover-letter/schema';
 import { buildProjectAnalysisTemplate } from './project-analysis/v1';
 import { ProjectAnalysisResult } from './project-analysis/schema';
+import { improveBulletV1, summaryV1, skillsV1 } from './resume-assist/v1';
+import {
+  ImprovedBulletResult,
+  ResumeSummaryResult,
+  SkillSuggestionResult,
+} from './resume-assist/schema';
 import { getTaskConfig } from './config';
 
 const executor = new PromptExecutor();
+
+export async function improveResumeBullet(bullet: string, context: string) {
+  const result = await executor.execute({
+    task: 'resumeAssist',
+    input: { bullet, context },
+    template: improveBulletV1,
+    schema: ImprovedBulletResult,
+    cacheKey: 'improve:' + bullet + '|' + context,
+  });
+  return result.data;
+}
+
+export async function generateResumeSummary(resumeJson: string) {
+  const result = await executor.execute({
+    task: 'resumeAssist',
+    input: { resume: resumeJson },
+    template: summaryV1,
+    schema: ResumeSummaryResult,
+    cacheKey: 'summary:' + resumeJson,
+  });
+  return result.data;
+}
+
+export async function suggestResumeSkills(
+    role: string,
+    experience: string,
+    existing: string
+) {
+  const result = await executor.execute({
+    task: 'resumeAssist',
+    input: { role, experience, existing },
+    template: skillsV1,
+    schema: SkillSuggestionResult,
+    cacheKey: 'skills:' + role + '|' + experience + '|' + existing,
+  });
+  return result.data;
+}
 
 export async function getResumeScoreAndSuggestions(text: string) {
   const config = getTaskConfig('grading');

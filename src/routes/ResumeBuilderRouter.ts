@@ -6,8 +6,18 @@ import { getAllResumeDraftsController, getAllResumeDraftsMiddleware } from '../u
 import { getResumeDraftByIdController, getResumeDraftByIdMiddleware } from '../use_cases/resume_builder/get_by_id';
 import { updateResumeDraftController, updateResumeDraftMiddleware } from '../use_cases/resume_builder/update';
 import { disableResumeDraftController, disableResumeDraftMiddleware } from '../use_cases/resume_builder/disable';
+import { createAIRateLimiter } from '../common_middleware/rateLimiter';
+import { requireCredits } from '../common_middleware/creditMiddleware';
+import {
+  improveBulletController,
+  summaryController,
+  skillsController,
+  ghostwriteController,
+  ghostwriteAcceptController,
+} from '../use_cases/resume_builder/ai/controllers';
 
 export const resumeBuilderRouter = express.Router();
+const aiLimiter = createAIRateLimiter();
 
 baseRouterHandler.handleWithHooks(
     resumeBuilderRouter, 'post', '/create',
@@ -47,4 +57,49 @@ baseRouterHandler.handleWithHooks(
     disableResumeDraftMiddleware.ensureLoggedIn(),
     disableResumeDraftMiddleware.ensureValidation(),
     disableResumeDraftController.execute()
+);
+
+// --- AI assist (synchronous) ---
+
+baseRouterHandler.handleWithHooks(
+    resumeBuilderRouter, 'post', '/ai/improve-bullet',
+    createResumeDraftMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createResumeDraftMiddleware.ensureLoggedIn(),
+    aiLimiter,
+    requireCredits('resume_ai_assist'),
+    improveBulletController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+    resumeBuilderRouter, 'post', '/ai/summary',
+    createResumeDraftMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createResumeDraftMiddleware.ensureLoggedIn(),
+    aiLimiter,
+    requireCredits('resume_ai_assist'),
+    summaryController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+    resumeBuilderRouter, 'post', '/ai/skills',
+    createResumeDraftMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createResumeDraftMiddleware.ensureLoggedIn(),
+    aiLimiter,
+    requireCredits('resume_ai_assist'),
+    skillsController.execute()
+);
+
+// Ghostwriter: generation is free (rate-limited); a credit is charged on accept.
+baseRouterHandler.handleWithHooks(
+    resumeBuilderRouter, 'post', '/ai/ghostwrite',
+    createResumeDraftMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createResumeDraftMiddleware.ensureLoggedIn(),
+    aiLimiter,
+    ghostwriteController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+    resumeBuilderRouter, 'post', '/ai/ghostwrite/accept',
+    createResumeDraftMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createResumeDraftMiddleware.ensureLoggedIn(),
+    ghostwriteAcceptController.execute()
 );

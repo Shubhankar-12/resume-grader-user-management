@@ -8,8 +8,9 @@ describe('creditCosts', () => {
     expect(getCost('tailored_resume')).toBe(2);
     expect(getCost('job_match')).toBe(1);
     expect(getCost('project_analysis')).toBe(1);
+    expect(getCost('resume_ai_assist')).toBe(1);
   });
-  it('map contains exactly 5 actions', () => {
-    expect(Object.keys(creditCosts)).toHaveLength(5);
+  it('map contains exactly 6 actions', () => {
+    expect(Object.keys(creditCosts)).toHaveLength(6);
   });
 });

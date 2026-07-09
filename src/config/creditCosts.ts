@@ -3,7 +3,8 @@ export type AIAction =
   | 'cover_letter'
   | 'tailored_resume'
   | 'job_match'
-  | 'project_analysis';
+  | 'project_analysis'
+  | 'resume_ai_assist';
 
 export const creditCosts: Record<AIAction, number> = {
   resume_grade: 3,
@@ -11,6 +12,7 @@ export const creditCosts: Record<AIAction, number> = {
   tailored_resume: 2,
   job_match: 1,
   project_analysis: 1,
+  resume_ai_assist: 1,
 };
 
 export function getCost(action: AIAction): number {

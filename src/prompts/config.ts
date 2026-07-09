@@ -50,6 +50,13 @@ export const TASK_DEFAULTS: Record<string, TaskDefault> = {
     useChainOfThought: false,
     promptVersion: 'v1',
   },
+  resumeAssist: {
+    envVar: 'AI_MODEL_RESUME_ASSIST',
+    defaultModel: 'gpt-4o-mini',
+    temperature: 0.4,
+    useChainOfThought: false,
+    promptVersion: 'v1',
+  },
 };
 
 export const COST_PER_1K: Record<string, { input: number; output: number }> = {
