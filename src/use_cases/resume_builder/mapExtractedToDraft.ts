@@ -19,10 +19,21 @@ export function mapExtractedToDraft(extracted: any): Partial<IResumeDraft> {
       phone: str(e.phone),
       location: str(e.location),
       links: [],
+      photoUrl: '',
     },
     summary: str(e.summary),
     skills: arr(e.skills).map(str).filter(Boolean),
+    skillGroups: (() => {
+      const names = arr(e.skills).map(str).filter(Boolean);
+      return names.length
+        ? [{ id: randomUUID(), category: 'Skills', skills: names.map((n) => ({ name: n })) }]
+        : [];
+    })(),
     languages: arr(e.languages).map(str).filter(Boolean),
+    languageItems: arr(e.languages)
+        .map(str)
+        .filter(Boolean)
+        .map((n) => ({ id: randomUUID(), name: n })),
     interests: arr(e.interests).map(str).filter(Boolean),
     experience: arr(e.experience).map((x: any) => {
       const bullets = arr(x.tasks).map(str).filter(Boolean);
@@ -46,6 +57,9 @@ export function mapExtractedToDraft(extracted: any): Partial<IResumeDraft> {
       location: str(x.location),
       startDate: str(x.startDate),
       endDate: str(x.endDate),
+      gpa: '',
+      honors: '',
+      coursework: [],
     })),
     projects: arr(e.projects).map((x: any) => ({
       id: randomUUID(),

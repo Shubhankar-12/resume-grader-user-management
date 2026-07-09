@@ -5,8 +5,9 @@ import { SECTION_KEYS, TEMPLATE_IDS } from '../types';
 describe('resume_draft schema', () => {
   it('exposes the canonical section keys and template ids', () => {
     expect(SECTION_KEYS).toEqual([
-      'summary', 'experience', 'skills', 'projects',
-      'education', 'certifications', 'languages', 'interests',
+      'summary', 'experience', 'skills', 'projects', 'education',
+      'awards', 'publications', 'volunteer', 'activities',
+      'certifications', 'languages', 'interests',
     ]);
     expect(TEMPLATE_IDS).toEqual(['classic', 'modern', 'compact']);
   });

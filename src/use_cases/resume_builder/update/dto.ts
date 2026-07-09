@@ -4,8 +4,9 @@ import { IUpdateResumeDraftRequest } from './request';
 
 export const EDITABLE_FIELDS = [
   'title', 'template_id', 'accent_color', 'basics', 'summary',
-  'skills', 'languages', 'interests', 'experience', 'education',
-  'projects', 'certifications', 'section_order',
+  'skills', 'skillGroups', 'languages', 'languageItems', 'interests',
+  'experience', 'education', 'projects', 'certifications',
+  'awards', 'publications', 'volunteer', 'activities', 'section_order',
 ];
 
 export interface IUpdateResumeDraftDto {
