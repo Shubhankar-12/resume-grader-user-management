@@ -12,6 +12,12 @@ export const summaryV1: PromptTemplate = {
   userTemplate: `Resume data (JSON):\n{{resume}}\n\nReturn the summary as JSON.`,
 };
 
+export const polishDescriptionV1: PromptTemplate = {
+  task: 'resumeAssist',
+  systemPrompt: `You are an expert resume writer. Rewrite a work experience description into 3-5 strong, distinct bullet points. Each bullet begins with a strong past-tense action verb, is specific and quantified where the input plausibly implies it, stays to one line, and is ATS-friendly. Preserve every real accomplishment from the input; never drop content and never invent metrics that are not implied. Write in a natural, specific, hand-crafted voice. Never use the em dash character (—); use commas or periods instead. Avoid clichéd, generic, AI-sounding filler (e.g. "leveraged", "spearheaded", "results-driven"). Respond ONLY with valid JSON: {"bullets": string[]}. No markdown.`,
+  userTemplate: `Context (role / company):\n{{context}}\n\nCurrent description:\n{{text}}\n\nReturn the improved bullets as JSON.`,
+};
+
 export const skillsV1: PromptTemplate = {
   task: 'resumeAssist',
   systemPrompt: `You are an ATS optimization expert. Given a target role and the candidate's experience, suggest 6-12 relevant, widely-recognized skills or keywords that strengthen ATS matching for that role. Exclude any skill already listed. Prefer concrete technologies, tools, and methodologies over generic soft-skill fluff. Respond ONLY with valid JSON: {"skills": string[]}. No markdown.`,

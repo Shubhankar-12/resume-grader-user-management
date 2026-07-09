@@ -6,6 +6,7 @@ import {
   improveResumeBullet,
   generateResumeSummary,
   suggestResumeSkills,
+  polishResumeDescription,
 } from '../../../prompts';
 import { refundCreditsOnInfraError } from '../../../common_middleware/creditMiddleware';
 import { userQueries, creditTransactionQueries } from '../../../db/queries';
@@ -55,6 +56,22 @@ class SkillsController extends BaseController {
       const { role = '', experience = '', existing = '' } = req.body ?? {};
       const existingStr = Array.isArray(existing) ? existing.join(', ') : String(existing);
       const data = await suggestResumeSkills(String(role), String(experience), existingStr);
+      res.locals.response = this.success(data);
+    } catch (err) {
+      await refundCreditsOnInfraError(res, err);
+      res.locals.response = this.fail({
+        errors: [], message: 'AI request failed', statusCode: 502,
+      });
+    }
+  }
+}
+
+/** POST /ai/polish-description — credit-gated; rewrites a full experience description into strong bullets. */
+class PolishDescriptionController extends BaseController {
+  async executeImpl(req: Request, res: Response): Promise<void> {
+    try {
+      const { text = '', context = '' } = req.body ?? {};
+      const data = await polishResumeDescription(String(text), String(context));
       res.locals.response = this.success(data);
     } catch (err) {
       await refundCreditsOnInfraError(res, err);
@@ -116,5 +133,6 @@ class GhostwriteAcceptController extends BaseController {
 export const improveBulletController = new ImproveBulletController();
 export const summaryController = new SummaryController();
 export const skillsController = new SkillsController();
+export const polishDescriptionController = new PolishDescriptionController();
 export const ghostwriteController = new GhostwriteController();
 export const ghostwriteAcceptController = new GhostwriteAcceptController();

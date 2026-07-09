@@ -12,6 +12,7 @@ import {
   improveBulletController,
   summaryController,
   skillsController,
+  polishDescriptionController,
   ghostwriteController,
   ghostwriteAcceptController,
 } from '../use_cases/resume_builder/ai/controllers';
@@ -86,6 +87,15 @@ baseRouterHandler.handleWithHooks(
     aiLimiter,
     requireCredits('resume_ai_assist'),
     skillsController.execute()
+);
+
+baseRouterHandler.handleWithHooks(
+    resumeBuilderRouter, 'post', '/ai/polish-description',
+    createResumeDraftMiddleware.ensureAuthentication([POLICIES.ADMIN_POLICY]),
+    createResumeDraftMiddleware.ensureLoggedIn(),
+    aiLimiter,
+    requireCredits('resume_ai_assist'),
+    polishDescriptionController.execute()
 );
 
 // Ghostwriter: generation is free (rate-limited); a credit is charged on accept.
