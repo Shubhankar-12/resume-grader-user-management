@@ -109,6 +109,10 @@ async function startServer() {
       }
     });
 
+    app.get('/health', (req, res) => {
+      res.status(200).json({ status: 'ok' });
+    });
+
     Sentry.setupExpressErrorHandler(app);
 
     app.use('*', (req, res) => {
