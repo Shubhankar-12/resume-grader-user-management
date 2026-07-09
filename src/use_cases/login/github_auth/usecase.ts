@@ -89,7 +89,10 @@ export class GithubAuthUseCase implements UseCase<IGithubAuthDto, any> {
       const loginData = await loginQueries.findLoginByUserId(userId);
 
       if (loginData.length > 0) {
-        return successClass({ token: loginData[0] });
+        return successClass({
+          token: loginData[0].token,
+          decoded_token: loginData[0],
+        });
       } else {
         const login = {
           is_login: true,
