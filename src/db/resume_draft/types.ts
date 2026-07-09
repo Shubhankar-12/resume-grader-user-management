@@ -1,8 +1,10 @@
 import { Document, Model } from 'mongoose';
 
+// Default order tells the candidate's story for a fast recruiter scan:
+// pitch -> experience -> skills -> proof -> credentials.
 export const SECTION_KEYS = [
-  'summary', 'skills', 'experience', 'education',
-  'projects', 'certifications', 'languages', 'interests',
+  'summary', 'experience', 'skills', 'projects',
+  'education', 'certifications', 'languages', 'interests',
 ] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
 
